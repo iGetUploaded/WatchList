@@ -1,1784 +1,1835 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Anime Watchlist</title>
-    <style>
-        :root {
-            --bg: #0d0d12;
-            --surface: #16161f;
-            --surface2: #1e1e2a;
-            --surface3: #242433;
-            --border: #2a2a3a;
-            --border2: #363650;
-            --purple: #a855f7;
-            --purple-dim: #7c3aed;
-            --purple-soft: #2d1f4a;
-            --text: #e8e8f0;
-            --text2: #9090a8;
-            --text3: #55556a;
-            --red: #f87171;
-            --red-bg: #2e0d0d;
-            --red-b: #7f1d1d;
-            --green: #34d399;
-            --green-bg: #0d2e22;
-            --green-b: #14532d;
-            --blue: #60a5fa;
-            --blue-bg: #0d1e35;
-            --blue-b: #1e3a5f;
-            --amber: #fbbf24;
-            --amber-bg: #2e1f05;
-            --amber-b: #78350f;
-        }
-
-        [data-theme="light"] {
-            --bg: #f4f4f8;
-            --surface: #ffffff;
-            --surface2: #f0f0f6;
-            --surface3: #e8e8f0;
-            --border: #dddde8;
-            --border2: #c8c8d8;
-            --text: #1a1a2e;
-            --text2: #55556a;
-            --text3: #9090a8;
-            --purple-soft: #ede9fe;
-        }
-
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            transition: background 0.2s, color 0.2s
-        }
-
-        /* HEADER */
-        .header {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            position: sticky;
-            top: 0;
-            z-index: 20
-        }
-
-        .header-left h1 {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: var(--purple)
-        }
-
-        .header-left p {
-            font-size: 0.72rem;
-            color: var(--text3);
-            margin-top: 1px
-        }
-
-        .header-right {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            align-items: center
-        }
-
-        /* BUTTONS */
-        .btn {
-            font-size: 0.76rem;
-            font-weight: 500;
-            padding: 5px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border2);
-            background: transparent;
-            color: var(--text2);
-            cursor: pointer;
-            transition: all 0.15s;
-            white-space: nowrap
-        }
-
-        .btn:hover {
-            background: var(--surface2);
-            border-color: var(--purple-dim);
-            color: var(--purple)
-        }
-
-        .btn.accent {
-            background: var(--purple-dim);
-            border-color: var(--purple-dim);
-            color: #fff
-        }
-
-        .btn.accent:hover {
-            background: var(--purple)
-        }
-
-        .btn.gb {
-            border-color: var(--green-b);
-            color: var(--green)
-        }
-
-        .btn.gb:hover {
-            background: var(--green-bg)
-        }
-
-        .btn.ab {
-            border-color: var(--amber-b);
-            color: var(--amber)
-        }
-
-        .btn.ab:hover {
-            background: var(--amber-bg)
-        }
-
-        .btn.rb {
-            border-color: var(--red-b);
-            color: var(--red)
-        }
-
-        .btn.rb:hover {
-            background: var(--red-bg)
-        }
-
-
-        /* LEGEND */
-        .legend {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            padding: 0.6rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            background: var(--surface);
-            align-items: center
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.72rem;
-            color: var(--text2)
-        }
-
-        .ld {
-            width: 10px;
-            height: 10px;
-            border-radius: 2px;
-            flex-shrink: 0
-        }
-
-        .ld-watching {
-            background: var(--blue)
-        }
-
-        .ld-completed {
-            background: var(--green)
-        }
-
-        .ld-plan {
-            background: var(--amber)
-        }
-
-        .ld-dropped {
-            background: var(--red)
-        }
-
-        .ld-none {
-            background: var(--border2)
-        }
-
-        /* STATS BAR */
-        .stats-bar {
-            display: flex;
-            gap: 1px;
-            background: var(--border);
-            border-bottom: 1px solid var(--border);
-            overflow-x: auto;
-            scrollbar-width: none
-        }
-
-        .stats-bar::-webkit-scrollbar {
-            display: none
-        }
-
-        .stat-item {
-            flex: 1;
-            min-width: 75px;
-            background: var(--surface);
-            padding: 9px 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: background 0.15s;
-            user-select: none
-        }
-
-        .stat-item:hover {
-            background: var(--surface2)
-        }
-
-        .stat-item.active {
-            background: var(--purple-soft)
-        }
-
-        .stat-n {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--purple);
-            line-height: 1
-        }
-
-        .stat-item.active .stat-n {
-            color: #d8b4fe
-        }
-
-        .stat-l {
-            font-size: 0.6rem;
-            color: var(--text3);
-            margin-top: 2px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em
-        }
-
-        .stat-item.sw .stat-n {
-            color: var(--blue)
-        }
-
-        .stat-item.sw.active {
-            background: var(--blue-bg)
-        }
-
-        .stat-item.sc .stat-n {
-            color: var(--green)
-        }
-
-        .stat-item.sc.active {
-            background: var(--green-bg)
-        }
-
-        .stat-item.sp .stat-n {
-            color: var(--amber)
-        }
-
-        .stat-item.sp.active {
-            background: var(--amber-bg)
-        }
-
-        .stat-item.sd .stat-n {
-            color: var(--red)
-        }
-
-        .stat-item.sd.active {
-            background: var(--red-bg)
-        }
-
-        /* CONTROLS */
-        .controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            padding: 0.8rem 1.5rem;
-            flex-wrap: wrap;
-            border-bottom: 1px solid var(--border);
-            background: var(--surface)
-        }
-
-        .search-wrap {
-            position: relative;
-            flex: 1;
-            min-width: 160px;
-            max-width: 280px
-        }
-
-        .si {
-            position: absolute;
-            left: 9px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text3);
-            font-size: 12px;
-            pointer-events: none
-        }
-
-        input[type="text"] {
-            width: 100%;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            padding: 6px 9px 6px 28px;
-            font-size: 0.83rem;
-            outline: none;
-            transition: border-color 0.15s
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--purple-dim)
-        }
-
-        input[type="text"]::placeholder {
-            color: var(--text3)
-        }
-
-        .csel {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text2);
-            padding: 6px 9px;
-            font-size: 0.8rem;
-            outline: none;
-            cursor: pointer
-        }
-
-        .rc {
-            font-size: 0.72rem;
-            color: var(--text3);
-            margin-left: auto
-        }
-
-        /* BULK BAR */
-        .bulk-bar {
-            display: none;
-            background: var(--purple-soft);
-            border-bottom: 1px solid var(--purple-dim);
-            padding: 7px 1.5rem;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap
-        }
-
-        .bulk-bar.show {
-            display: flex
-        }
-
-        .bulk-bar span {
-            font-size: 0.8rem;
-            color: var(--purple);
-            font-weight: 500
-        }
-
-        /* GRID */
-        .grid-wrap {
-            padding: 1rem 1.5rem
-        }
-
-        .alpha-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 3px;
-            margin-bottom: 0.9rem
-        }
-
-        .ab-btn {
-            font-size: 0.68rem;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 5px;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text3);
-            cursor: pointer;
-            transition: all 0.12s
-        }
-
-        .ab-btn:hover,
-        .ab-btn.active {
-            background: var(--purple-soft);
-            border-color: var(--purple-dim);
-            color: var(--purple)
-        }
-
-        .ab-btn.dim {
-            opacity: 0.2;
-            pointer-events: none
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 9px
-        }
-
-        /* CARD */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 13px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            position: relative;
-            transition: border-color 0.15s, background 0.15s
-        }
-
-        .card:hover {
-            border-color: var(--border2);
-            background: var(--surface2)
-        }
-
-        .card:hover .remove-btn {
-            opacity: 1
-        }
-
-        .card.sw {
-            border-left: 3px solid var(--blue)
-        }
-
-        .card.sc {
-            border-left: 3px solid var(--green)
-        }
-
-        .card.sp {
-            border-left: 3px solid var(--amber)
-        }
-
-        .card.sd {
-            border-left: 3px solid var(--red)
-        }
-
-        .card.selected {
-            outline: 2px solid var(--purple-dim);
-            outline-offset: -1px
-        }
-
-        .card-top {
-            display: flex;
-            align-items: flex-start;
-            gap: 6px
-        }
-
-        .card-cb {
-            width: 15px;
-            height: 15px;
-            border-radius: 4px;
-            border: 1px solid var(--border2);
-            background: transparent;
-            cursor: pointer;
-            flex-shrink: 0;
-            margin-top: 2px;
-            accent-color: var(--purple)
-        }
-
-        .card-num {
-            font-size: 0.63rem;
-            color: var(--text3);
-            position: absolute;
-            top: 8px;
-            right: 34px
-        }
-
-        .remove-btn {
-            position: absolute;
-            top: 6px;
-            right: 9px;
-            width: 19px;
-            height: 19px;
-            border-radius: 4px;
-            border: 1px solid transparent;
-            background: transparent;
-            color: var(--text3);
-            cursor: pointer;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: all 0.15s
-        }
-
-        .remove-btn:hover {
-            background: var(--red-bg);
-            border-color: var(--red-b);
-            color: var(--red)
-        }
-
-        .card-title {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text);
-            line-height: 1.4;
-            flex: 1;
-            cursor: pointer
-        }
-
-        .card-title:hover {
-            color: var(--purple)
-        }
-
-
-        /* Progress */
-        .progress-row {
-            display: flex;
-            align-items: center;
-            gap: 6px
-        }
-
-        .prog-input {
-            width: 44px;
-            background: var(--surface3);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            color: var(--text);
-            padding: 2px 5px;
-            font-size: 0.75rem;
-            outline: none;
-            text-align: center
-        }
-
-        .prog-input:focus {
-            border-color: var(--purple-dim)
-        }
-
-        .prog-sep {
-            font-size: 0.72rem;
-            color: var(--text3)
-        }
-
-        .prog-bar-wrap {
-            flex: 1;
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            overflow: hidden;
-            min-width: 30px
-        }
-
-        .prog-bar {
-            height: 100%;
-            background: var(--blue);
-            border-radius: 2px;
-            transition: width 0.3s
-        }
-
-        .prog-bar.done {
-            background: var(--green)
-        }
-
-        /* Notes */
-        .note-text {
-            font-size: 0.75rem;
-            color: var(--text3);
-            font-style: italic;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: pointer
-        }
-
-        .note-text:hover {
-            color: var(--text2)
-        }
-
-        .note-text.empty {
-            color: var(--border2)
-        }
-
-        /* Card footer */
-        .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 5px;
-            margin-top: 2px
-        }
-
-        .ep-badge {
-            font-size: 0.68rem;
-            color: var(--text3);
-            display: flex;
-            align-items: center;
-            gap: 3px
-        }
-
-        .ep-badge::before {
-            content: '';
-            display: inline-block;
-            width: 3px;
-            height: 3px;
-            border-radius: 50%;
-            background: var(--text3)
-        }
-
-        .ep18 {
-            color: var(--red)
-        }
-
-        .ep18::before {
-            background: var(--red)
-        }
-
-        .stsел,
-        .sts {
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--surface2);
-            color: var(--text3);
-            cursor: pointer;
-            outline: none;
-            transition: all 0.15s;
-            max-width: 120px
-        }
-
-        .sts:hover {
-            border-color: var(--border2)
-        }
-
-        .sts.sw {
-            color: var(--blue);
-            border-color: var(--blue-b);
-            background: var(--blue-bg)
-        }
-
-        .sts.sc {
-            color: var(--green);
-            border-color: var(--green-b);
-            background: var(--green-bg)
-        }
-
-        .sts.sp {
-            color: var(--amber);
-            border-color: var(--amber-b);
-            background: var(--amber-bg)
-        }
-
-        .sts.sd {
-            color: var(--red);
-            border-color: var(--red-b);
-            background: var(--red-bg)
-        }
-
-        .added-pill {
-            font-size: 0.58rem;
-            padding: 1px 5px;
-            border-radius: 20px;
-            background: var(--green-bg);
-            color: var(--green);
-            border: 1px solid var(--green-b);
-            flex-shrink: 0
-        }
-
-        /* Category tag */
-        .cat-tag {
-            font-size: 0.62rem;
-            padding: 1px 6px;
-            border-radius: 20px;
-            background: var(--purple-soft);
-            color: var(--purple);
-            border: 1px solid var(--purple-dim);
-            cursor: pointer;
-            flex-shrink: 0
-        }
-
-        .empty {
-            text-align: center;
-            padding: 3rem 2rem;
-            color: var(--text3);
-            font-size: 0.88rem;
-            display: none
-        }
-
-        /* MODAL */
-        .modal-bg {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 100;
-            align-items: center;
-            justify-content: center
-        }
-
-        .modal-bg.open {
-            display: flex
-        }
-
-        .modal {
-            background: var(--surface);
-            border: 1px solid var(--border2);
-            border-radius: 14px;
-            padding: 1.5rem;
-            width: 100%;
-            max-width: 480px;
-            margin: 1rem;
-            max-height: 90vh;
-            overflow-y: auto
-        }
-
-        .modal h2 {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--purple);
-            margin-bottom: 1rem
-        }
-
-        .field {
-            margin-bottom: 0.9rem
-        }
-
-        .field label {
-            display: block;
-            font-size: 0.75rem;
-            color: var(--text2);
-            margin-bottom: 4px
-        }
-
-        .mi {
-            width: 100%;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            padding: 7px 11px;
-            font-size: 0.85rem;
-            outline: none;
-            transition: border-color 0.15s
-        }
-
-        .mi:focus {
-            border-color: var(--purple-dim)
-        }
-
-        .mi::placeholder {
-            color: var(--text3)
-        }
-
-        .msel {
-            width: 100%;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            padding: 7px 11px;
-            font-size: 0.85rem;
-            outline: none;
-            cursor: pointer
-        }
-
-        .modal-row {
-            display: flex;
-            gap: 7px;
-            margin-top: 1rem
-        }
-
-        .warn {
-            font-size: 0.72rem;
-            color: var(--red);
-            margin-top: 3px;
-            min-height: 14px
-        }
-
-        .div {
-            border: none;
-            border-top: 1px solid var(--border);
-            margin: 1rem 0
-        }
-
-        .drop-zone {
-            border: 1px dashed var(--border2);
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-            cursor: pointer;
-            color: var(--text3);
-            font-size: 0.8rem;
-            line-height: 1.6;
-            transition: all 0.15s
-        }
-
-        .drop-zone:hover,
-        .drop-zone.dg {
-            border-color: var(--purple-dim);
-            background: var(--purple-soft);
-            color: var(--purple)
-        }
-
-        .fn {
-            font-size: 0.72rem;
-            margin-top: 6px;
-            min-height: 14px;
-            color: var(--green)
-        }
-
-        .fn.err {
-            color: var(--red)
-        }
-
-        .sp-row {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap
-        }
-
-        .sp-btn {
-            flex: 1;
-            min-width: 80px;
-            padding: 7px 5px;
-            border-radius: 7px;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text3);
-            font-size: 0.75rem;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.15s
-        }
-
-        .sp-btn:hover {
-            border-color: var(--border2);
-            color: var(--text)
-        }
-
-        .sp-btn.aw {
-            border-color: var(--blue-b);
-            background: var(--blue-bg);
-            color: var(--blue)
-        }
-
-        .sp-btn.ac {
-            border-color: var(--green-b);
-            background: var(--green-bg);
-            color: var(--green)
-        }
-
-        .sp-btn.ap {
-            border-color: var(--amber-b);
-            background: var(--amber-bg);
-            color: var(--amber)
-        }
-
-        .sp-btn.adr {
-            border-color: var(--red-b);
-            background: var(--red-bg);
-            color: var(--red)
-        }
-
-        /* NOTE MODAL */
-        .note-area {
-            width: 100%;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            padding: 8px 11px;
-            font-size: 0.83rem;
-            outline: none;
-            resize: vertical;
-            min-height: 100px;
-            font-family: inherit
-        }
-
-        .note-area:focus {
-            border-color: var(--purple-dim)
-        }
-
-        /* RANDOM MODAL */
-        .random-card {
-            background: var(--surface2);
-            border: 1px solid var(--border2);
-            border-radius: 10px;
-            padding: 1.2rem;
-            text-align: center;
-            margin-bottom: 1rem
-        }
-
-        .random-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 6px
-        }
-
-        .random-meta {
-            font-size: 0.78rem;
-            color: var(--text2)
-        }
-
-        /* DUPE MODAL */
-        .dupe-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-height: 300px;
-            overflow-y: auto
-        }
-
-        .dupe-item {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 7px;
-            padding: 8px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.82rem
-        }
-
-        /* TOAST */
-        .toast {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: var(--surface);
-            border: 1px solid var(--border2);
-            border-radius: 10px;
-            padding: 9px 14px;
-            font-size: 0.8rem;
-            color: var(--text);
-            z-index: 200;
-            transform: translateY(80px);
-            opacity: 0;
-            transition: all 0.25s;
-            pointer-events: none;
-            max-width: 300px
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1
-        }
-
-        .toast.ok {
-            border-color: var(--green-b);
-            color: var(--green)
-        }
-
-        .toast.err {
-            border-color: var(--red-b);
-            color: var(--red)
-        }
-
-        /* PRINT */
-        @media print {
-
-            .header,
-            .legend,
-            .stats-bar,
-            .controls,
-            .bulk-bar,
-            .alpha-bar,
-            .remove-btn,
-            .card-cb,
-            .modal-bg,
-            .toast {
-                display: none !important
-            }
-
-            body {
-                background: #fff;
-                color: #000
-            }
-
-            .grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px
-            }
-
-            .card {
-                border: 1px solid #ccc;
-                break-inside: avoid;
-                background: #fff
-            }
-
-            .card-title {
-                color: #000
-            }
-
-            .grid-wrap {
-                padding: 0
-            }
-        }
-
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border2);
-            border-radius: 3px
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Anime Watchlist</title>
+<style>
+:root {
+  --bg:#0d0d12;--surface:#16161f;--surface2:#1e1e2a;--surface3:#242433;
+  --border:#2a2a3a;--border2:#363650;
+  --purple:#a855f7;--purple-dim:#7c3aed;--purple-soft:#2d1f4a;
+  --text:#e8e8f0;--text2:#9090a8;--text3:#55556a;
+  --red:#f87171;--red-bg:#2e0d0d;--red-b:#7f1d1d;
+  --green:#34d399;--green-bg:#0d2e22;--green-b:#14532d;
+  --blue:#60a5fa;--blue-bg:#0d1e35;--blue-b:#1e3a5f;
+  --amber:#fbbf24;--amber-bg:#2e1f05;--amber-b:#78350f;
+}
+[data-theme="light"] {
+  --bg:#f4f4f8;--surface:#ffffff;--surface2:#f0f0f6;--surface3:#e8e8f0;
+  --border:#dddde8;--border2:#c8c8d8;
+  --text:#1a1a2e;--text2:#55556a;--text3:#9090a8;
+  --purple-soft:#ede9fe;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;transition:background 0.2s,color 0.2s}
+
+/* HEADER */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;flex-shrink:0}
+.header-left h1{font-size:1.15rem;font-weight:600;color:var(--purple)}
+.header-left p{font-size:0.72rem;color:var(--text3);margin-top:1px}
+.header-right{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* BUTTONS */
+.btn{font-size:0.76rem;font-weight:500;padding:5px 12px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.btn:hover{background:var(--surface2);border-color:var(--purple-dim);color:var(--purple)}
+.btn.accent{background:var(--purple-dim);border-color:var(--purple-dim);color:#fff}
+.btn.accent:hover{background:var(--purple)}
+.btn.gb{border-color:var(--green-b);color:var(--green)}
+.btn.gb:hover{background:var(--green-bg)}
+.btn.ab{border-color:var(--amber-b);color:var(--amber)}
+.btn.ab:hover{background:var(--amber-bg)}
+.btn.rb{border-color:var(--red-b);color:var(--red)}
+.btn.rb:hover{background:var(--red-bg)}
+
+
+/* LEGEND */
+.legend{display:flex;gap:12px;flex-wrap:wrap;padding:0.6rem 1.5rem;border-bottom:1px solid var(--border);background:var(--surface);align-items:center}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:0.72rem;color:var(--text2)}
+.ld{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.ld-watching{background:var(--blue)}.ld-completed{background:var(--green)}.ld-plan{background:var(--amber)}.ld-dropped{background:var(--red)}.ld-none{background:var(--border2)}
+
+/* STATS BAR */
+.stats-bar{display:flex;gap:1px;background:var(--border);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.stats-bar::-webkit-scrollbar{display:none}
+.stat-item{flex:1;min-width:75px;background:var(--surface);padding:9px 10px;text-align:center;cursor:pointer;transition:background 0.15s;user-select:none}
+.stat-item:hover{background:var(--surface2)}
+.stat-item.active{background:var(--purple-soft)}
+.stat-n{font-size:1.2rem;font-weight:700;color:var(--purple);line-height:1}
+.stat-item.active .stat-n{color:#d8b4fe}
+.stat-l{font-size:0.6rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:0.05em}
+.stat-item.sw .stat-n{color:var(--blue)}.stat-item.sw.active{background:var(--blue-bg)}
+.stat-item.sc .stat-n{color:var(--green)}.stat-item.sc.active{background:var(--green-bg)}
+.stat-item.sp .stat-n{color:var(--amber)}.stat-item.sp.active{background:var(--amber-bg)}
+.stat-item.sd .stat-n{color:var(--red)}.stat-item.sd.active{background:var(--red-bg)}
+
+/* CONTROLS */
+.controls{display:flex;gap:8px;align-items:center;padding:0.8rem 1.5rem;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--surface)}
+.search-wrap{position:relative;flex:1;min-width:160px;max-width:280px}
+.si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;pointer-events:none}
+input[type="text"]{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:6px 9px 6px 28px;font-size:0.83rem;outline:none;transition:border-color 0.15s}
+input[type="text"]:focus{border-color:var(--purple-dim)}
+input[type="text"]::placeholder{color:var(--text3)}
+.csel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text2);padding:6px 9px;font-size:0.8rem;outline:none;cursor:pointer}
+.rc{font-size:0.72rem;color:var(--text3);margin-left:auto}
+
+/* BULK BAR */
+.bulk-bar{display:none;background:var(--purple-soft);border-bottom:1px solid var(--purple-dim);padding:7px 1.5rem;gap:10px;align-items:center;flex-wrap:wrap}
+.bulk-bar.show{display:flex}
+.bulk-bar span{font-size:0.8rem;color:var(--purple);font-weight:500}
+
+/* GRID */
+.grid-wrap{padding:1rem 1.5rem}
+.alpha-bar{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:0.9rem}
+.ab-btn{font-size:0.68rem;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.12s}
+.ab-btn:hover,.ab-btn.active{background:var(--purple-soft);border-color:var(--purple-dim);color:var(--purple)}
+.ab-btn.dim{opacity:0.2;pointer-events:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:9px}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 13px 10px;display:flex;flex-direction:column;gap:6px;position:relative;transition:border-color 0.15s,background 0.15s}
+.card:hover{border-color:var(--border2);background:var(--surface2)}
+.card:hover .remove-btn{opacity:1}
+.card.sw{border-left:3px solid var(--blue)}
+.card.sc{border-left:3px solid var(--green)}
+.card.sp{border-left:3px solid var(--amber)}
+.card.sd{border-left:3px solid var(--red)}
+.card.selected{outline:2px solid var(--purple-dim);outline-offset:-1px}
+
+.card-top{display:flex;align-items:flex-start;gap:4px}
+.card-cb{width:15px;height:15px;border-radius:4px;border:1px solid var(--border2);background:transparent;cursor:pointer;flex-shrink:0;margin-top:2px;accent-color:var(--purple)}
+.card-num{font-size:0.6rem;color:var(--text3);white-space:nowrap;flex-shrink:0;padding-top:3px;line-height:1}
+.remove-btn{flex-shrink:0;width:18px;height:18px;border-radius:4px;border:1px solid transparent;background:transparent;color:var(--text3);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;opacity:0;transition:all 0.15s;margin-left:auto}
+.remove-btn:hover{background:var(--red-bg);border-color:var(--red-b);color:var(--red)}
+.card-title{font-size:0.85rem;font-weight:500;color:var(--text);line-height:1.4;flex:1;cursor:pointer}
+.card-title:hover{color:var(--purple)}
+
+
+/* Progress */
+.progress-row{display:flex;align-items:center;gap:6px}
+.prog-input{width:44px;background:var(--surface3);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:2px 5px;font-size:0.75rem;outline:none;text-align:center}
+.prog-input:focus{border-color:var(--purple-dim)}
+.prog-sep{font-size:0.72rem;color:var(--text3)}
+.prog-bar-wrap{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;min-width:30px}
+.prog-bar{height:100%;background:var(--blue);border-radius:2px;transition:width 0.3s}
+.prog-bar.done{background:var(--green)}
+
+/* Notes */
+.note-text{font-size:0.75rem;color:var(--text3);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.note-text:hover{color:var(--text2)}
+.note-text.empty{color:var(--border2)}
+
+/* Card footer */
+.card-footer{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.card-footer-row{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.ep-badge{font-size:0.68rem;color:var(--text3);display:flex;align-items:center;gap:3px;white-space:nowrap}
+.ep-badge::before{content:'';display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--text3)}
+.ep18{color:var(--red)}.ep18::before{background:var(--red)}
+.stsел,.sts{font-size:0.7rem;padding:2px 6px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text3);cursor:pointer;outline:none;transition:all 0.15s;max-width:120px}
+.sts:hover{border-color:var(--border2)}
+.sts.sw{color:var(--blue);border-color:var(--blue-b);background:var(--blue-bg)}
+.sts.sc{color:var(--green);border-color:var(--green-b);background:var(--green-bg)}
+.sts.sp{color:var(--amber);border-color:var(--amber-b);background:var(--amber-bg)}
+.sts.sd{color:var(--red);border-color:var(--red-b);background:var(--red-bg)}
+.added-pill{font-size:0.58rem;padding:1px 5px;border-radius:20px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-b);flex-shrink:0}
+
+/* Category tag */
+.cat-tag{font-size:0.62rem;padding:1px 6px;border-radius:20px;background:var(--purple-soft);color:var(--purple);border:1px solid var(--purple-dim);cursor:pointer;flex-shrink:0}
+
+.empty{text-align:center;padding:3rem 2rem;color:var(--text3);font-size:0.88rem;display:none}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:1.5rem;width:100%;max-width:480px;margin:1rem;max-height:90vh;overflow-y:auto}
+.modal h2{font-size:0.95rem;font-weight:600;color:var(--purple);margin-bottom:1rem}
+.field{margin-bottom:0.9rem}
+.field label{display:block;font-size:0.75rem;color:var(--text2);margin-bottom:4px}
+.mi{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 11px;font-size:0.85rem;outline:none;transition:border-color 0.15s}
+.mi:focus{border-color:var(--purple-dim)}
+.mi::placeholder{color:var(--text3)}
+.msel{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 11px;font-size:0.85rem;outline:none;cursor:pointer}
+.modal-row{display:flex;gap:7px;margin-top:1rem}
+.warn{font-size:0.72rem;color:var(--red);margin-top:3px;min-height:14px}
+.div{border:none;border-top:1px solid var(--border);margin:1rem 0}
+.drop-zone{border:1px dashed var(--border2);border-radius:8px;padding:1rem;text-align:center;cursor:pointer;color:var(--text3);font-size:0.8rem;line-height:1.6;transition:all 0.15s}
+.drop-zone:hover,.drop-zone.dg{border-color:var(--purple-dim);background:var(--purple-soft);color:var(--purple)}
+.fn{font-size:0.72rem;margin-top:6px;min-height:14px;color:var(--green)}
+.fn.err{color:var(--red)}
+.sp-row{display:flex;gap:6px;flex-wrap:wrap}
+.sp-btn{flex:1;min-width:80px;padding:7px 5px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:0.75rem;cursor:pointer;text-align:center;transition:all 0.15s}
+.sp-btn:hover{border-color:var(--border2);color:var(--text)}
+.sp-btn.aw{border-color:var(--blue-b);background:var(--blue-bg);color:var(--blue)}
+.sp-btn.ac{border-color:var(--green-b);background:var(--green-bg);color:var(--green)}
+.sp-btn.ap{border-color:var(--amber-b);background:var(--amber-bg);color:var(--amber)}
+.sp-btn.adr{border-color:var(--red-b);background:var(--red-bg);color:var(--red)}
+
+/* NOTE MODAL */
+.note-area{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 11px;font-size:0.83rem;outline:none;resize:vertical;min-height:100px;font-family:inherit}
+.note-area:focus{border-color:var(--purple-dim)}
+
+/* RANDOM MODAL */
+.random-card{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:1.2rem;text-align:center;margin-bottom:1rem}
+.random-title{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:6px}
+.random-meta{font-size:0.78rem;color:var(--text2)}
+
+/* DUPE MODAL */
+.dupe-list{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto}
+.dupe-item{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;font-size:0.82rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:9px 14px;font-size:0.8rem;color:var(--text);z-index:200;transform:translateY(80px);opacity:0;transition:all 0.25s;pointer-events:none;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{border-color:var(--green-b);color:var(--green)}
+.toast.err{border-color:var(--red-b);color:var(--red)}
+
+/* PRINT */
+@media print {
+  .header,.legend,.stats-bar,.controls,.bulk-bar,.alpha-bar,.remove-btn,.card-cb,.modal-bg,.toast,.sidebar{display:none!important}
+  body{background:#fff;color:#000}
+  .app-shell,.app-body,.main-content{display:block;height:auto;overflow:visible}
+  .grid{grid-template-columns:repeat(3,1fr);gap:8px}
+  .card{border:1px solid #ccc;break-inside:avoid;background:#fff}
+  .card-title{color:#000}
+  .grid-wrap{padding:0}
+}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── LAYOUT SHELL ── */
+.app-shell{display:flex;height:100vh;overflow:hidden;flex-direction:column}
+.app-body{display:flex;flex:1;overflow:hidden}
+.main-content{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+
+/* ── SIDEBAR ── */
+.sidebar{width:52px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:width 0.22s cubic-bezier(.4,0,.2,1);overflow:hidden;flex-shrink:0;z-index:15}
+.sidebar.open{width:220px}
+.sb-toggle{padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid var(--border);user-select:none;min-height:48px;flex-shrink:0}
+.sb-toggle-icon{font-size:1.1rem;flex-shrink:0;width:24px;text-align:center;transition:transform 0.2s}
+.sidebar.open .sb-toggle-icon{transform:rotate(180deg)}
+.sb-toggle-label{font-size:0.78rem;font-weight:600;color:var(--text2);white-space:nowrap;opacity:0;transition:opacity 0.15s}
+.sidebar.open .sb-toggle-label{opacity:1}
+.sb-nav{display:flex;flex-direction:column;gap:2px;padding:8px 6px;flex:1}
+.sb-item{display:flex;align-items:center;gap:10px;padding:8px 8px;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:all 0.15s;user-select:none;min-height:38px}
+.sb-item:hover{background:var(--surface2);border-color:var(--border)}
+.sb-item.active{background:var(--purple-soft);border-color:var(--purple-dim)}
+.sb-item.active .sb-item-label,.sb-item.active .sb-item-icon{color:var(--purple)}
+.sb-item-icon{font-size:1rem;flex-shrink:0;width:24px;text-align:center}
+.sb-item-label{font-size:0.78rem;font-weight:500;color:var(--text2);white-space:nowrap;opacity:0;transition:opacity 0.15s}
+.sidebar.open .sb-item-label{opacity:1}
+.sb-divider{border:none;border-top:1px solid var(--border);margin:6px 4px}
+.sb-section-label{font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);padding:4px 8px 2px;white-space:nowrap;opacity:0;transition:opacity 0.15s}
+.sidebar.open .sb-section-label{opacity:1}
+
+/* ── VIEWS ── */
+.view{display:none;flex:1;flex-direction:column}
+.view.active{display:flex}
+
+/* ── DASHBOARD ── */
+.dash-wrap{padding:1.5rem;display:flex;flex-direction:column;gap:1.2rem;overflow-y:auto}
+.dash-title{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:0.2rem}
+.dash-sub{font-size:0.76rem;color:var(--text3)}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem}
+.dash-card-title{font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:0.5rem}
+.dash-stat{font-size:1.8rem;font-weight:700;color:var(--purple);line-height:1}
+.dash-stat-label{font-size:0.72rem;color:var(--text2);margin-top:4px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.2rem}
+.chart-title{font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:1rem}
+.pie-wrap{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.pie-legend{display:flex;flex-direction:column;gap:6px;flex:1;min-width:120px}
+.pie-leg-item{display:flex;align-items:center;gap:7px;font-size:0.75rem;color:var(--text2)}
+.pie-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.pie-leg-val{margin-left:auto;font-weight:600;color:var(--text)}
+.bar-row{display:flex;flex-direction:column;gap:7px}
+.bar-item{display:flex;align-items:center;gap:8px;font-size:0.75rem}
+.bar-label{width:130px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.bar-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:var(--purple);transition:width 0.4s}
+.bar-count{width:28px;text-align:right;color:var(--text3);flex-shrink:0}
+.no-data{color:var(--text3);font-size:0.82rem;font-style:italic;padding:1rem 0}
+.sb-exp-opt{font-size:0.75rem;color:var(--text2);padding:6px 10px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.sb-exp-opt:hover{background:var(--surface3);color:var(--purple)}
+
+/* ── SIDEBAR SEARCH ── */
+.sb-search-wrap{padding:6px 8px;flex-shrink:0;overflow:hidden}
+.sb-search-inner{position:relative;opacity:0;transition:opacity 0.15s;pointer-events:none}
+.sidebar.open .sb-search-inner{opacity:1;pointer-events:all}
+.sb-search-icon{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:11px;pointer-events:none}
+.sb-search-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:5px 8px 5px 26px;font-size:0.76rem;outline:none;transition:border-color 0.15s}
+.sb-search-input:focus{border-color:var(--purple-dim)}
+.sb-search-input::placeholder{color:var(--text3)}
+
+/* ── HEADER RENAME ── */
+.header-left h1{font-size:1.15rem;font-weight:600;color:var(--purple);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.header-left h1:hover .rename-hint{opacity:1}
+.rename-hint{font-size:0.65rem;color:var(--text3);opacity:0;transition:opacity 0.15s;font-weight:400}
+.rename-input{font-size:1.15rem;font-weight:600;color:var(--purple);background:transparent;border:none;border-bottom:2px solid var(--purple-dim);outline:none;min-width:80px;max-width:320px;font-family:inherit}
+
+/* ── CUSTOM LISTS ── */
+.cl-view-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.cl-header{padding:1rem 1.5rem 0.5rem;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cl-header-title{font-size:1rem;font-weight:600;color:var(--text)}
+.cl-body{display:flex;flex:1;overflow:hidden}
+.cl-sidebar{width:220px;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.cl-sidebar-inner{flex:1;overflow-y:auto;padding:8px}
+.cl-list-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:all 0.12s;user-select:none}
+.cl-list-item:hover{background:var(--surface2)}
+.cl-list-item.active{background:var(--purple-soft);border-color:var(--purple-dim)}
+.cl-list-item.active .cl-list-name{color:var(--purple)}
+.cl-list-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cl-list-name{flex:1;font-size:0.8rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-list-count{font-size:0.68rem;color:var(--text3);flex-shrink:0}
+.cl-list-actions{display:none;gap:2px;flex-shrink:0}
+.cl-list-item:hover .cl-list-actions{display:flex}
+.cl-act-btn{background:none;border:none;cursor:pointer;padding:2px 4px;border-radius:4px;font-size:0.7rem;color:var(--text3)}
+.cl-act-btn:hover{background:var(--surface3);color:var(--text)}
+.cl-act-btn.del:hover{color:var(--red)}
+.cl-new-btn{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:0.78rem;color:var(--purple);border:1px dashed var(--purple-dim);margin:4px 0;transition:all 0.12s}
+.cl-new-btn:hover{background:var(--purple-soft)}
+.cl-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.cl-main-header{padding:0.75rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cl-main-title{font-size:0.88rem;font-weight:600;color:var(--text);flex:1}
+.cl-grid{flex:1;overflow-y:auto;padding:1rem}
+.cl-empty{text-align:center;padding:3rem 1rem;font-size:0.82rem;color:var(--text3);font-style:italic}
+
+/* card list tags */
+.card-lists{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.cl-tag{font-size:0.62rem;padding:1px 6px;border-radius:10px;color:#fff;cursor:pointer;opacity:0.9;transition:opacity 0.12s}
+.cl-tag:hover{opacity:1}
+
+/* assign modal */
+.cl-assign-list{display:flex;flex-direction:column;gap:4px;max-height:260px;overflow-y:auto}
+.cl-assign-row{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:7px;cursor:pointer;transition:background 0.12s}
+.cl-assign-row:hover{background:var(--surface2)}
+.cl-assign-check{width:15px;height:15px;accent-color:var(--purple);cursor:pointer;flex-shrink:0}
+.cl-assign-label{font-size:0.8rem;color:var(--text);flex:1}
+.cl-inline-create{display:flex;gap:6px;align-items:center;margin-top:6px;padding-top:8px;border-top:1px solid var(--border)}
+.cl-inline-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 8px;font-size:0.76rem;outline:none}
+.cl-inline-input:focus{border-color:var(--purple-dim)}
+.ql-fab{position:fixed;bottom:1.5rem;left:1.5rem;width:46px;height:46px;border-radius:50%;background:var(--blue);border:none;color:#fff;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 16px rgba(96,165,250,0.4);z-index:150;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.ql-fab:hover{background:#3b82f6;transform:scale(1.08)}
+.ql-fab.hidden{display:none}
+.ql-panel{position:fixed;bottom:5rem;left:1.5rem;width:300px;max-height:420px;background:var(--surface);border:1px solid var(--border2);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:149;display:flex;flex-direction:column;overflow:hidden;transform:translateY(12px) scale(0.96);opacity:0;pointer-events:none;transition:all 0.2s}
+.ql-panel.open{transform:translateY(0) scale(1);opacity:1;pointer-events:all}
+.ql-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ql-title{font-size:0.82rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px}
+.ql-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;line-height:1;padding:2px 4px;border-radius:4px}
+.ql-close:hover{color:var(--red)}
+.ql-list{overflow-y:auto;flex:1;padding:6px}
+.ql-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;transition:background 0.12s}
+.ql-item:hover{background:var(--surface2)}
+.ql-item-title{flex:1;font-size:0.78rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ql-item-prog{font-size:0.7rem;color:var(--text3);flex-shrink:0;min-width:44px;text-align:right}
+.ql-plus{width:26px;height:26px;border-radius:6px;border:1px solid var(--blue-b);background:var(--blue-bg);color:var(--blue);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.12s;line-height:1}
+.ql-plus:hover{background:var(--blue);color:#fff}
+.ql-plus:disabled{opacity:0.3;cursor:default}
+.ql-empty{padding:1.5rem;text-align:center;font-size:0.78rem;color:var(--text3);font-style:italic}
+/* ── DRAG TO REORDER ── */
+.drag-handle{position:absolute;top:50%;left:3px;transform:translateY(-50%);width:14px;height:100%;display:flex;align-items:center;justify-content:center;color:var(--border2);font-size:10px;cursor:grab;opacity:0;transition:opacity 0.15s;letter-spacing:-2px;line-height:1;user-select:none}
+.card:hover .drag-handle{opacity:1}
+.drag-handle:active{cursor:grabbing}
+.card.drag-over{border:2px dashed var(--purple-dim);background:var(--purple-soft)}
+.card.dragging{opacity:0.4;transform:scale(0.97)}
+.drag-hint{font-size:0.65rem;color:var(--text3);text-align:center;padding:4px 0 2px;display:none}
+.drag-hint.show{display:block}
+</style>
 </head>
-
 <body>
 
-    <div class="header">
-        <div class="header-left">
-            <h1>My Anime Watchlist</h1>
-            <p id="hdr-sub">Loading...</p>
-        </div>
-        <div class="header-right">
-            <button class="btn gb" onclick="openModal('import')">↑ Import</button>
-            <button class="btn accent" onclick="openModal('add')">+ Add</button>
-            <button class="btn ab" onclick="pickRandom()">🎲 Random</button>
-            <button class="btn" onclick="openModal('dupes')">🔍 Dupes</button>
-            <button class="btn" onclick="toggleBulk()">☑ Bulk</button>
-            <button class="btn" onclick="window.print()">🖨 Print</button>
-            <button class="btn" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
-            <div style="position:relative;display:inline-block" id="export-wrap">
-                <button class="btn" onclick="toggleExportMenu()" id="export-btn">↓ Export <span
-                        id="export-filter-tag"></span></button>
-                <div id="export-menu"
-                    style="display:none;position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:6px;min-width:200px;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
-                    <div style="font-size:0.68rem;color:var(--text3);padding:2px 8px 6px;border-bottom:1px solid var(--border);margin-bottom:4px"
-                        id="export-scope-label">Exporting: all 0 anime</div>
-                    <button class="btn" style="width:100%;text-align:left;margin-bottom:3px" onclick="dlJSON()">JSON —
-                        full data</button>
-                    <button class="btn" style="width:100%;text-align:left;margin-bottom:3px" onclick="dlCSV()">CSV —
-                        spreadsheet</button>
-                    <button class="btn" style="width:100%;text-align:left;margin-bottom:6px" onclick="dlTXT()">TXT —
-                        plain text</button>
-                    <div
-                        style="font-size:0.68rem;color:var(--text3);padding:2px 8px 6px;border-top:1px solid var(--border);margin-top:2px">
-                        Exports respect your active filter &amp; search
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="app-shell">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1 id="list-title-display" onclick="startRename()" title="Click to rename">
+      <span id="list-title-text">My Anime Watchlist</span>
+      <span class="rename-hint">✎ rename</span>
+    </h1>
+    <p id="hdr-sub">Loading...</p>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sb-toggle" onclick="toggleSidebar()">
+      <span class="sb-toggle-icon">☰</span>
+      <span class="sb-toggle-label">Menu</span>
+    </div>
+    <!-- Sidebar search -->
+    <div class="sb-search-wrap">
+      <div class="sb-search-inner">
+        <span class="sb-search-icon">⌕</span>
+        <input class="sb-search-input" id="sb-search" type="text" placeholder="Search anime..." oninput="onSbSearch(this.value)">
+      </div>
+    </div>
+    <div class="sb-nav" style="overflow-y:auto">
+      <div class="sb-item active" id="sb-watchlist" onclick="switchView('watchlist')">
+        <span class="sb-item-icon">📋</span>
+        <span class="sb-item-label">Watchlist</span>
+      </div>
+      <div class="sb-item" id="sb-dashboard" onclick="switchView('dashboard')">
+        <span class="sb-item-icon">📊</span>
+        <span class="sb-item-label">Dashboard</span>
+      </div>
+      <div class="sb-item" id="sb-lists" onclick="switchView('lists')">
+        <span class="sb-item-icon">📁</span>
+        <span class="sb-item-label">Custom Lists</span>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-section-label">Actions</div>
+      <div class="sb-item" onclick="openModal('add');closeSidebarIfMobile()">
+        <span class="sb-item-icon">＋</span>
+        <span class="sb-item-label">Add Anime</span>
+      </div>
+      <div class="sb-item" onclick="openModal('import');closeSidebarIfMobile()">
+        <span class="sb-item-icon">↑</span>
+        <span class="sb-item-label">Import</span>
+      </div>
+      <div class="sb-item" onclick="importFromFolder()" id="sb-import-folder" style="display:none">
+        <span class="sb-item-icon">📂</span>
+        <span class="sb-item-label">Open saved file</span>
+      </div>
+      <div class="sb-item" onclick="toggleSbExport(event)">
+        <span class="sb-item-icon">↓</span>
+        <span class="sb-item-label">Export</span>
+      </div>
+      <div id="sb-export-menu" style="display:none;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;margin:2px 4px 4px;padding:4px;overflow:hidden">
+        <div style="font-size:0.62rem;color:var(--text3);padding:3px 8px 4px;border-bottom:1px solid var(--border);margin-bottom:2px" id="sb-save-loc-label">📁 Save to: default location</div>
+        <div onclick="pickSaveFolder()" class="sb-exp-opt" style="color:var(--purple)">📂 Choose save folder…</div>
+        <div onclick="clearSaveFolder()" class="sb-exp-opt" id="sb-clear-folder" style="display:none;color:var(--red)">✕ Clear saved location</div>
+        <div style="border-top:1px solid var(--border);margin:3px 0"></div>
+        <div onclick="dlJSON()" class="sb-exp-opt">JSON — full data</div>
+        <div onclick="dlCSV()" class="sb-exp-opt">CSV — spreadsheet</div>
+        <div onclick="dlTXT()" class="sb-exp-opt">TXT — plain text</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-section-label">Tools</div>
+      <div class="sb-item" onclick="pickRandom();closeSidebarIfMobile()">
+        <span class="sb-item-icon">🎲</span>
+        <span class="sb-item-label">Random Pick</span>
+      </div>
+      <div class="sb-item" onclick="openModal('dupes');closeSidebarIfMobile()">
+        <span class="sb-item-icon">🔍</span>
+        <span class="sb-item-label">Dupes</span>
+      </div>
+      <div class="sb-item" onclick="toggleBulk();closeSidebarIfMobile()">
+        <span class="sb-item-icon">☑</span>
+        <span class="sb-item-label">Bulk Edit</span>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-section-label">Settings</div>
+      <div class="sb-item" onclick="toggleTheme()">
+        <span class="sb-item-icon" id="sb-theme-icon">☀</span>
+        <span class="sb-item-label" id="sb-theme-label">Light Mode</span>
+      </div>
+      <div class="sb-item" onclick="window.print()">
+        <span class="sb-item-icon">🖨</span>
+        <span class="sb-item-label">Print</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- VIEW: WATCHLIST -->
+    <div class="view active" id="view-watchlist" style="flex-direction:column;overflow:hidden">
+
+
+<div class="legend">
+  <span style="font-size:0.72rem;color:var(--text3);margin-right:4px">Status:</span>
+  <div class="legend-item"><div class="ld ld-watching"></div>Watching</div>
+  <div class="legend-item"><div class="ld ld-completed"></div>Completed</div>
+  <div class="legend-item"><div class="ld ld-plan"></div>Plan to Watch</div>
+  <div class="legend-item"><div class="ld ld-dropped"></div>Dropped</div>
+  <div class="legend-item"><div class="ld ld-none"></div>Not Set</div>
+  <span style="margin-left:auto;font-size:0.72rem;color:var(--text3)">Click title to edit notes · Ep field tracks progress</span>
+</div>
+
+<div class="stats-bar" id="stats-bar"></div>
+
+<div class="bulk-bar" id="bulk-bar">
+  <span id="bulk-count">0 selected</span>
+  <select class="csel" id="bulk-status-sel" style="font-size:0.76rem">
+    <option value="">— Set status</option>
+    <option value="watching">▶ Watching</option>
+    <option value="completed">✓ Completed</option>
+    <option value="plan">☆ Plan to Watch</option>
+    <option value="dropped">✕ Dropped</option>
+  </select>
+  <button class="btn accent" onclick="applyBulkStatus()">Apply</button>
+  <button class="btn rb" onclick="removeSelected()">Remove selected</button>
+  <button class="btn" onclick="clearSelection()">Clear</button>
+</div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <span class="si">⌕</span>
+    <input type="text" id="search" placeholder="Search titles..." oninput="render()">
+  </div>
+  <select class="csel" id="sort" onchange="render()">
+    <option value="default">Original order</option>
+    <option value="az">A → Z</option>
+    <option value="za">Z → A</option>
+    <option value="status">By status</option>
+    <option value="ep-desc">Most episodes</option>
+    <option value="ep-asc">Fewest episodes</option>
+    <option value="added">Recently added first</option>
+  </select>
+  <select class="csel" id="cat-filter" onchange="render()">
+    <option value="">All categories</option>
+  </select>
+  <div class="rc" id="result-count"></div>
+</div>
+
+<div class="grid-wrap" style="flex:1;overflow-y:auto">
+  <div class="alpha-bar" id="alpha-bar"></div>
+  <div class="drag-hint" id="drag-hint">⠿ Drag cards to reorder · Only available in Original order</div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty">No anime match your filter.</div>
+  <div id="empty-blank" style="display:none;text-align:center;padding:4rem 2rem">
+    <div style="font-size:2.5rem;margin-bottom:0.8rem">📋</div>
+    <div style="font-size:1rem;font-weight:600;color:var(--text2);margin-bottom:0.5rem">Your watchlist is empty</div>
+    <div style="font-size:0.82rem;color:var(--text3)">Click <strong style="color:var(--purple)">+ Add</strong> to add your first anime, or use <strong style="color:var(--green)">↑ Import</strong> to load a JSON file.</div>
+  </div>
+</div><!-- /grid-wrap -->
+</div><!-- /view-watchlist -->
+
+<!-- VIEW: DASHBOARD -->
+<div class="view" id="view-dashboard">
+  <div class="dash-wrap" id="dash-content">
+    <div>
+      <div class="dash-title">Dashboard</div>
+      <div class="dash-sub" id="dash-subtitle">Your watchlist at a glance</div>
     </div>
 
+    <!-- Stat cards -->
+    <div class="dash-grid" id="dash-stats"></div>
 
-    <div class="legend">
-        <span style="font-size:0.72rem;color:var(--text3);margin-right:4px">Status:</span>
-        <div class="legend-item">
-            <div class="ld ld-watching"></div>Watching
+    <!-- Charts row -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
+
+      <!-- Pie chart -->
+      <div class="chart-card">
+        <div class="chart-title">Status Breakdown</div>
+        <div class="pie-wrap">
+          <canvas id="pie-canvas" width="130" height="130" style="flex-shrink:0"></canvas>
+          <div class="pie-legend" id="pie-legend"></div>
         </div>
-        <div class="legend-item">
-            <div class="ld ld-completed"></div>Completed
-        </div>
-        <div class="legend-item">
-            <div class="ld ld-plan"></div>Plan to Watch
-        </div>
-        <div class="legend-item">
-            <div class="ld ld-dropped"></div>Dropped
-        </div>
-        <div class="legend-item">
-            <div class="ld ld-none"></div>Not Set
-        </div>
-        <span style="margin-left:auto;font-size:0.72rem;color:var(--text3)">Click title to edit notes · Ep field tracks
-            progress</span>
+      </div>
+
+      <!-- Top categories bar -->
+      <div class="chart-card">
+        <div class="chart-title">Top Categories</div>
+        <div class="bar-row" id="cat-bars"></div>
+      </div>
+
     </div>
 
-    <div class="stats-bar" id="stats-bar"></div>
-
-    <div class="bulk-bar" id="bulk-bar">
-        <span id="bulk-count">0 selected</span>
-        <select class="csel" id="bulk-status-sel" style="font-size:0.76rem">
-            <option value="">— Set status</option>
-            <option value="watching">▶ Watching</option>
-            <option value="completed">✓ Completed</option>
-            <option value="plan">☆ Plan to Watch</option>
-            <option value="dropped">✕ Dropped</option>
-        </select>
-        <button class="btn accent" onclick="applyBulkStatus()">Apply</button>
-        <button class="btn rb" onclick="removeSelected()">Remove selected</button>
-        <button class="btn" onclick="clearSelection()">Clear</button>
+    <!-- Episodes progress bar chart -->
+    <div class="chart-card">
+      <div class="chart-title">Episodes Watched vs Total — Top 15 by Total (excludes 18+)</div>
+      <div class="bar-row" id="ep-bars"></div>
     </div>
 
-    <div class="controls">
-        <div class="search-wrap">
-            <span class="si">⌕</span>
-            <input type="text" id="search" placeholder="Search titles..." oninput="render()">
+  </div>
+</div><!-- /view-dashboard -->
+
+<!-- VIEW: LISTS -->
+<div class="view" id="view-lists">
+  <div class="cl-view-wrap">
+    <div class="cl-header">
+      <div class="cl-header-title">📁 Custom Lists</div>
+      <button class="btn accent" onclick="openCreateList()" style="font-size:0.76rem;padding:5px 12px">+ New List</button>
+    </div>
+    <div class="cl-body">
+      <!-- List sidebar -->
+      <div class="cl-sidebar">
+        <div class="cl-sidebar-inner" id="cl-nav"></div>
+      </div>
+      <!-- List content -->
+      <div class="cl-main">
+        <div class="cl-main-header">
+          <div class="cl-main-title" id="cl-main-title">Select a list</div>
+          <button class="btn" id="cl-rename-btn" onclick="renameActiveList()" style="font-size:0.72rem;padding:4px 10px;display:none">✎ Rename</button>
+          <button class="btn" id="cl-delete-btn" onclick="deleteActiveList()" style="font-size:0.72rem;padding:4px 10px;display:none;color:var(--red);border-color:var(--red)">✕ Delete</button>
         </div>
-        <select class="csel" id="sort" onchange="render()">
-            <option value="default">Original order</option>
-            <option value="az">A → Z</option>
-            <option value="za">Z → A</option>
-            <option value="status">By status</option>
-            <option value="ep-desc">Most episodes</option>
-            <option value="ep-asc">Fewest episodes</option>
-            <option value="added">Recently added first</option>
-        </select>
-        <select class="csel" id="cat-filter" onchange="render()">
-            <option value="">All categories</option>
-        </select>
-        <div class="rc" id="result-count"></div>
+        <div class="cl-grid" id="cl-grid"></div>
+      </div>
     </div>
+  </div>
+</div><!-- /view-lists -->
 
-    <div class="grid-wrap">
-        <div class="alpha-bar" id="alpha-bar"></div>
-        <div class="grid" id="grid"></div>
-        <div class="empty" id="empty">No anime match your filter.</div>
-        <div id="empty-blank" style="display:none;text-align:center;padding:4rem 2rem">
-            <div style="font-size:2.5rem;margin-bottom:0.8rem">📋</div>
-            <div style="font-size:1rem;font-weight:600;color:var(--text2);margin-bottom:0.5rem">Your watchlist is empty
-            </div>
-            <div style="font-size:0.82rem;color:var(--text3)">Click <strong style="color:var(--purple)">+ Add</strong>
-                to add your first anime, or use <strong style="color:var(--green)">↑ Import</strong> to load a JSON
-                file.</div>
-        </div>
+  </div><!-- /main-content -->
+</div><!-- /app-body -->
+
+<!-- QUICK LOG FAB -->
+<button class="ql-fab hidden" id="ql-fab" onclick="toggleQuickLog()" title="Currently Watching — quick log">▶</button>
+
+<!-- QUICK LOG PANEL -->
+<div class="ql-panel" id="ql-panel">
+  <div class="ql-header">
+    <div class="ql-title">▶ Currently Watching</div>
+    <button class="ql-close" onclick="toggleQuickLog()">✕</button>
+  </div>
+  <div class="ql-list" id="ql-list"></div>
+</div>
+
+</div><!-- /app-shell -->
+
+<!-- MODALS -->
+<div class="modal-bg" id="modal-bg" onclick="bgClick(event)">
+ <div class="modal" id="modal-inner">
+
+  <!-- Import -->
+  <div id="v-import">
+   <h2>Import JSON</h2>
+   <div class="field">
+    <label>Drop or select a .json file:</label>
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="dzOver(event)" ondragleave="dzLeave()" ondrop="dzDrop(event)">
+     Click to browse · or drag & drop a .json file
+     <input type="file" id="file-input" accept=".json" style="display:none" onchange="fileChosen(event)">
     </div>
+    <div class="fn" id="file-note"></div>
+   </div>
+   <div class="div"></div>
+   <div class="field">
+    <label>Or paste JSON directly:</label>
+    <textarea class="mi" id="paste-json" rows="5" placeholder='[{"title":"Naruto","episodes":"220","status":"completed"}, ...]' style="resize:vertical;font-family:monospace;font-size:0.74rem"></textarea>
+   </div>
+   <div class="modal-row">
+    <button class="btn accent" onclick="doImport()" style="flex:1">Import & Update</button>
+    <button class="btn" onclick="closeModal()">Cancel</button>
+   </div>
+  </div>
 
-    <!-- MODALS -->
-    <div class="modal-bg" id="modal-bg" onclick="bgClick(event)">
-        <div class="modal" id="modal-inner">
-
-            <!-- Import -->
-            <div id="v-import">
-                <h2>Import JSON</h2>
-                <div class="field">
-                    <label>Drop or select a .json file:</label>
-                    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()"
-                        ondragover="dzOver(event)" ondragleave="dzLeave()" ondrop="dzDrop(event)">
-                        Click to browse · or drag & drop a .json file
-                        <input type="file" id="file-input" accept=".json" style="display:none"
-                            onchange="fileChosen(event)">
-                    </div>
-                    <div class="fn" id="file-note"></div>
-                </div>
-                <div class="div"></div>
-                <div class="field">
-                    <label>Or paste JSON directly:</label>
-                    <textarea class="mi" id="paste-json" rows="5"
-                        placeholder='[{"title":"Naruto","episodes":"220","status":"completed"}, ...]'
-                        style="resize:vertical;font-family:monospace;font-size:0.74rem"></textarea>
-                </div>
-                <div class="modal-row">
-                    <button class="btn accent" onclick="doImport()" style="flex:1">Import & Update</button>
-                    <button class="btn" onclick="closeModal()">Cancel</button>
-                </div>
-            </div>
-
-            <!-- Add -->
-            <div id="v-add" style="display:none">
-                <h2>Add Anime</h2>
-                <div class="field">
-                    <label>Title</label>
-                    <input type="text" class="mi" id="add-title" placeholder="e.g. Naruto Shippuden"
-                        oninput="checkDupe()">
-                    <div class="warn" id="dupe-warn"></div>
-                </div>
-                <div style="display:flex;gap:8px">
-                    <div class="field" style="flex:1">
-                        <label>Episodes (total)</label>
-                        <input type="text" class="mi" id="add-eps" placeholder="e.g. 24 or 18+">
-                    </div>
-                </div>
-                <div class="field">
-                    <label>Category / List</label>
-                    <input type="text" class="mi" id="add-cat" placeholder="e.g. Shonen, Romance, Isekai…"
-                        list="cat-datalist">
-                    <datalist id="cat-datalist"></datalist>
-                </div>
-                <div class="field">
-                    <label>Status</label>
-                    <div class="sp-row" id="add-sp">
-                        <button class="sp-btn" data-s="" onclick="pickStatus(this)">— None</button>
-                        <button class="sp-btn" data-s="watching" onclick="pickStatus(this)">▶ Watching</button>
-                        <button class="sp-btn" data-s="completed" onclick="pickStatus(this)">✓ Completed</button>
-                        <button class="sp-btn" data-s="plan" onclick="pickStatus(this)">☆ Plan</button>
-                        <button class="sp-btn" data-s="dropped" onclick="pickStatus(this)">✕ Dropped</button>
-                    </div>
-                </div>
-                <div class="field">
-                    <label>Notes</label>
-                    <textarea class="note-area" id="add-note" rows="2" placeholder="Any notes…"
-                        style="min-height:60px"></textarea>
-                </div>
-                <div class="modal-row">
-                    <button class="btn accent" onclick="doAdd()" style="flex:1">Add to list</button>
-                    <button class="btn" onclick="closeModal()">Cancel</button>
-                </div>
-            </div>
-
-            <!-- Note editor -->
-            <div id="v-note" style="display:none">
-                <h2 id="note-modal-title">Notes</h2>
-                <div class="field">
-                    <label>Your notes:</label>
-                    <textarea class="note-area" id="note-edit"></textarea>
-                </div>
-                <div class="modal-row">
-                    <button class="btn accent" onclick="saveNote()" style="flex:1">Save</button>
-                    <button class="btn" onclick="closeModal()">Cancel</button>
-                </div>
-            </div>
-
-            <!-- Random picker -->
-            <div id="v-random" style="display:none">
-                <h2>🎲 Random Anime</h2>
-                <div class="random-card" id="random-card">
-                    <div class="random-title" id="random-title">—</div>
-                    <div class="random-meta" id="random-meta"></div>
-                </div>
-                <div class="field">
-                    <label>Filter from:</label>
-                    <select class="msel" id="random-pool">
-                        <option value="all">All anime</option>
-                        <option value="plan">Plan to Watch only</option>
-                        <option value="watching">Currently Watching</option>
-                        <option value="unset">Not set</option>
-                    </select>
-                </div>
-                <div class="modal-row">
-                    <button class="btn accent" onclick="doRandom()" style="flex:1">🎲 Pick another</button>
-                    <button class="btn" onclick="closeModal()">Close</button>
-                </div>
-            </div>
-
-            <!-- Duplicate detector -->
-            <div id="v-dupes" style="display:none">
-                <h2>🔍 Duplicate Detector</h2>
-                <div id="dupe-results"></div>
-                <div class="modal-row">
-                    <button class="btn" onclick="closeModal()" style="flex:1">Close</button>
-                </div>
-            </div>
-
-        </div>
+  <!-- Add -->
+  <div id="v-add" style="display:none">
+   <h2>Add Anime</h2>
+   <div class="field">
+    <label>Title</label>
+    <input type="text" class="mi" id="add-title" placeholder="e.g. Naruto Shippuden" oninput="checkDupe()">
+    <div class="warn" id="dupe-warn"></div>
+   </div>
+   <div style="display:flex;gap:8px">
+    <div class="field" style="flex:1">
+     <label>Episodes (total)</label>
+     <input type="text" class="mi" id="add-eps" placeholder="e.g. 24 or 18+">
     </div>
+   </div>
+   <div class="field">
+    <label>Category / List</label>
+    <input type="text" class="mi" id="add-cat" placeholder="e.g. Shonen, Romance, Isekai…" list="cat-datalist">
+    <datalist id="cat-datalist"></datalist>
+   </div>
+   <div class="field">
+    <label>Status</label>
+    <div class="sp-row" id="add-sp">
+     <button class="sp-btn" data-s="" onclick="pickStatus(this)">— None</button>
+     <button class="sp-btn" data-s="watching" onclick="pickStatus(this)">▶ Watching</button>
+     <button class="sp-btn" data-s="completed" onclick="pickStatus(this)">✓ Completed</button>
+     <button class="sp-btn" data-s="plan" onclick="pickStatus(this)">☆ Plan</button>
+     <button class="sp-btn" data-s="dropped" onclick="pickStatus(this)">✕ Dropped</button>
+    </div>
+   </div>
+   <div class="field">
+    <label>Notes</label>
+    <textarea class="note-area" id="add-note" rows="2" placeholder="Any notes…" style="min-height:60px"></textarea>
+   </div>
+   <div class="modal-row">
+    <button class="btn accent" onclick="doAdd()" style="flex:1">Add to list</button>
+    <button class="btn" onclick="closeModal()">Cancel</button>
+   </div>
+  </div>
 
-    <div class="toast" id="toast"></div>
+  <!-- Note editor -->
+  <div id="v-note" style="display:none">
+   <h2 id="note-modal-title">Notes</h2>
+   <div class="field">
+    <label>Your notes:</label>
+    <textarea class="note-area" id="note-edit"></textarea>
+   </div>
+   <div class="modal-row">
+    <button class="btn accent" onclick="saveNote()" style="flex:1">Save</button>
+    <button class="btn" onclick="closeModal()">Cancel</button>
+   </div>
+  </div>
 
-    <script>
-        const SEED = [{ "title": "My Cultivator Girlfriend", "episodes": "15" }, { "title": "The Genius Prince's Guide to Raising a Nation Out of Debt", "episodes": "12" }, { "title": "Seraph of the Endless", "episodes": "4" }, { "title": "Seraph of the End: Battle in Nagoya", "episodes": "18+" }, { "title": "Seraph of the End: Vampire Reign", "episodes": "18+" }, { "title": "To LOVE Ru Darkness 2 Specials", "episodes": "18+" }, { "title": "To LOVE-Ru Darkness 2nd OVA", "episodes": "18+" }, { "title": "To LOVE Ru Darkness 2", "episodes": "18+" }, { "title": "To LOVE-Ru Darkness OVA", "episodes": "18+" }, { "title": "To LOVE Ru Darkness", "episodes": "18+" }, { "title": "Motto To LOVE Ru", "episodes": "18+" }, { "title": "To LOVE-Ru OVA", "episodes": "18+" }, { "title": "IS: Infinite Stratos 2 - World Purge", "episodes": "18+" }, { "title": "IS: Infinite Stratos: A Sextet Yearns to Be in Love", "episodes": "18+" }, { "title": "IS: Infinite Stratos 2 - Infinite Wedding", "episodes": "1" }, { "title": "Kiss x Sis", "episodes": "18+" }, { "title": "Strike the Blood IV", "episodes": "18+" }, { "title": "Strike the Blood III", "episodes": "18+" }, { "title": "Strike the Blood Second", "episodes": "18+" }, { "title": "Strike the Blood", "episodes": "18+" }, { "title": "Code Geass: Lelouch of the Rebellion R2", "episodes": "18+" }, { "title": "Code Geass: Lelouch of the Rebellion", "episodes": "18+" }, { "title": "Vanquished Queens Specials", "episodes": "18+" }, { "title": "Vanquished Queens", "episodes": "18+" }, { "title": "Queen's Blade: Grimoire", "episodes": "18+" }, { "title": "Queen's Blade: Rebellion Specials", "episodes": "18+" }, { "title": "Queen's Blade: Rebellion", "episodes": "18+" }, { "title": "Queen's Blade OVA Specials", "episodes": "18+" }, { "title": "Queen's Blade: Beautiful Warriors", "episodes": "18+" }, { "title": "Queen's Blade: Inheritor of the Throne Specials", "episodes": "18+" }, { "title": "Queen's Blade: Inheritor of the Throne", "episodes": "18+" }, { "title": "Queen's Blade: The Exiled Virgin", "episodes": "18+" }, { "title": "Train to the End of the World: Special", "episodes": "1" }, { "title": "Train to the End of the World", "episodes": "12" }, { "title": "Maken-Ki! Two Specials", "episodes": "18+" }, { "title": "Maken-Ki!", "episodes": "18+" }, { "title": "Isuca (Uncensored)", "episodes": "18+" }, { "title": "The Kingdoms of Ruin", "episodes": "18+" }, { "title": "My Instant Death Ability is So Overpowered, No One in This Other World Stands a Chance Against Me!", "episodes": "12" }, { "title": "So, I Can't Play H! (OVA)", "episodes": "18+" }, { "title": "The Yakuza's Guide to Babysitting", "episodes": "12" }, { "title": "Peach Boy Riverside", "episodes": "12" }, { "title": "Kanojo, Okarishimasu Petit", "episodes": "15" }, { "title": "Rent-a-Girlfriend Season 3", "episodes": "12" }, { "title": "Rent-a-Girlfriend Season 4", "episodes": "12" }, { "title": "Rent-A-Girlfriend 2nd Season", "episodes": "12" }, { "title": "Rent-a-Girlfriend", "episodes": "12" }, { "title": "Chained Soldier [Uncensored]", "episodes": "18+" }, { "title": "Berserk: The Golden Age Arc II - The Battle for Doldrey", "episodes": "18+" }, { "title": "Berserk of Gluttony", "episodes": "12" }, { "title": "Nisekoi OVA", "episodes": "4" }, { "title": "Nisekoi: False Love", "episodes": "12" }, { "title": "Is This a Zombie? Of the Dead OVA", "episodes": "18+" }, { "title": "Is this A Zombie? of the Dead", "episodes": "18+" }, { "title": "Is This a Zombie? OVA", "episodes": "1" }, { "title": "Is This a Zombie?", "episodes": "18+" }, { "title": "Akebi's Sailor Uniform", "episodes": "12" }, { "title": "Yuragi-sou no Yuuna-san OVA", "episodes": "18+" }, { "title": "Yuragi-sou no Yuuna-san", "episodes": "18+" }, { "title": "SHIMONETA: A Boring World Where the Concept of Dirty Jokes Doesn't Exist", "episodes": "18+" }, { "title": "Daimidaler: Prince vs. Penguin Empire", "episodes": "18+" }, { "title": "Kenzen Robo Daimidaler Specials", "episodes": "18+" }, { "title": "Kekkaishi", "episodes": "52" }, { "title": "Tawawa on Monday", "episodes": "12" }, { "title": "Tawawa on Monday: Specials", "episodes": "2" }, { "title": "Tawawa on Monday Two", "episodes": "18+" }, { "title": "Seiren", "episodes": "12" }, { "title": "The Irregular at Magic High School The Movie - The Girl Who Summons The Stars", "episodes": "18+" }, { "title": "The Irregular at Magic High School: Visitor Arc", "episodes": "13" }, { "title": "The Irregular at Magic High School: Reminiscence Arc", "episodes": "1" }, { "title": "The Irregular at Magic High School Season 3", "episodes": "13" }, { "title": "Burn the Witch", "episodes": "3" }, { "title": "Full Metal Panic!", "episodes": "18+" }, { "title": "Devils Line: Anytime Anywhere", "episodes": "18+" }, { "title": "Devils' Line", "episodes": "18+" }, { "title": "SUPER HXEROS", "episodes": "18+" }, { "title": "I'm Giving the Disgraced Noble Lady I Rescued a Crash Course in Naughtiness", "episodes": "12" }, { "title": "Princess Lover!", "episodes": "18+" }, { "title": "Beyond the Boundary", "episodes": "12" }, { "title": "The Children of Shiunji Family", "episodes": "12" }, { "title": "Tsuredure Children", "episodes": "12" }, { "title": "How a Realist Hero Rebuilt the Kingdom Part 2", "episodes": "13" }, { "title": "How a Realist Hero Rebuilt the Kingdom", "episodes": "13" }, { "title": "No Longer Allowed In Another World", "episodes": "12" }, { "title": "Saekano: How to Raise a Boring Girlfriend .flat", "episodes": "11" }, { "title": "Saekano: How to Raise a Boring Girlfriend", "episodes": "12" }, { "title": "Classroom for Heroes", "episodes": "12" }, { "title": "Classroom of the Elite", "episodes": "12" }, { "title": "In Another World With My Smartphone", "episodes": "12" }, { "title": "In Another World With My Smartphone 2", "episodes": "12" }, { "title": "Castle Town Dandelion", "episodes": "12" }, { "title": "My Senpai is Annoying", "episodes": "12" }, { "title": "The Ice Guy and His Cool Female Colleague", "episodes": "12" }, { "title": "My Teen Romantic Comedy SNAFU Climax! OVA", "episodes": "1" }, { "title": "My Teen Romantic Comedy SNAFU Climax!", "episodes": "12" }, { "title": "My Teen Romantic Comedy SNAFU TOO!", "episodes": "13" }, { "title": "My Teen Romantic Comedy SNAFU", "episodes": "13" }, { "title": "KILL la KILL", "episodes": "24" }, { "title": "Sekirei: Hajimete no Otsukai", "episodes": "18+" }, { "title": "Sekirei: Pure Engagement Episode 0", "episodes": "18+" }, { "title": "Sekirei: Pure Engagement", "episodes": "18+" }, { "title": "Sekirei", "episodes": "18+" }, { "title": "World's End Harem (Uncensored)", "episodes": "18+" }, { "title": "Vermeil in Gold", "episodes": "12" }, { "title": "Trinity Seven Movie 2: Heavens Library to Crimson Lord", "episodes": "1" }, { "title": "Trinity Seven: Eternity Library & Alchemic Girl", "episodes": "1" }, { "title": "Trinity Seven", "episodes": "12" }, { "title": "Armed Girl's Machiavellism", "episodes": "12" }, { "title": "Demon King Daimao", "episodes": "18+" }, { "title": "Infinite Stratos", "episodes": "12" }, { "title": "Infinite Stratos 2", "episodes": "12" }, { "title": "Tomo-chan Is a Girl!", "episodes": "13" }, { "title": "Kaiju No. 8", "episodes": "12" }, { "title": "Kaiju No. 8 Season 2", "episodes": "11" }, { "title": "Kaiju No. 8 Movie", "episodes": "1" }, { "title": "Plunderer", "episodes": "24" }, { "title": "Akame ga Kill!", "episodes": "18+" }, { "title": "The Iceblade Sorcerer Shall Rule the World", "episodes": "12" }, { "title": "The Eminence in Shadow Season 2", "episodes": "18+" }, { "title": "The Eminence in Shadow", "episodes": "18+" }, { "title": "A Returner's Magic Should Be Special", "episodes": "12" }, { "title": "The Last Summoner", "episodes": "12" }, { "title": "Akashic Records of Bastard Magic Instructor", "episodes": "18+" }, { "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs", "episodes": "12" }, { "title": "Alya Sometimes Hides Her Feelings in Russian", "episodes": "12" }, { "title": "Clean Freak! Aoyama-kun", "episodes": "12" }, { "title": "Noblesse", "episodes": "13" }, { "title": "Noblesse: Pamyeol-ui Sijak", "episodes": "18+" }, { "title": "Gosick", "episodes": "18+" }, { "title": "I Got a Cheat Skill in Another World and Became Unrivaled in The Real World, Too: Real World", "episodes": "1" }, { "title": "I Got a Cheat Skill in Another World and Became Unrivaled in The Real World, Too", "episodes": "13" }, { "title": "Campione!", "episodes": "13" }, { "title": "The Asterisk War Season 2", "episodes": "12" }, { "title": "The Asterisk War", "episodes": "12" }, { "title": "Chivalry of a Failed Knight", "episodes": "18+" }, { "title": "Witch Craft Works", "episodes": "12" }, { "title": "The Dreaming Boy is a Realist", "episodes": "12" }, { "title": "Code:Breaker OVA", "episodes": "18+" }, { "title": "Code:Breaker", "episodes": "18+" }, { "title": "Mission: Yozakura Family", "episodes": "27" }, { "title": "Fate/strange Fake", "episodes": "18+" }, { "title": "A Sister's All You Need", "episodes": "18+" }, { "title": "The Fruit of Grisaia", "episodes": "18+" }, { "title": "To LOVE Ru", "episodes": "18+" }, { "title": "Samurai Girls", "episodes": "18+" }, { "title": "The Testament of Sister New Devil", "episodes": "18+" }, { "title": "Rosario + Vampire 2nd Season", "episodes": "18+" }, { "title": "The Testament of Sister New Devil OVA", "episodes": "18+" }, { "title": "Aesthetica of a Rogue Hero", "episodes": "18+" }, { "title": "IS: Infinite Stratos 2: Long Vacation Edition - The Memories of One Summer", "episodes": "18+" }, { "title": "So, I Can't Play H!", "episodes": "18+" }, { "title": "Masou Gakuen HxH Specials", "episodes": "18+" }, { "title": "Hybrid x Heart Magias Academy Ataraxia", "episodes": "18+" }, { "title": "Maken-Ki! Two", "episodes": "18+" }, { "title": "Maken-ki! Secret Training", "episodes": "18+" }, { "title": "Chained Soldier Season 2 [Uncensored]", "episodes": "18+" }, { "title": "Aesthetica of a Rogue Hero Specials", "episodes": "18+" }, { "title": "Maken-Ki! OVA", "episodes": "18+" }, { "title": "The Qwaser Of Stigmata Picture Drama", "episodes": "18+" }, { "title": "Samurai Bride", "episodes": "18+" }, { "title": "Grisaia no Kajitsu Specials", "episodes": "18+" }, { "title": "Rosario + Vampire", "episodes": "18+" }, { "title": "The Testament of Sister New Devil 2nd Season: Burst OVA", "episodes": "18+" }, { "title": "Domestic Girlfriend", "episodes": "18+" }, { "title": "Nande Koko ni Sensei ga!? Special", "episodes": "18+" }, { "title": "Aki-Sora: Yume no Naka", "episodes": "18+" }, { "title": "The Qwaser Of Stigmata II Picture Drama", "episodes": "18+" }, { "title": "Harem in the Labyrinth of Another World Specials", "episodes": "18+" }, { "title": "Immoral Guild (Uncensored)", "episodes": "18+" }, { "title": "Please Put Them On, Takamine-san [UNCENSORED]", "episodes": "18+" }, { "title": "Hands Off: Sawaranaide Kotesashi-kun [UNCENSORED]", "episodes": "18+" }, { "title": "Triage X (Uncensored)", "episodes": "18+" }, { "title": "Redo of Healer (Uncensored)", "episodes": "18+" }, { "title": "Overflow (Uncensored)", "episodes": "18+" }, { "title": "The Misfit of Demon King Academy", "episodes": "18+" }, { "title": "The Misfit of Demon King Academy II Part 2", "episodes": "18+" }, { "title": "The Misfit of Demon King Academy II", "episodes": "18+" }, { "title": "Boarding School Juliet", "episodes": "12" }, { "title": "Prison School: Mad Wax", "episodes": "18+" }, { "title": "Highschool of the Dead: Drifters of the Dead", "episodes": "18+" }, { "title": "The irregular at magic high school: Get to Know Magic Studies!", "episodes": "6" }, { "title": "Prison School", "episodes": "18+" }, { "title": "School Days", "episodes": "18+" }, { "title": "The Irregular at Magic High School", "episodes": "26" }, { "title": "High School of the Dead", "episodes": "18+" }, { "title": "High School DxD BorN Specials", "episodes": "18+" }, { "title": "High School DxD BorN: Yomigaeranai Fushichou", "episodes": "18+" }, { "title": "High School DxD New: Oppai, Tsutsumimasu!", "episodes": "18+" }, { "title": "High School DxD Hero: Taiikukan-ura no Holy", "episodes": "18+" }, { "title": "High School DxD BorN", "episodes": "18+" }, { "title": "High School DxD Hero", "episodes": "18+" }, { "title": "High School DxD Specials", "episodes": "18+" }, { "title": "High School DxD New", "episodes": "18+" }, { "title": "High School DxD OVA", "episodes": "18+" }, { "title": "High School DxD", "episodes": "18+" }, { "title": "Chainsaw Man", "episodes": "18+" }, { "title": "Jujutsu Kaisen (TV)", "episodes": "24" }, { "title": "Chained Soldier Season 2", "episodes": "18+" }];
+  <!-- Random picker -->
+  <div id="v-random" style="display:none">
+   <h2>🎲 Random Anime</h2>
+   <div class="random-card" id="random-card">
+    <div class="random-title" id="random-title">—</div>
+    <div class="random-meta" id="random-meta"></div>
+   </div>
+   <div class="field">
+    <label>Filter from:</label>
+    <select class="msel" id="random-pool">
+     <option value="all">All anime</option>
+     <option value="plan">Plan to Watch only</option>
+     <option value="watching">Currently Watching</option>
+     <option value="unset">Not set</option>
+    </select>
+   </div>
+   <div class="modal-row">
+    <button class="btn accent" onclick="doRandom()" style="flex:1">🎲 Pick another</button>
+    <button class="btn" onclick="closeModal()">Close</button>
+   </div>
+  </div>
 
-        // ── Data ──
-        let DATA = [], nextId = 0, _bulkMode = false, _selectedIds = new Set();
-        let activeFilter = 'all', activeLetter = 'all', _noteTargetId = null, _addStatus = '';
-        let _fileContent = null;
+  <!-- Duplicate detector -->
+  <div id="v-dupes" style="display:none">
+   <h2>🔍 Duplicate Detector</h2>
+   <div id="dupe-results"></div>
+   <div class="modal-row">
+    <button class="btn" onclick="closeModal()" style="flex:1">Close</button>
+   </div>
+  </div>
 
-        function loadData() {
-            DATA = [];
-            nextId = 0;
-        }
+  <!-- Assign lists -->
+  <div id="v-assignlists" style="display:none">
+   <h2>📌 Add to Lists</h2>
+   <div style="font-size:0.82rem;font-weight:600;color:var(--purple);margin-bottom:8px" id="assignlists-anime-name"></div>
+   <div class="cl-assign-list" id="cl-assign-list"></div>
+   <div class="cl-inline-create">
+    <input class="cl-inline-input" id="cl-inline-name" placeholder="New list name…" onkeydown="if(event.key==='Enter')clInlineCreate()">
+    <button class="btn accent" onclick="clInlineCreate()" style="font-size:0.74rem;padding:5px 10px">+ Create</button>
+   </div>
+   <div class="modal-row" style="margin-top:10px">
+    <button class="btn accent" onclick="closeModal()" style="flex:1">Done</button>
+   </div>
+  </div>
 
-        function saveData() { }
+  <!-- Create list -->
+  <div id="v-createlist" style="display:none">
+   <h2>📁 New Custom List</h2>
+   <div class="field">
+    <label>List name</label>
+    <input type="text" class="mi" id="cl-create-name" placeholder="e.g. Watch with friends…" onkeydown="if(event.key==='Enter')doCreateList()">
+   </div>
+   <div class="field">
+    <label>Color</label>
+    <div id="cl-color-picker" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"></div>
+   </div>
+   <div class="modal-row">
+    <button class="btn accent" onclick="doCreateList()" style="flex:1">Create</button>
+    <button class="btn" onclick="closeModal()">Cancel</button>
+   </div>
+  </div>
+
+ </div>
+</div></div>
+
+<script>
+const SEED=[{"title":"My Cultivator Girlfriend","episodes":"15"},{"title":"The Genius Prince's Guide to Raising a Nation Out of Debt","episodes":"12"},{"title":"Seraph of the Endless","episodes":"4"},{"title":"Seraph of the End: Battle in Nagoya","episodes":"18+"},{"title":"Seraph of the End: Vampire Reign","episodes":"18+"},{"title":"To LOVE Ru Darkness 2 Specials","episodes":"18+"},{"title":"To LOVE-Ru Darkness 2nd OVA","episodes":"18+"},{"title":"To LOVE Ru Darkness 2","episodes":"18+"},{"title":"To LOVE-Ru Darkness OVA","episodes":"18+"},{"title":"To LOVE Ru Darkness","episodes":"18+"},{"title":"Motto To LOVE Ru","episodes":"18+"},{"title":"To LOVE-Ru OVA","episodes":"18+"},{"title":"IS: Infinite Stratos 2 - World Purge","episodes":"18+"},{"title":"IS: Infinite Stratos: A Sextet Yearns to Be in Love","episodes":"18+"},{"title":"IS: Infinite Stratos 2 - Infinite Wedding","episodes":"1"},{"title":"Kiss x Sis","episodes":"18+"},{"title":"Strike the Blood IV","episodes":"18+"},{"title":"Strike the Blood III","episodes":"18+"},{"title":"Strike the Blood Second","episodes":"18+"},{"title":"Strike the Blood","episodes":"18+"},{"title":"Code Geass: Lelouch of the Rebellion R2","episodes":"18+"},{"title":"Code Geass: Lelouch of the Rebellion","episodes":"18+"},{"title":"Vanquished Queens Specials","episodes":"18+"},{"title":"Vanquished Queens","episodes":"18+"},{"title":"Queen's Blade: Grimoire","episodes":"18+"},{"title":"Queen's Blade: Rebellion Specials","episodes":"18+"},{"title":"Queen's Blade: Rebellion","episodes":"18+"},{"title":"Queen's Blade OVA Specials","episodes":"18+"},{"title":"Queen's Blade: Beautiful Warriors","episodes":"18+"},{"title":"Queen's Blade: Inheritor of the Throne Specials","episodes":"18+"},{"title":"Queen's Blade: Inheritor of the Throne","episodes":"18+"},{"title":"Queen's Blade: The Exiled Virgin","episodes":"18+"},{"title":"Train to the End of the World: Special","episodes":"1"},{"title":"Train to the End of the World","episodes":"12"},{"title":"Maken-Ki! Two Specials","episodes":"18+"},{"title":"Maken-Ki!","episodes":"18+"},{"title":"Isuca (Uncensored)","episodes":"18+"},{"title":"The Kingdoms of Ruin","episodes":"18+"},{"title":"My Instant Death Ability is So Overpowered, No One in This Other World Stands a Chance Against Me!","episodes":"12"},{"title":"So, I Can't Play H! (OVA)","episodes":"18+"},{"title":"The Yakuza's Guide to Babysitting","episodes":"12"},{"title":"Peach Boy Riverside","episodes":"12"},{"title":"Kanojo, Okarishimasu Petit","episodes":"15"},{"title":"Rent-a-Girlfriend Season 3","episodes":"12"},{"title":"Rent-a-Girlfriend Season 4","episodes":"12"},{"title":"Rent-A-Girlfriend 2nd Season","episodes":"12"},{"title":"Rent-a-Girlfriend","episodes":"12"},{"title":"Chained Soldier [Uncensored]","episodes":"18+"},{"title":"Berserk: The Golden Age Arc II - The Battle for Doldrey","episodes":"18+"},{"title":"Berserk of Gluttony","episodes":"12"},{"title":"Nisekoi OVA","episodes":"4"},{"title":"Nisekoi: False Love","episodes":"12"},{"title":"Is This a Zombie? Of the Dead OVA","episodes":"18+"},{"title":"Is this A Zombie? of the Dead","episodes":"18+"},{"title":"Is This a Zombie? OVA","episodes":"1"},{"title":"Is This a Zombie?","episodes":"18+"},{"title":"Akebi's Sailor Uniform","episodes":"12"},{"title":"Yuragi-sou no Yuuna-san OVA","episodes":"18+"},{"title":"Yuragi-sou no Yuuna-san","episodes":"18+"},{"title":"SHIMONETA: A Boring World Where the Concept of Dirty Jokes Doesn't Exist","episodes":"18+"},{"title":"Daimidaler: Prince vs. Penguin Empire","episodes":"18+"},{"title":"Kenzen Robo Daimidaler Specials","episodes":"18+"},{"title":"Kekkaishi","episodes":"52"},{"title":"Tawawa on Monday","episodes":"12"},{"title":"Tawawa on Monday: Specials","episodes":"2"},{"title":"Tawawa on Monday Two","episodes":"18+"},{"title":"Seiren","episodes":"12"},{"title":"The Irregular at Magic High School The Movie - The Girl Who Summons The Stars","episodes":"18+"},{"title":"The Irregular at Magic High School: Visitor Arc","episodes":"13"},{"title":"The Irregular at Magic High School: Reminiscence Arc","episodes":"1"},{"title":"The Irregular at Magic High School Season 3","episodes":"13"},{"title":"Burn the Witch","episodes":"3"},{"title":"Full Metal Panic!","episodes":"18+"},{"title":"Devils Line: Anytime Anywhere","episodes":"18+"},{"title":"Devils' Line","episodes":"18+"},{"title":"SUPER HXEROS","episodes":"18+"},{"title":"I'm Giving the Disgraced Noble Lady I Rescued a Crash Course in Naughtiness","episodes":"12"},{"title":"Princess Lover!","episodes":"18+"},{"title":"Beyond the Boundary","episodes":"12"},{"title":"The Children of Shiunji Family","episodes":"12"},{"title":"Tsuredure Children","episodes":"12"},{"title":"How a Realist Hero Rebuilt the Kingdom Part 2","episodes":"13"},{"title":"How a Realist Hero Rebuilt the Kingdom","episodes":"13"},{"title":"No Longer Allowed In Another World","episodes":"12"},{"title":"Saekano: How to Raise a Boring Girlfriend .flat","episodes":"11"},{"title":"Saekano: How to Raise a Boring Girlfriend","episodes":"12"},{"title":"Classroom for Heroes","episodes":"12"},{"title":"Classroom of the Elite","episodes":"12"},{"title":"In Another World With My Smartphone","episodes":"12"},{"title":"In Another World With My Smartphone 2","episodes":"12"},{"title":"Castle Town Dandelion","episodes":"12"},{"title":"My Senpai is Annoying","episodes":"12"},{"title":"The Ice Guy and His Cool Female Colleague","episodes":"12"},{"title":"My Teen Romantic Comedy SNAFU Climax! OVA","episodes":"1"},{"title":"My Teen Romantic Comedy SNAFU Climax!","episodes":"12"},{"title":"My Teen Romantic Comedy SNAFU TOO!","episodes":"13"},{"title":"My Teen Romantic Comedy SNAFU","episodes":"13"},{"title":"KILL la KILL","episodes":"24"},{"title":"Sekirei: Hajimete no Otsukai","episodes":"18+"},{"title":"Sekirei: Pure Engagement Episode 0","episodes":"18+"},{"title":"Sekirei: Pure Engagement","episodes":"18+"},{"title":"Sekirei","episodes":"18+"},{"title":"World's End Harem (Uncensored)","episodes":"18+"},{"title":"Vermeil in Gold","episodes":"12"},{"title":"Trinity Seven Movie 2: Heavens Library to Crimson Lord","episodes":"1"},{"title":"Trinity Seven: Eternity Library & Alchemic Girl","episodes":"1"},{"title":"Trinity Seven","episodes":"12"},{"title":"Armed Girl's Machiavellism","episodes":"12"},{"title":"Demon King Daimao","episodes":"18+"},{"title":"Infinite Stratos","episodes":"12"},{"title":"Infinite Stratos 2","episodes":"12"},{"title":"Tomo-chan Is a Girl!","episodes":"13"},{"title":"Kaiju No. 8","episodes":"12"},{"title":"Kaiju No. 8 Season 2","episodes":"11"},{"title":"Kaiju No. 8 Movie","episodes":"1"},{"title":"Plunderer","episodes":"24"},{"title":"Akame ga Kill!","episodes":"18+"},{"title":"The Iceblade Sorcerer Shall Rule the World","episodes":"12"},{"title":"The Eminence in Shadow Season 2","episodes":"18+"},{"title":"The Eminence in Shadow","episodes":"18+"},{"title":"A Returner's Magic Should Be Special","episodes":"12"},{"title":"The Last Summoner","episodes":"12"},{"title":"Akashic Records of Bastard Magic Instructor","episodes":"18+"},{"title":"Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs","episodes":"12"},{"title":"Alya Sometimes Hides Her Feelings in Russian","episodes":"12"},{"title":"Clean Freak! Aoyama-kun","episodes":"12"},{"title":"Noblesse","episodes":"13"},{"title":"Noblesse: Pamyeol-ui Sijak","episodes":"18+"},{"title":"Gosick","episodes":"18+"},{"title":"I Got a Cheat Skill in Another World and Became Unrivaled in The Real World, Too: Real World","episodes":"1"},{"title":"I Got a Cheat Skill in Another World and Became Unrivaled in The Real World, Too","episodes":"13"},{"title":"Campione!","episodes":"13"},{"title":"The Asterisk War Season 2","episodes":"12"},{"title":"The Asterisk War","episodes":"12"},{"title":"Chivalry of a Failed Knight","episodes":"18+"},{"title":"Witch Craft Works","episodes":"12"},{"title":"The Dreaming Boy is a Realist","episodes":"12"},{"title":"Code:Breaker OVA","episodes":"18+"},{"title":"Code:Breaker","episodes":"18+"},{"title":"Mission: Yozakura Family","episodes":"27"},{"title":"Fate/strange Fake","episodes":"18+"},{"title":"A Sister's All You Need","episodes":"18+"},{"title":"The Fruit of Grisaia","episodes":"18+"},{"title":"To LOVE Ru","episodes":"18+"},{"title":"Samurai Girls","episodes":"18+"},{"title":"The Testament of Sister New Devil","episodes":"18+"},{"title":"Rosario + Vampire 2nd Season","episodes":"18+"},{"title":"The Testament of Sister New Devil OVA","episodes":"18+"},{"title":"Aesthetica of a Rogue Hero","episodes":"18+"},{"title":"IS: Infinite Stratos 2: Long Vacation Edition - The Memories of One Summer","episodes":"18+"},{"title":"So, I Can't Play H!","episodes":"18+"},{"title":"Masou Gakuen HxH Specials","episodes":"18+"},{"title":"Hybrid x Heart Magias Academy Ataraxia","episodes":"18+"},{"title":"Maken-Ki! Two","episodes":"18+"},{"title":"Maken-ki! Secret Training","episodes":"18+"},{"title":"Chained Soldier Season 2 [Uncensored]","episodes":"18+"},{"title":"Aesthetica of a Rogue Hero Specials","episodes":"18+"},{"title":"Maken-Ki! OVA","episodes":"18+"},{"title":"The Qwaser Of Stigmata Picture Drama","episodes":"18+"},{"title":"Samurai Bride","episodes":"18+"},{"title":"Grisaia no Kajitsu Specials","episodes":"18+"},{"title":"Rosario + Vampire","episodes":"18+"},{"title":"The Testament of Sister New Devil 2nd Season: Burst OVA","episodes":"18+"},{"title":"Domestic Girlfriend","episodes":"18+"},{"title":"Nande Koko ni Sensei ga!? Special","episodes":"18+"},{"title":"Aki-Sora: Yume no Naka","episodes":"18+"},{"title":"The Qwaser Of Stigmata II Picture Drama","episodes":"18+"},{"title":"Harem in the Labyrinth of Another World Specials","episodes":"18+"},{"title":"Immoral Guild (Uncensored)","episodes":"18+"},{"title":"Please Put Them On, Takamine-san [UNCENSORED]","episodes":"18+"},{"title":"Hands Off: Sawaranaide Kotesashi-kun [UNCENSORED]","episodes":"18+"},{"title":"Triage X (Uncensored)","episodes":"18+"},{"title":"Redo of Healer (Uncensored)","episodes":"18+"},{"title":"Overflow (Uncensored)","episodes":"18+"},{"title":"The Misfit of Demon King Academy","episodes":"18+"},{"title":"The Misfit of Demon King Academy II Part 2","episodes":"18+"},{"title":"The Misfit of Demon King Academy II","episodes":"18+"},{"title":"Boarding School Juliet","episodes":"12"},{"title":"Prison School: Mad Wax","episodes":"18+"},{"title":"Highschool of the Dead: Drifters of the Dead","episodes":"18+"},{"title":"The irregular at magic high school: Get to Know Magic Studies!","episodes":"6"},{"title":"Prison School","episodes":"18+"},{"title":"School Days","episodes":"18+"},{"title":"The Irregular at Magic High School","episodes":"26"},{"title":"High School of the Dead","episodes":"18+"},{"title":"High School DxD BorN Specials","episodes":"18+"},{"title":"High School DxD BorN: Yomigaeranai Fushichou","episodes":"18+"},{"title":"High School DxD New: Oppai, Tsutsumimasu!","episodes":"18+"},{"title":"High School DxD Hero: Taiikukan-ura no Holy","episodes":"18+"},{"title":"High School DxD BorN","episodes":"18+"},{"title":"High School DxD Hero","episodes":"18+"},{"title":"High School DxD Specials","episodes":"18+"},{"title":"High School DxD New","episodes":"18+"},{"title":"High School DxD OVA","episodes":"18+"},{"title":"High School DxD","episodes":"18+"},{"title":"Chainsaw Man","episodes":"18+"},{"title":"Jujutsu Kaisen (TV)","episodes":"24"},{"title":"Chained Soldier Season 2","episodes":"18+"}];
+
+// ── Data ──
+let DATA=[], nextId=0, _bulkMode=false, _selectedIds=new Set();
+let activeFilter='all', activeLetter='all', _noteTargetId=null, _addStatus='';
+let _fileContent=null;
+let CUSTOM_LISTS=[]; // [{id, name, color}]
+let _clNextId=0;
+let _activeListId=null;
+let _assignTargetId=null;
+
+const CL_COLORS=['#8b5cf6','#3b82f6','#10b981','#f59e0b','#ef4444','#ec4899','#06b6d4','#84cc16','#f97316','#6366f1'];
+
+function loadData(){
+  DATA=[];
+  nextId=0;
+}
+
+function saveData(){}
 
 
-        // ── Theme ──
-        function toggleTheme() {
-            const isLight = document.documentElement.dataset.theme === 'light';
-            document.documentElement.dataset.theme = isLight ? '' : 'light';
-            document.getElementById('theme-btn').textContent = isLight ? '☀ Light' : '🌙 Dark';
-        }
+// ── Theme ──
+function toggleTheme(){
+  const isLight=document.documentElement.dataset.theme==='light';
+  document.documentElement.dataset.theme=isLight?'':'light';
+  const icon=document.getElementById('sb-theme-icon');
+  const label=document.getElementById('sb-theme-label');
+  if(icon) icon.textContent=isLight?'🌙':'☀';
+  if(label) label.textContent=isLight?'Dark Mode':'Light Mode';
+}
 
-        // ── Stats ──
-        function buildStats() {
-            const c = { all: DATA.length, watching: 0, completed: 0, plan: 0, dropped: 0, unset: 0 };
-            DATA.forEach(a => { if (a.status && c[a.status] !== undefined) c[a.status]++; else if (!a.status) c.unset++; });
-            const items = [
-                { l: 'All', n: c.all, f: 'all', cl: '' },
-                { l: 'Watching', n: c.watching, f: 'watching', cl: 'sw' },
-                { l: 'Completed', n: c.completed, f: 'completed', cl: 'sc' },
-                { l: 'Plan', n: c.plan, f: 'plan', cl: 'sp' },
-                { l: 'Dropped', n: c.dropped, f: 'dropped', cl: 'sd' },
-                { l: 'Not Set', n: c.unset, f: 'unset', cl: '' },
-            ];
-            document.getElementById('stats-bar').innerHTML = items.map(it =>
-                `<div class="stat-item ${it.cl} ${activeFilter === it.f ? 'active' : ''}" onclick="setFilter('${it.f}')">
+// ── Stats ──
+function buildStats(){
+  const c={all:DATA.length,watching:0,completed:0,plan:0,dropped:0,unset:0};
+  DATA.forEach(a=>{if(a.status&&c[a.status]!==undefined)c[a.status]++;else if(!a.status)c.unset++;});
+  const items=[
+    {l:'All',n:c.all,f:'all',cl:''},
+    {l:'Watching',n:c.watching,f:'watching',cl:'sw'},
+    {l:'Completed',n:c.completed,f:'completed',cl:'sc'},
+    {l:'Plan',n:c.plan,f:'plan',cl:'sp'},
+    {l:'Dropped',n:c.dropped,f:'dropped',cl:'sd'},
+    {l:'Not Set',n:c.unset,f:'unset',cl:''},
+  ];
+  document.getElementById('stats-bar').innerHTML=items.map(it=>
+    `<div class="stat-item ${it.cl} ${activeFilter===it.f?'active':''}" onclick="setFilter('${it.f}')">
       <div class="stat-n">${it.n}</div><div class="stat-l">${it.l}</div></div>`).join('');
-        }
+}
 
-        function buildAlpha() {
-            const letters = new Set(DATA.map(a => a.title[0].toUpperCase()).filter(c => /[A-Z]/.test(c)));
-            const all = `<button class="ab-btn ${activeLetter === 'all' ? 'active' : ''}" onclick="setLetter('all')">#</button>`;
-            const btns = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(l =>
-                `<button class="ab-btn ${!letters.has(l) ? 'dim' : activeLetter === l ? 'active' : ''}" onclick="setLetter('${l}')">${l}</button>`).join('');
-            document.getElementById('alpha-bar').innerHTML = all + btns;
-        }
+function buildAlpha(){
+  const letters=new Set(DATA.map(a=>a.title[0].toUpperCase()).filter(c=>/[A-Z]/.test(c)));
+  const all=`<button class="ab-btn ${activeLetter==='all'?'active':''}" onclick="setLetter('all')">#</button>`;
+  const btns='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(l=>
+    `<button class="ab-btn ${!letters.has(l)?'dim':activeLetter===l?'active':''}" onclick="setLetter('${l}')">${l}</button>`).join('');
+  document.getElementById('alpha-bar').innerHTML=all+btns;
+}
 
-        function buildCatFilter() {
-            const cats = [...new Set(DATA.map(a => a.category).filter(Boolean))].sort();
-            const sel = document.getElementById('cat-filter');
-            const cur = sel.value;
-            sel.innerHTML = '<option value="">All categories</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
-            if (cur) sel.value = cur;
-            const dl = document.getElementById('cat-datalist');
-            if (dl) dl.innerHTML = cats.map(c => `<option value="${c}">`).join('');
-        }
+function buildCatFilter(){
+  const cats=[...new Set(DATA.map(a=>a.category).filter(Boolean))].sort();
+  const sel=document.getElementById('cat-filter');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">All categories</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  if(cur)sel.value=cur;
+  const dl=document.getElementById('cat-datalist');
+  if(dl)dl.innerHTML=cats.map(c=>`<option value="${c}">`).join('');
+}
 
-        function render() {
-            const q = document.getElementById('search').value.toLowerCase();
-            const sort = document.getElementById('sort').value;
-            const catF = document.getElementById('cat-filter').value;
-            let items = [...DATA];
+function render(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const sort=document.getElementById('sort').value;
+  const catF=document.getElementById('cat-filter').value;
+  let items=[...DATA];
 
-            if (activeFilter === 'watching') items = items.filter(a => a.status === 'watching');
-            else if (activeFilter === 'completed') items = items.filter(a => a.status === 'completed');
-            else if (activeFilter === 'plan') items = items.filter(a => a.status === 'plan');
-            else if (activeFilter === 'dropped') items = items.filter(a => a.status === 'dropped');
-            else if (activeFilter === 'unset') items = items.filter(a => !a.status);
-            if (catF) items = items.filter(a => a.category === catF);
-            if (activeLetter !== 'all') items = items.filter(a => a.title[0].toUpperCase() === activeLetter);
-            if (q) items = items.filter(a => a.title.toLowerCase().includes(q) || (a.note || '').toLowerCase().includes(q));
+  if(activeFilter==='watching') items=items.filter(a=>a.status==='watching');
+  else if(activeFilter==='completed') items=items.filter(a=>a.status==='completed');
+  else if(activeFilter==='plan') items=items.filter(a=>a.status==='plan');
+  else if(activeFilter==='dropped') items=items.filter(a=>a.status==='dropped');
+  else if(activeFilter==='unset') items=items.filter(a=>!a.status);
+  if(catF) items=items.filter(a=>a.category===catF);
+  if(activeLetter!=='all') items=items.filter(a=>a.title[0].toUpperCase()===activeLetter);
+  if(q) items=items.filter(a=>a.title.toLowerCase().includes(q)||(a.note||'').toLowerCase().includes(q));
 
-            const STATUS_ORDER = { watching: 0, plan: 1, completed: 2, dropped: 3, '': 4 };
-            if (sort === 'az') items.sort((a, b) => a.title.localeCompare(b.title));
-            else if (sort === 'za') items.sort((a, b) => b.title.localeCompare(a.title));
-            else if (sort === 'status') items.sort((a, b) => (STATUS_ORDER[a.status || ''] || 4) - (STATUS_ORDER[b.status || ''] || 4));
-            else if (sort === 'ep-desc') items.sort((a, b) => (parseInt(b.episodes) || 0) - (parseInt(a.episodes) || 0));
-            else if (sort === 'ep-asc') items.sort((a, b) => (parseInt(a.episodes) || 9999) - (parseInt(b.episodes) || 9999));
-            else if (sort === 'added') { items = [...items.filter(a => a.added), ...items.filter(a => !a.added)]; }
+  const STATUS_ORDER={watching:0,plan:1,completed:2,dropped:3,'':4};
+  if(sort==='az') items.sort((a,b)=>a.title.localeCompare(b.title));
+  else if(sort==='za') items.sort((a,b)=>b.title.localeCompare(a.title));
+  else if(sort==='status') items.sort((a,b)=>(STATUS_ORDER[a.status||'']||4)-(STATUS_ORDER[b.status||'']||4));
+  else if(sort==='ep-desc') items.sort((a,b)=>(parseInt(b.episodes)||0)-(parseInt(a.episodes)||0));
+  else if(sort==='ep-asc') items.sort((a,b)=>(parseInt(a.episodes)||9999)-(parseInt(b.episodes)||9999));
+  else if(sort==='added'){items=[...items.filter(a=>a.added),...items.filter(a=>!a.added)];}
 
-            document.getElementById('result-count').textContent = `${items.length} of ${DATA.length}`;
-            updateExportLabel();
-            const grid = document.getElementById('grid');
-            const empty = document.getElementById('empty');
-            const emptyBlank = document.getElementById('empty-blank');
-            if (DATA.length === 0) { grid.innerHTML = ''; empty.style.display = 'none'; emptyBlank.style.display = 'block'; return; }
-            emptyBlank.style.display = 'none';
-            if (!items.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
-            empty.style.display = 'none';
+  document.getElementById('result-count').textContent=`${items.length} of ${DATA.length}`;
+  updateExportLabel();
+  const grid=document.getElementById('grid');
+  const empty=document.getElementById('empty');
+  const emptyBlank=document.getElementById('empty-blank');
+  const dragHint=document.getElementById('drag-hint');
+  if(DATA.length===0){grid.innerHTML='';empty.style.display='none';emptyBlank.style.display='block';dragHint.classList.remove('show');return;}
+  emptyBlank.style.display='none';
+  if(!items.length){grid.innerHTML='';empty.style.display='block';dragHint.classList.remove('show');return;}
+  empty.style.display='none';
 
-            const idxMap = {};
-            DATA.forEach((a, i) => { idxMap[a.id] = i + 1; });
+  const isDragMode = sort==='default' && !q && !catF && activeFilter==='all' && activeLetter==='all';
+  dragHint.classList.toggle('show', isDragMode);
 
-            const sOpts = '<option value="">— Status</option><option value="watching">▶ Watching</option><option value="completed">✓ Completed</option><option value="plan">☆ Plan</option><option value="dropped">✕ Dropped</option>';
+  const idxMap={};
+  DATA.forEach((a,i)=>{idxMap[a.id]=i+1;});
 
-            grid.innerHTML = items.map(a => {
-                const scMap = { watching: 'sw', completed: 'sc', plan: 'sp', dropped: 'sd' };
-                const sc = a.status ? ' ' + (scMap[a.status] || '') : '';
-                const ec = a.is18 ? 'ep-badge ep18' : 'ep-badge';
-                const el = a.episodes ? (a.is18 ? '18+' : a.episodes + ' eps') : '';
-                const total = parseInt(a.episodes) || 0;
-                const prog = Math.min(a.progress || 0, total || 9999);
-                const pct = total > 0 ? Math.round((prog / total) * 100) : 0;
-                const barCls = pct >= 100 ? 'prog-bar done' : 'prog-bar';
+  const sOpts='<option value="">— Status</option><option value="watching">▶ Watching</option><option value="completed">✓ Completed</option><option value="plan">☆ Plan</option><option value="dropped">✕ Dropped</option>';
 
-                const notePrev = a.note ? (a.note.length > 40 ? a.note.slice(0, 40) + '…' : a.note) : 'Add note…';
-                const noteEmpty = !a.note;
-                const catTag = a.category ? `<span class="cat-tag" onclick="filterCat('${esc(a.category)}')">${esc(a.category)}</span>` : '';
-                const addedPill = a.added ? `<span class="added-pill">new</span>` : '';
-                const cbChk = _selectedIds.has(a.id) ? 'checked' : '';
-                const selCls = _selectedIds.has(a.id) ? ' selected' : '';
-                return `<div class="card${sc}${selCls}" id="card-${a.id}">
-      ${_bulkMode ? `<input type="checkbox" class="card-cb" ${cbChk} onchange="toggleSelect(${a.id},this.checked)">` : ''}
-      <span class="card-num">#${idxMap[a.id]}</span>
-      <button class="remove-btn" onclick="removeAnime(${a.id})" title="Remove">✕</button>
+  grid.innerHTML=items.map(a=>{
+    const scMap={watching:'sw',completed:'sc',plan:'sp',dropped:'sd'};
+    const sc=a.status?' '+(scMap[a.status]||''):'';
+    const ec=a.is18?'ep-badge ep18':'ep-badge';
+    const el=a.episodes?(a.is18?'18+':a.episodes+' eps'):'';
+    const total=parseInt(a.episodes)||0;
+    const prog=Math.min(a.progress||0,total||9999);
+    const pct=total>0?Math.round((prog/total)*100):0;
+    const barCls=pct>=100?'prog-bar done':'prog-bar';
+    const notePrev=a.note?(a.note.length>40?a.note.slice(0,40)+'…':a.note):'Add note…';
+    const noteEmpty=!a.note;
+    const catTag=a.category?`<span class="cat-tag" onclick="filterCat('${esc(a.category)}')">${esc(a.category)}</span>`:'';
+    const addedPill=a.added?`<span class="added-pill">new</span>`:'';
+    const cbChk=_selectedIds.has(a.id)?'checked':'';
+    const selCls=_selectedIds.has(a.id)?' selected':'';
+    const draggable=isDragMode?'draggable="true"':'';
+    const handle=isDragMode?`<div class="drag-handle" title="Drag to reorder">⠿⠿</div>`:'';
+    const listTags=(a.lists&&a.lists.length)
+      ? '<div class="card-lists">'+a.lists.map(lid=>{
+          const cl=CUSTOM_LISTS.find(l=>l.id===lid);
+          return cl?'<span class="cl-tag" style="background:'+cl.color+'" onclick="switchView(\'lists\');setActiveList(\''+lid+'\')" title="'+esc(cl.name)+'">'+esc(cl.name)+'</span>':'';
+        }).join('')+'</div>'
+      : '';
+    return `<div class="card${sc}${selCls}" id="card-${a.id}" data-id="${a.id}" ${draggable}
+      ${isDragMode?`ondragstart="dragStart(event,${a.id})" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dragDrop(event,${a.id})" ondragend="dragEnd(event)"`:''}
+    >
+      ${handle}
+      ${_bulkMode?`<input type="checkbox" class="card-cb" ${cbChk} onchange="toggleSelect(${a.id},this.checked)">`:''}
       <div class="card-top">
+        <span class="card-num">#${idxMap[a.id]}</span>
         <div class="card-title" onclick="openNote(${a.id})">${esc(a.title)}</div>
+        <button class="remove-btn" onclick="removeAnime(${a.id})" title="Remove">✕</button>
       </div>
       <div class="progress-row">
-        <input class="prog-input" type="number" min="0" max="${total || 9999}" value="${prog}" onchange="setProgress(${a.id},this.value)" title="Episodes watched">
-        <span class="prog-sep">/ ${total || '?'}</span>
+        <input class="prog-input" type="number" min="0" max="${total||9999}" value="${prog}" onchange="setProgress(${a.id},this.value)" title="Episodes watched">
+        <span class="prog-sep">/ ${total||'?'}</span>
         <div class="prog-bar-wrap"><div class="${barCls}" style="width:${pct}%"></div></div>
-        <span style="font-size:0.65rem;color:var(--text3);min-width:28px;text-align:right">${total > 0 ? pct + '%' : ''}</span>
+        <span style="font-size:0.65rem;color:var(--text3);min-width:28px;text-align:right">${total>0?pct+'%':''}</span>
       </div>
-      <div class="note-text${noteEmpty ? ' empty' : ''}" onclick="openNote(${a.id})">${noteEmpty ? 'Add note…' : esc(notePrev)}</div>
+      <div class="note-text${noteEmpty?' empty':''}" onclick="openNote(${a.id})">${noteEmpty?'Add note…':esc(notePrev)}</div>
+      ${listTags}
       <div class="card-footer">
-        ${el ? `<span class="${ec}">${el}</span>` : '<span></span>'}
-        ${catTag}${addedPill}
-        <select class="sts${sc}" onchange="setStatus(${a.id},this.value)">${sOpts}</select>
+        <div class="card-footer-row">
+          ${el?`<span class="${ec}">${el}</span>`:''}
+          ${catTag}${addedPill}
+        </div>
+        <div class="card-footer-row">
+          <button class="btn" onclick="openAssignLists(${a.id})" style="font-size:0.62rem;padding:2px 6px" title="Add to custom list">📌 Lists</button>
+          <select class="sts${sc}" onchange="setStatus(${a.id},this.value)" style="margin-left:auto">${sOpts}</select>
+        </div>
       </div>
     </div>`;
-            }).join('');
+  }).join('');
 
-            items.forEach(a => {
-                const s = document.querySelector(`#card-${a.id} .sts`);
-                if (s) s.value = a.status || '';
-            });
-        }
+  items.forEach(a=>{
+    const s=document.querySelector(`#card-${a.id} .sts`);
+    if(s)s.value=a.status||'';
+  });
+}
 
-        function refresh() {
-            document.getElementById('hdr-sub').textContent = `${DATA.length} anime in your list`;
-            buildStats(); buildAlpha(); buildCatFilter(); render();
-        }
+function refresh(){
+  document.getElementById('hdr-sub').textContent=`${DATA.length} anime in your list`;
+  buildStats();buildAlpha();buildCatFilter();render();
+  updateQuickLogFab();
+  if(_qlOpen) renderQuickLog();
+}
 
-        function setFilter(f) { activeFilter = f; buildStats(); render(); }
-        function setLetter(l) { activeLetter = l; buildAlpha(); render(); }
-        function filterCat(c) { document.getElementById('cat-filter').value = c; render(); }
+function setFilter(f){activeFilter=f;buildStats();render();}
+function setLetter(l){activeLetter=l;buildAlpha();render();}
+function filterCat(c){document.getElementById('cat-filter').value=c;render();}
 
-        // ── Card actions ──
-        function setStatus(id, val) {
-            const a = DATA.find(x => x.id === id);
-            if (!a) return;
-            a.status = val;
-            saveData();
-            buildStats();
-            const scMap = { watching: 'sw', completed: 'sc', plan: 'sp', dropped: 'sd' };
-            const sc = val ? ' ' + (scMap[val] || '') : '';
-            const card = document.getElementById('card-' + id);
-            if (card) {
-                card.className = 'card' + sc + (_selectedIds.has(id) ? ' selected' : '');
-                const s = card.querySelector('.sts');
-                if (s) { s.className = 'sts' + sc; s.value = val; }
-            }
-        }
+// ── Drag to reorder ──
+let _dragId=null, _dragOverId=null;
 
-        function setProgress(id, val) {
-            const a = DATA.find(x => x.id === id);
-            if (!a) return;
-            const total = parseInt(a.episodes) || 0;
-            a.progress = Math.max(0, Math.min(parseInt(val) || 0, total || 9999));
-            saveData();
-            const pct = total > 0 ? Math.round((a.progress / total) * 100) : 0;
-            const card = document.getElementById('card-' + id);
-            if (card) {
-                const bar = card.querySelector('.prog-bar');
-                const pctEl = card.querySelector('.prog-bar-wrap').nextElementSibling;
-                if (bar) { bar.style.width = pct + '%'; bar.className = pct >= 100 ? 'prog-bar done' : 'prog-bar'; }
-                if (pctEl && total > 0) pctEl.textContent = pct + '%';
-                if (pct >= 100 && a.status === 'watching') { setStatus(id, 'completed'); }
-            }
-        }
+function dragStart(e, id){
+  _dragId=id;
+  e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setData('text/plain', id);
+  // slight delay so the card renders as dragging before opacity kicks in
+  setTimeout(()=>{ const el=document.getElementById('card-'+id); if(el) el.classList.add('dragging'); },0);
+}
 
-        function removeAnime(id) {
-            const a = DATA.find(x => x.id === id);
-            if (!a) return;
-            if (!confirm(`Remove "${a.title}"?`)) return;
-            DATA = DATA.filter(x => x.id !== id);
-            _selectedIds.delete(id);
-            saveData();
-            toast(`Removed "${a.title}"`, 'ok');
-            refresh();
-        }
+function dragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+  const card=e.currentTarget;
+  const overId=parseInt(card.dataset.id);
+  if(overId===_dragOverId) return;
+  // clear previous
+  document.querySelectorAll('.card.drag-over').forEach(c=>c.classList.remove('drag-over'));
+  if(overId!==_dragId){ _dragOverId=overId; card.classList.add('drag-over'); }
+}
 
-        // ── Notes ──
-        function openNote(id) {
-            const a = DATA.find(x => x.id === id);
-            if (!a) return;
-            _noteTargetId = id;
-            document.getElementById('note-modal-title').textContent = a.title;
-            document.getElementById('note-edit').value = a.note || '';
-            openModal('note');
-        }
-        function saveNote() {
-            const a = DATA.find(x => x.id === _noteTargetId);
-            if (a) { a.note = document.getElementById('note-edit').value.trim(); saveData(); }
-            closeModal();
-            refresh();
-            toast('Note saved', 'ok');
-        }
+function dragLeave(e){
+  e.currentTarget.classList.remove('drag-over');
+}
 
-        // ── Bulk ──
-        function toggleBulk() {
-            _bulkMode = !_bulkMode;
-            if (!_bulkMode) { clearSelection(); }
-            document.getElementById('bulk-bar').className = 'bulk-bar' + (_bulkMode ? ' show' : '');
-            render();
-        }
-        function toggleSelect(id, checked) {
-            if (checked) _selectedIds.add(id); else _selectedIds.delete(id);
-            const card = document.getElementById('card-' + id);
-            if (card) card.classList.toggle('selected', checked);
-            document.getElementById('bulk-count').textContent = `${_selectedIds.size} selected`;
-        }
-        function clearSelection() { _selectedIds.clear(); document.getElementById('bulk-count').textContent = '0 selected'; render(); }
-        function applyBulkStatus() {
-            const s = document.getElementById('bulk-status-sel').value;
-            if (!s) { toast('Pick a status first', 'err'); return; }
-            _selectedIds.forEach(id => {
-                const a = DATA.find(x => x.id === id);
-                if (!a) return;
-                a.status = s;
-                if (s === 'completed') {
-                    const total = parseInt(a.episodes) || 0;
-                    if (total > 0) a.progress = total;
-                }
-            });
-            saveData();
-            toast(`Set ${_selectedIds.size} anime to "${s}"`, 'ok');
-            clearSelection(); refresh();
-        }
-        function removeSelected() {
-            if (!_selectedIds.size) { toast('Nothing selected', 'err'); return; }
-            if (!confirm(`Remove ${_selectedIds.size} anime?`)) return;
-            DATA = DATA.filter(a => !_selectedIds.has(a.id));
-            saveData();
-            toast(`Removed ${_selectedIds.size} anime`, 'ok');
-            clearSelection(); refresh();
-        }
+function dragDrop(e, targetId){
+  e.preventDefault();
+  document.querySelectorAll('.card.drag-over').forEach(c=>c.classList.remove('drag-over'));
+  if(_dragId===null || _dragId===targetId) return;
+  // Reorder DATA array
+  const fromIdx=DATA.findIndex(a=>a.id===_dragId);
+  const toIdx=DATA.findIndex(a=>a.id===targetId);
+  if(fromIdx===-1||toIdx===-1) return;
+  const [moved]=DATA.splice(fromIdx,1);
+  DATA.splice(toIdx,0,moved);
+  saveData();
+  render();
+}
 
-        // ── Random ──
-        function pickRandom() {
-            openModal('random');
-            doRandom();
-        }
-        function doRandom() {
-            const pool = document.getElementById('random-pool')?.value || 'all';
-            let items = DATA;
-            if (pool === 'plan') items = DATA.filter(a => a.status === 'plan');
-            else if (pool === 'watching') items = DATA.filter(a => a.status === 'watching');
-            else if (pool === 'unset') items = DATA.filter(a => !a.status);
-            if (!items.length) { document.getElementById('random-title').textContent = 'No anime in this pool!'; document.getElementById('random-meta').textContent = ''; return; }
-            const pick = items[Math.floor(Math.random() * items.length)];
-            document.getElementById('random-title').textContent = pick.title;
-            const meta = [];
-            if (pick.episodes) meta.push(pick.episodes + (pick.is18 ? '' : ' eps'));
-            if (pick.status) meta.push({ watching: '▶ Watching', completed: '✓ Completed', plan: '☆ Plan', dropped: '✕ Dropped' }[pick.status] || '');
-            document.getElementById('random-meta').textContent = meta.join(' · ');
-        }
+function dragEnd(e){
+  document.querySelectorAll('.card.dragging,.card.drag-over').forEach(c=>c.classList.remove('dragging','drag-over'));
+  _dragId=null;
+  _dragOverId=null;
+}
 
-        // ── Dupes ──
-        function findDupes() {
-            const groups = {};
-            DATA.forEach(a => {
-                const key = a.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 30);
-                if (!groups[key]) groups[key] = [];
-                groups[key].push(a);
-            });
-            return Object.values(groups).filter(g => g.length > 1);
-        }
+// ── Card actions ──
+function setStatus(id,val){
+  const a=DATA.find(x=>x.id===id);
+  if(!a)return;
+  a.status=val;
+  saveData();
+  buildStats();
+  const scMap={watching:'sw',completed:'sc',plan:'sp',dropped:'sd'};
+  const sc=val?' '+(scMap[val]||''):'';
+  const card=document.getElementById('card-'+id);
+  if(card){
+    card.className='card'+sc+(_selectedIds.has(id)?' selected':'');
+    const s=card.querySelector('.sts');
+    if(s){s.className='sts'+sc;s.value=val;}
+  }
+  updateQuickLogFab();
+  if(_qlOpen) renderQuickLog();
+}
 
-        // ── Modal ──
-        function openModal(view) {
-            document.getElementById('modal-bg').classList.add('open');
-            ['import', 'add', 'note', 'random', 'dupes'].forEach(v => {
-                document.getElementById('v-' + v).style.display = v === view ? '' : 'none';
-            });
-            _fileContent = null; _addStatus = '';
-            if (view === 'add') {
-                document.getElementById('add-title').value = '';
-                document.getElementById('add-eps').value = '';
-                document.getElementById('add-cat').value = '';
-                document.getElementById('add-note').value = '';
-                document.getElementById('dupe-warn').textContent = '';
-                document.querySelectorAll('#add-sp .sp-btn').forEach(b => b.className = 'sp-btn');
-                setTimeout(() => document.getElementById('add-title').focus(), 60);
-            }
-            if (view === 'import') {
-                document.getElementById('file-note').textContent = '';
-                document.getElementById('file-note').className = 'fn';
-                document.getElementById('paste-json').value = '';
-                document.getElementById('file-input').value = '';
-            }
-            if (view === 'dupes') {
-                const dupes = findDupes();
-                const el = document.getElementById('dupe-results');
-                if (!dupes.length) { el.innerHTML = '<p style="color:var(--green);font-size:0.85rem;padding:0.5rem 0">No duplicates found!</p>'; return; }
-                el.innerHTML = `<p style="font-size:0.78rem;color:var(--text2);margin-bottom:0.8rem">${dupes.length} possible duplicate group(s):</p><div class="dupe-list">` +
-                    dupes.map(g => g.map((a, i) => `<div class="dupe-item">
+function setProgress(id,val){
+  const a=DATA.find(x=>x.id===id);
+  if(!a)return;
+  const total=parseInt(a.episodes)||0;
+  a.progress=Math.max(0,Math.min(parseInt(val)||0,total||9999));
+  saveData();
+  const pct=total>0?Math.round((a.progress/total)*100):0;
+  const card=document.getElementById('card-'+id);
+  if(card){
+    const bar=card.querySelector('.prog-bar');
+    const pctEl=card.querySelector('.prog-bar-wrap').nextElementSibling;
+    if(bar){bar.style.width=pct+'%';bar.className=pct>=100?'prog-bar done':'prog-bar';}
+    if(pctEl&&total>0)pctEl.textContent=pct+'%';
+    if(pct>=100&&a.status==='watching'){setStatus(id,'completed');}
+  }
+}
+
+function removeAnime(id){
+  const a=DATA.find(x=>x.id===id);
+  if(!a)return;
+  if(!confirm(`Remove "${a.title}"?`))return;
+  DATA=DATA.filter(x=>x.id!==id);
+  _selectedIds.delete(id);
+  saveData();
+  toast(`Removed "${a.title}"`, 'ok');
+  refresh();
+}
+
+// ── Notes ──
+function openNote(id){
+  const a=DATA.find(x=>x.id===id);
+  if(!a)return;
+  _noteTargetId=id;
+  document.getElementById('note-modal-title').textContent=a.title;
+  document.getElementById('note-edit').value=a.note||'';
+  openModal('note');
+}
+function saveNote(){
+  const a=DATA.find(x=>x.id===_noteTargetId);
+  if(a){a.note=document.getElementById('note-edit').value.trim();saveData();}
+  closeModal();
+  refresh();
+  toast('Note saved','ok');
+}
+
+// ── Bulk ──
+function toggleBulk(){
+  _bulkMode=!_bulkMode;
+  if(!_bulkMode){clearSelection();}
+  document.getElementById('bulk-bar').className='bulk-bar'+(_bulkMode?' show':'');
+  render();
+}
+function toggleSelect(id,checked){
+  if(checked)_selectedIds.add(id);else _selectedIds.delete(id);
+  const card=document.getElementById('card-'+id);
+  if(card)card.classList.toggle('selected',checked);
+  document.getElementById('bulk-count').textContent=`${_selectedIds.size} selected`;
+}
+function clearSelection(){_selectedIds.clear();document.getElementById('bulk-count').textContent='0 selected';render();}
+function applyBulkStatus(){
+  const s=document.getElementById('bulk-status-sel').value;
+  if(!s){toast('Pick a status first','err');return;}
+  _selectedIds.forEach(id=>{
+    const a=DATA.find(x=>x.id===id);
+    if(!a)return;
+    a.status=s;
+    if(s==='completed'){
+      const total=parseInt(a.episodes)||0;
+      if(total>0) a.progress=total;
+    }
+  });
+  saveData();
+  toast(`Set ${_selectedIds.size} anime to "${s}"`, 'ok');
+  clearSelection();refresh();
+}
+function removeSelected(){
+  if(!_selectedIds.size){toast('Nothing selected','err');return;}
+  if(!confirm(`Remove ${_selectedIds.size} anime?`))return;
+  DATA=DATA.filter(a=>!_selectedIds.has(a.id));
+  saveData();
+  toast(`Removed ${_selectedIds.size} anime`,'ok');
+  clearSelection();refresh();
+}
+
+// ── Random ──
+function pickRandom(){
+  openModal('random');
+  doRandom();
+}
+function doRandom(){
+  const pool=document.getElementById('random-pool')?.value||'all';
+  let items=DATA;
+  if(pool==='plan') items=DATA.filter(a=>a.status==='plan');
+  else if(pool==='watching') items=DATA.filter(a=>a.status==='watching');
+  else if(pool==='unset') items=DATA.filter(a=>!a.status);
+  if(!items.length){document.getElementById('random-title').textContent='No anime in this pool!';document.getElementById('random-meta').textContent='';return;}
+  const pick=items[Math.floor(Math.random()*items.length)];
+  document.getElementById('random-title').textContent=pick.title;
+  const meta=[];
+  if(pick.episodes)meta.push(pick.episodes+(pick.is18?'':' eps'));
+  if(pick.status)meta.push({watching:'▶ Watching',completed:'✓ Completed',plan:'☆ Plan',dropped:'✕ Dropped'}[pick.status]||'');
+  document.getElementById('random-meta').textContent=meta.join(' · ');
+}
+
+// ── Dupes ──
+function findDupes(){
+  const groups={};
+  DATA.forEach(a=>{
+    const key=a.title.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,30);
+    if(!groups[key])groups[key]=[];
+    groups[key].push(a);
+  });
+  return Object.values(groups).filter(g=>g.length>1);
+}
+
+// ── Modal ──
+function openModal(view){
+  document.getElementById('modal-bg').classList.add('open');
+  ['import','add','note','random','dupes','assignlists','createlist'].forEach(v=>{
+    document.getElementById('v-'+v).style.display=v===view?'':'none';
+  });
+  _fileContent=null;_addStatus='';
+  if(view==='add'){
+    document.getElementById('add-title').value='';
+    document.getElementById('add-eps').value='';
+    document.getElementById('add-cat').value='';
+    document.getElementById('add-note').value='';
+    document.getElementById('dupe-warn').textContent='';
+    document.querySelectorAll('#add-sp .sp-btn').forEach(b=>b.className='sp-btn');
+    setTimeout(()=>document.getElementById('add-title').focus(),60);
+  }
+  if(view==='import'){
+    document.getElementById('file-note').textContent='';
+    document.getElementById('file-note').className='fn';
+    document.getElementById('paste-json').value='';
+    document.getElementById('file-input').value='';
+  }
+  if(view==='dupes'){
+    const dupes=findDupes();
+    const el=document.getElementById('dupe-results');
+    if(!dupes.length){el.innerHTML='<p style="color:var(--green);font-size:0.85rem;padding:0.5rem 0">No duplicates found!</p>';return;}
+    el.innerHTML=`<p style="font-size:0.78rem;color:var(--text2);margin-bottom:0.8rem">${dupes.length} possible duplicate group(s):</p><div class="dupe-list">`+
+      dupes.map(g=>g.map((a,i)=>`<div class="dupe-item">
         <span>${esc(a.title)}</span>
-        ${i > 0 ? `<button class="btn rb" style="padding:2px 8px;font-size:0.7rem" onclick="removeAnime(${a.id});openModal('dupes')">Remove</button>` : '<span style="font-size:0.7rem;color:var(--text3)">keep</span>'}
-      </div>`).join('')).join('<div style="height:6px"></div>') +
-                    '</div>';
-            }
-        }
-        function closeModal() { document.getElementById('modal-bg').classList.remove('open'); }
-        function bgClick(e) { if (e.target === document.getElementById('modal-bg')) closeModal(); }
+        ${i>0?`<button class="btn rb" style="padding:2px 8px;font-size:0.7rem" onclick="removeAnime(${a.id});openModal('dupes')">Remove</button>`:'<span style="font-size:0.7rem;color:var(--text3)">keep</span>'}
+      </div>`).join('')).join('<div style="height:6px"></div>')+
+      '</div>';
+  }
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');}
+function bgClick(e){if(e.target===document.getElementById('modal-bg'))closeModal();}
 
-        // ── Add ──
-        function checkDupe() {
-            const t = document.getElementById('add-title').value.trim().toLowerCase();
-            const dupe = DATA.find(a => a.title.toLowerCase() === t);
-            document.getElementById('dupe-warn').textContent = dupe ? `"${dupe.title}" is already in your list.` : '';
-        }
-        function pickStatus(btn) {
-            _addStatus = btn.dataset.s;
-            document.querySelectorAll('#add-sp .sp-btn').forEach(b => {
-                b.className = 'sp-btn' + (b === btn && b.dataset.s ? ` a${b.dataset.s === 'watching' ? 'w' : b.dataset.s === 'completed' ? 'c' : b.dataset.s === 'plan' ? 'p' : b.dataset.s === 'dropped' ? 'dr' : ''}` : '');
-            });
-        }
-        function doAdd() {
-            const title = document.getElementById('add-title').value.trim();
-            const eps = document.getElementById('add-eps').value.trim();
-            const cat = document.getElementById('add-cat').value.trim();
-            const note = document.getElementById('add-note').value.trim();
-            if (!title) { toast('Please enter a title', 'err'); return; }
-            if (DATA.find(a => a.title.toLowerCase() === title.toLowerCase())) { toast('Already in your list!', 'err'); return; }
-            DATA.push({ id: nextId++, title, episodes: eps, is18: eps.includes('18+'), status: _addStatus, progress: 0, note, category: cat, added: true });
-            saveData();
-            closeModal();
-            toast(`Added "${title}"`, 'ok');
-            refresh();
-        }
+// ── Add ──
+function checkDupe(){
+  const t=document.getElementById('add-title').value.trim().toLowerCase();
+  const dupe=DATA.find(a=>a.title.toLowerCase()===t);
+  document.getElementById('dupe-warn').textContent=dupe?`"${dupe.title}" is already in your list.`:'';
+}
+function pickStatus(btn){
+  _addStatus=btn.dataset.s;
+  document.querySelectorAll('#add-sp .sp-btn').forEach(b=>{
+    b.className='sp-btn'+(b===btn&&b.dataset.s?` a${b.dataset.s==='watching'?'w':b.dataset.s==='completed'?'c':b.dataset.s==='plan'?'p':b.dataset.s==='dropped'?'dr':''}`:'');
+  });
+}
+function doAdd(){
+  const title=document.getElementById('add-title').value.trim();
+  const eps=document.getElementById('add-eps').value.trim();
+  const cat=document.getElementById('add-cat').value.trim();
+  const note=document.getElementById('add-note').value.trim();
+  if(!title){toast('Please enter a title','err');return;}
+  if(DATA.find(a=>a.title.toLowerCase()===title.toLowerCase())){toast('Already in your list!','err');return;}
+  DATA.push({id:nextId++,title,episodes:eps,is18:eps.includes('18+'),status:_addStatus,progress:0,note,category:cat,lists:[],added:true});
+  saveData();
+  closeModal();
+  toast(`Added "${title}"`, 'ok');
+  refresh();
+}
 
-        // ── Import ──
-        function cleanEp(raw) {
-            if (!raw) return '';
-            const tokens = String(raw).split(/[\n\s]+/);
-            for (const t of tokens) { if (/^\d+\+?$/.test(t.trim())) return t.trim(); }
-            return String(raw).includes('18+') ? '18+' : String(raw).trim();
-        }
-        function normStatus(s) {
-            if (!s) return ''; s = s.toLowerCase().trim();
-            if (s.includes('watch') && !s.includes('plan')) return 'watching';
-            if (s.includes('complet')) return 'completed';
-            if (s.includes('plan')) return 'plan';
-            if (s.includes('drop')) return 'dropped';
-            if (['watching', 'completed', 'plan', 'dropped'].includes(s)) return s;
-            return '';
-        }
-        function parseImport(raw) {
-            let p; try { p = JSON.parse(raw); } catch (e) { return { error: 'Could not parse JSON.' }; }
-            if (!Array.isArray(p)) return { error: 'Expected a JSON array.' };
-            const items = [];
-            for (const item of p) {
-                const title = (item.title || item.name || '').trim();
-                if (!title) continue;
-                const ep = cleanEp(item.episodes || item.episode || '');
-                const st = normStatus(item.status || '');
-                items.push({ title, episodes: ep, is18: ep.includes('18+'), status: st, progress: item.progress || 0, note: item.note || '', category: item.category || '' });
-            }
-            if (!items.length) return { error: 'No valid entries found.' };
-            return { items };
-        }
-        function doImport() {
-            const raw = document.getElementById('paste-json').value.trim() || _fileContent;
-            if (!raw) { setFN('No data — drop a file or paste JSON.', true); return; }
-            const result = parseImport(raw);
-            if (result.error) { setFN(result.error, true); return; }
-            let added = 0, updated = 0;
-            for (const item of result.items) {
-                const match = DATA.find(a => a.title.toLowerCase() === item.title.toLowerCase());
-                if (match) {
-                    if (item.status !== undefined) match.status = item.status;
-                    if (item.progress) match.progress = item.progress;
-                    if (item.note) match.note = item.note;
-                    if (item.category) match.category = item.category;
-                    if (item.episodes) match.episodes = item.episodes;
-                    match.is18 = (match.episodes || '').includes('18+');
-                    updated++;
-                } else {
-                    DATA.push({ id: nextId++, ...item, added: true });
-                    added++;
-                }
-            }
-            saveData();
-            closeModal();
-            const parts = [];
-            if (updated) parts.push(updated + ' updated');
-            if (added) parts.push(added + ' added');
-            toast('Import complete: ' + (parts.join(', ') || 'nothing changed'), 'ok');
-            refresh();
-        }
-        function setFN(msg, err) { const el = document.getElementById('file-note'); el.textContent = msg; el.className = 'fn' + (err ? ' err' : ''); }
-        function dzOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('dg'); }
-        function dzLeave() { document.getElementById('drop-zone').classList.remove('dg'); }
-        function dzDrop(e) { e.preventDefault(); dzLeave(); if (e.dataTransfer.files[0]) readFile(e.dataTransfer.files[0]); }
-        function fileChosen(e) { if (e.target.files[0]) readFile(e.target.files[0]); }
-        function readFile(file) {
-            if (!file.name.endsWith('.json')) { setFN('Please select a .json file.', true); return; }
-            const r = new FileReader();
-            r.onload = e => { _fileContent = e.target.result; setFN(`"${file.name}" ready — click Merge.`); };
-            r.readAsText(file);
-        }
+// ── Import ──
+function cleanEp(raw){
+  if(!raw)return'';
+  const tokens=String(raw).split(/[\n\s]+/);
+  for(const t of tokens){if(/^\d+\+?$/.test(t.trim()))return t.trim();}
+  return String(raw).includes('18+')?'18+':String(raw).trim();
+}
+function normStatus(s){
+  if(!s)return'';s=s.toLowerCase().trim();
+  if(s.includes('watch')&&!s.includes('plan'))return'watching';
+  if(s.includes('complet'))return'completed';
+  if(s.includes('plan'))return'plan';
+  if(s.includes('drop'))return'dropped';
+  if(['watching','completed','plan','dropped'].includes(s))return s;
+  return'';
+}
+function parseImport(raw){
+  let p;try{p=JSON.parse(raw);}catch(e){return{error:'Could not parse JSON.'};}
+  // Support new format: {listName, anime:[]} or old flat array
+  let listName=null, customLists=null;
+  if(!Array.isArray(p)){
+    if(p && Array.isArray(p.anime)){listName=p.listName||null;customLists=p.customLists||null;p=p.anime;}
+    else return{error:'Expected a JSON array or exported watchlist object.'};
+  }
+  const items=[];
+  for(const item of p){
+    const title=(item.title||item.name||'').trim();
+    if(!title)continue;
+    const ep=cleanEp(item.episodes||item.episode||'');
+    const st=normStatus(item.status||'');
+    items.push({title,episodes:ep,is18:ep.includes('18+'),status:st,progress:item.progress||0,note:item.note||'',category:item.category||'',lists:item.lists||[]});
+  }
+  if(!items.length)return{error:'No valid entries found.'};
+  return{items,listName,customLists};
+}
+function doImport(){
+  const raw=document.getElementById('paste-json').value.trim()||_fileContent;
+  if(!raw){setFN('No data — drop a file or paste JSON.',true);return;}
+  const result=parseImport(raw);
+  if(result.error){setFN(result.error,true);return;}
+  // Restore list name if present
+  if(result.listName){
+    _listName=result.listName;
+    document.title=_listName;
+    const el=document.getElementById('list-title-text');
+    if(el)el.textContent=_listName;
+  }
+  if(result.customLists&&result.customLists.length){
+    // Merge: add lists that don't already exist by id
+    result.customLists.forEach(cl=>{
+      if(!CUSTOM_LISTS.find(l=>l.id===cl.id)) CUSTOM_LISTS.push(cl);
+    });
+    if(CUSTOM_LISTS.length) _clNextId=Math.max(...CUSTOM_LISTS.map(l=>parseInt(l.id.split('_')[1])||0));
+  }
+  let added=0,updated=0;
+  for(const item of result.items){
+    const match=DATA.find(a=>a.title.toLowerCase()===item.title.toLowerCase());
+    if(match){
+      if(item.status!==undefined)   match.status   = item.status;
+      if(item.progress)             match.progress = item.progress;
+      if(item.note)                 match.note     = item.note;
+      if(item.category)             match.category = item.category;
+      if(item.episodes)             match.episodes = item.episodes;
+      match.is18=(match.episodes||'').includes('18+');
+      if(!match.lists)              match.lists    = item.lists||[];
+      updated++;
+    } else {
+      DATA.push({id:nextId++,...item,lists:item.lists||[],added:true});
+      added++;
+    }
+  }
+  saveData();
+  const parts=[];
+  if(updated) parts.push(updated+' updated');
+  if(added)   parts.push(added+' added');
+  // Switch to watchlist and fully re-render BEFORE closing modal
+  _currentView='watchlist';
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-watchlist').classList.add('active');
+  document.querySelectorAll('.sb-item[id^="sb-"]').forEach(el=>el.classList.remove('active'));
+  const sbWl=document.getElementById('sb-watchlist');
+  if(sbWl) sbWl.classList.add('active');
+  refresh();
+  closeModal();
+  toast('Import complete: '+(parts.join(', ')||'nothing changed'), 'ok');
+}
+function setFN(msg,err){const el=document.getElementById('file-note');el.textContent=msg;el.className='fn'+(err?' err':'');}
+function dzOver(e){e.preventDefault();document.getElementById('drop-zone').classList.add('dg');}
+function dzLeave(){document.getElementById('drop-zone').classList.remove('dg');}
+function dzDrop(e){e.preventDefault();dzLeave();if(e.dataTransfer.files[0])readFile(e.dataTransfer.files[0]);}
+function fileChosen(e){if(e.target.files[0])readFile(e.target.files[0]);}
+function readFile(file){
+  if(!file.name.endsWith('.json')){setFN('Please select a .json file.',true);return;}
+  const r=new FileReader();
+  r.onload=e=>{_fileContent=e.target.result;setFN(`"${file.name}" ready — click Merge.`);};
+  r.readAsText(file);
+}
 
-        // ── Export menu ──
-        function toggleExportMenu() {
-            const menu = document.getElementById('export-menu');
-            const open = menu.style.display === 'none';
-            menu.style.display = open ? '' : 'none';
-            if (open) updateExportLabel();
-        }
-        document.addEventListener('click', e => {
-            const wrap = document.getElementById('export-wrap');
-            if (wrap && !wrap.contains(e.target)) document.getElementById('export-menu').style.display = 'none';
-        });
+function getFilteredData(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const catF=document.getElementById('cat-filter').value;
+  let items=[...DATA];
+  if(activeFilter==='watching') items=items.filter(a=>a.status==='watching');
+  else if(activeFilter==='completed') items=items.filter(a=>a.status==='completed');
+  else if(activeFilter==='plan') items=items.filter(a=>a.status==='plan');
+  else if(activeFilter==='dropped') items=items.filter(a=>a.status==='dropped');
+  else if(activeFilter==='unset') items=items.filter(a=>!a.status);
+  if(catF) items=items.filter(a=>a.category===catF);
+  if(activeLetter!=='all') items=items.filter(a=>a.title[0].toUpperCase()===activeLetter);
+  if(q) items=items.filter(a=>a.title.toLowerCase().includes(q)||(a.note||'').toLowerCase().includes(q));
+  return items;
+}
 
-        function getFilteredData() {
-            const q = document.getElementById('search').value.toLowerCase();
-            const catF = document.getElementById('cat-filter').value;
-            let items = [...DATA];
-            if (activeFilter === 'watching') items = items.filter(a => a.status === 'watching');
-            else if (activeFilter === 'completed') items = items.filter(a => a.status === 'completed');
-            else if (activeFilter === 'plan') items = items.filter(a => a.status === 'plan');
-            else if (activeFilter === 'dropped') items = items.filter(a => a.status === 'dropped');
-            else if (activeFilter === 'unset') items = items.filter(a => !a.status);
-            if (catF) items = items.filter(a => a.category === catF);
-            if (activeLetter !== 'all') items = items.filter(a => a.title[0].toUpperCase() === activeLetter);
-            if (q) items = items.filter(a => a.title.toLowerCase().includes(q) || (a.note || '').toLowerCase().includes(q));
-            return items;
-        }
+function getFilterLabel(){
+  if(activeFilter==='all'&&!document.getElementById('search').value&&!document.getElementById('cat-filter').value&&activeLetter==='all') return null;
+  const parts=[];
+  if(activeFilter!=='all') parts.push(activeFilter);
+  if(activeLetter!=='all') parts.push(activeLetter);
+  if(document.getElementById('cat-filter').value) parts.push(document.getElementById('cat-filter').value);
+  if(document.getElementById('search').value) parts.push(`"${document.getElementById('search').value}"`);
+  return parts.join(', ');
+}
 
-        function getFilterLabel() {
-            if (activeFilter === 'all' && !document.getElementById('search').value && !document.getElementById('cat-filter').value && activeLetter === 'all') return null;
-            const parts = [];
-            if (activeFilter !== 'all') parts.push(activeFilter);
-            if (activeLetter !== 'all') parts.push(activeLetter);
-            if (document.getElementById('cat-filter').value) parts.push(document.getElementById('cat-filter').value);
-            if (document.getElementById('search').value) parts.push(`"${document.getElementById('search').value}"`);
-            return parts.join(', ');
-        }
+function updateExportLabel(){
+  // no-op: header export button removed, sidebar uses sb-export-menu
+}
 
-        function updateExportLabel() {
-            const filtered = getFilteredData();
-            const label = getFilterLabel();
-            const isFiltered = label !== null;
-            const tag = document.getElementById('export-filter-tag');
-            const scopeLabel = document.getElementById('export-scope-label');
-            const btn = document.getElementById('export-btn');
-            if (isFiltered) {
-                tag.innerHTML = `<span style="background:var(--purple-soft);color:var(--purple);border-radius:4px;padding:1px 5px;font-size:0.65rem;margin-left:4px">filtered</span>`;
-                scopeLabel.innerHTML = `Exporting: <strong style="color:var(--text)">${filtered.length} of ${DATA.length}</strong> anime<br><span style="color:var(--purple);font-size:0.65rem">Filter: ${label}</span>`;
-                btn.style.borderColor = 'var(--purple-dim)';
-                btn.style.color = 'var(--purple)';
-            } else {
-                tag.innerHTML = '';
-                scopeLabel.innerHTML = `Exporting: <strong style="color:var(--text)">all ${filtered.length}</strong> anime`;
-                btn.style.borderColor = '';
-                btn.style.color = '';
-            }
-        }
+function getExportFilename(ext){
+  const label=getFilterLabel();
+  const base=label?`animelist_${label.replace(/[^a-z0-9]/gi,'_').slice(0,30)}`:' my_animelist';
+  return`${base}.${ext}`;
+}
 
-        function getExportFilename(ext) {
-            const label = getFilterLabel();
-            const base = label ? `animelist_${label.replace(/[^a-z0-9]/gi, '_').slice(0, 30)}` : ' my_animelist';
-            return `${base}.${ext}`;
-        }
+// ── Export ──
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-        // ── Export ──
-        function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-        function dl(content, name, type) { const b = new Blob([content], { type }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; a.click(); URL.revokeObjectURL(a.href); }
+// File System Access API state
+let _dirHandle = null;   // pinned folder
+let _fileHandles = {};   // { json: FileSystemFileHandle, csv: ..., txt: ... }
 
-        function dlJSON() {
-            const items = getFilteredData();
-            document.getElementById('export-menu').style.display = 'none';
-            dl(JSON.stringify(items.map(a => ({ title: a.title, episodes: a.episodes, status: a.status || '', progress: a.progress || 0, note: a.note || '', category: a.category || '' })), null, 2), getExportFilename('json'), 'application/json');
-            toast(`Exported ${items.length} anime as JSON`, 'ok');
-        }
-        function dlCSV() {
-            const items = getFilteredData();
-            document.getElementById('export-menu').style.display = 'none';
-            const rows = items.map(a => `"${a.title.replace(/"/g, '""')}","${a.episodes || ''}","${a.status || ''}","${a.progress || ''}","${(a.category || '').replace(/"/g, '""')}","${(a.note || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`);
-            dl('Title,Episodes,Status,Progress,Category,Notes\n' + rows.join('\n'), getExportFilename('csv'), 'text/csv');
-            toast(`Exported ${items.length} anime as CSV`, 'ok');
-        }
-        function dlTXT() {
-            const items = getFilteredData();
-            document.getElementById('export-menu').style.display = 'none';
-            const sl = { watching: '▶', completed: '✓', plan: '☆', dropped: '✕', '': ' ' };
-            const lines = items.map((a, i) => {
-                const s = sl[a.status || ''] || ' ';
-                const p = a.progress && parseInt(a.episodes) ? ` [${a.progress}/${a.episodes}]` : '';
-                return `${String(i + 1).padStart(3, ' ')}. ${s} ${a.title}${a.episodes ? ' (' + a.episodes + ' eps)' : ''}${p}`;
-            });
-            const header = getFilterLabel() ? `Filter: ${getFilterLabel()} — ${items.length} anime\n${'─'.repeat(50)}\n` : '';
-            dl(header + lines.join('\n'), getExportFilename('txt'), 'text/plain');
-            toast(`Exported ${items.length} anime as TXT`, 'ok');
-        }
+const _fsaSupported = typeof window.showSaveFilePicker === 'function';
 
-        // ── Toast ──
-        let _tt;
-        function toast(msg, type) { const el = document.getElementById('toast'); el.textContent = msg; el.className = `toast show ${type || ''}`; clearTimeout(_tt); _tt = setTimeout(() => { el.className = 'toast'; }, 3000); }
+function updateSaveLocUI(){
+  const label = document.getElementById('sb-save-loc-label');
+  const clearBtn = document.getElementById('sb-clear-folder');
+  const importFolderBtn = document.getElementById('sb-import-folder');
+  if(_dirHandle){
+    label.textContent = `📁 Folder: ${_dirHandle.name}`;
+    label.style.color = 'var(--green)';
+    clearBtn.style.display = 'block';
+    importFolderBtn.style.display = 'flex';
+  } else {
+    label.textContent = _fsaSupported ? '📁 Save to: choose a folder below' : '📁 Save to: downloads folder';
+    label.style.color = '';
+    clearBtn.style.display = 'none';
+    importFolderBtn.style.display = 'none';
+  }
+}
 
-        // ── Keys ──
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') closeModal();
-            if (e.key === 'Enter' && document.getElementById('modal-bg').classList.contains('open')) {
-                const add = document.getElementById('v-add');
-                if (add.style.display !== 'none' && document.activeElement.tagName !== 'TEXTAREA') doAdd();
-            }
-        });
+async function pickSaveFolder(){
+  if(!_fsaSupported){ toast('Your browser doesn\'t support folder picking. Files will download normally.','err'); return; }
+  try {
+    _dirHandle = await window.showDirectoryPicker({ mode:'readwrite', startIn:'documents' });
+    _fileHandles = {}; // reset cached file handles for new folder
+    updateSaveLocUI();
+    toast(`📁 Folder set: ${_dirHandle.name}`,'ok');
+  } catch(e){ if(e.name!=='AbortError') toast('Could not access folder.','err'); }
+}
 
-        // ── Init ──
-        loadData();
-        refresh();
-    </script>
+function clearSaveFolder(){
+  _dirHandle = null;
+  _fileHandles = {};
+  updateSaveLocUI();
+  toast('Save location cleared — files will download normally.');
+}
+
+async function smartSave(content, filename, mimeType, ext){
+  // If we have a pinned folder, write directly there
+  if(_dirHandle){
+    try {
+      const fh = await _dirHandle.getFileHandle(filename, {create:true});
+      const writable = await fh.createWritable();
+      await writable.write(content);
+      await writable.close();
+      return true;
+    } catch(e){
+      toast('Could not write to folder — check permissions.','err');
+      return false;
+    }
+  }
+  // If FSA supported but no pinned folder, show Save As picker
+  if(_fsaSupported){
+    try {
+      const types = [{ description: mimeType, accept:{ [mimeType]: ['.'+ext] } }];
+      const fh = await window.showSaveFilePicker({ suggestedName: filename, types, startIn:'documents' });
+      const writable = await fh.createWritable();
+      await writable.write(content);
+      await writable.close();
+      return true;
+    } catch(e){
+      if(e.name==='AbortError') return false; // user cancelled
+      // fall through to legacy download
+    }
+  }
+  // Legacy fallback
+  const b = new Blob([content],{type:mimeType});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  return true;
+}
+
+async function dlJSON(){
+  document.getElementById('sb-export-menu').style.display='none';
+  const items = getFilteredData();
+  const payload = {listName:_listName, exported:new Date().toISOString(), customLists:CUSTOM_LISTS, anime:items.map(a=>({title:a.title,episodes:a.episodes,status:a.status||'',progress:a.progress||0,note:a.note||'',category:a.category||'',lists:a.lists||[]}))};
+  const content = JSON.stringify(payload,null,2);
+  const ok = await smartSave(content, getExportFilename('json'), 'application/json', 'json');
+  if(ok) toast(`Exported ${items.length} anime as JSON`,'ok');
+}
+async function dlCSV(){
+  document.getElementById('sb-export-menu').style.display='none';
+  const items = getFilteredData();
+  const rows = items.map(a=>`"${a.title.replace(/"/g,'""')}","${a.episodes||''}","${a.status||''}","${a.progress||''}","${(a.category||'').replace(/"/g,'""')}","${(a.note||'').replace(/"/g,'""').replace(/\n/g,' ')}"`);
+  const content = 'Title,Episodes,Status,Progress,Category,Notes\n'+rows.join('\n');
+  const ok = await smartSave(content, getExportFilename('csv'), 'text/csv', 'csv');
+  if(ok) toast(`Exported ${items.length} anime as CSV`,'ok');
+}
+async function dlTXT(){
+  document.getElementById('sb-export-menu').style.display='none';
+  const items = getFilteredData();
+  const sl={watching:'▶',completed:'✓',plan:'☆',dropped:'✕','':' '};
+  const lines = items.map((a,i)=>{
+    const s=sl[a.status||'']||' ';
+    const p=a.progress&&parseInt(a.episodes)?` [${a.progress}/${a.episodes}]`:'';
+    return`${String(i+1).padStart(3,' ')}. ${s} ${a.title}${a.episodes?' ('+a.episodes+' eps)':''}${p}`;
+  });
+  const header = getFilterLabel()?`Filter: ${getFilterLabel()} — ${items.length} anime\n${'─'.repeat(50)}\n`:'';
+  const ok = await smartSave(header+lines.join('\n'), getExportFilename('txt'), 'text/plain', 'txt');
+  if(ok) toast(`Exported ${items.length} anime as TXT`,'ok');
+}
+
+// Import from pinned folder
+async function importFromFolder(){
+  if(!_dirHandle){ toast('No folder selected yet.','err'); return; }
+  try {
+    // Look for a JSON file in the folder matching our export naming, or let user pick
+    const fh = await _dirHandle.getFileHandle(getExportFilename('json')).catch(()=>null)
+            || await _dirHandle.getFileHandle('my_animelist.json').catch(()=>null);
+    if(!fh){ toast('No matching JSON file found in folder. Use Import instead.','err'); return; }
+    const file = await fh.getFile();
+    const text = await file.text();
+    const result = parseImport(text);
+    if(result.error){ toast('Import error: '+result.error,'err'); return; }
+    if(result.listName){ _listName=result.listName; document.title=_listName; const el=document.getElementById('list-title-text'); if(el) el.textContent=_listName; }
+    let added=0,updated=0;
+    for(const item of result.items){
+      const match=DATA.find(a=>a.title.toLowerCase()===item.title.toLowerCase());
+      if(match){ if(item.status!==undefined)match.status=item.status; if(item.progress)match.progress=item.progress; if(item.note)match.note=item.note; if(item.category)match.category=item.category; if(item.episodes)match.episodes=item.episodes; match.is18=(match.episodes||'').includes('18+'); updated++; }
+      else { DATA.push({id:nextId++,...item,added:true}); added++; }
+    }
+    saveData(); refresh();
+    const parts=[]; if(updated) parts.push(updated+' updated'); if(added) parts.push(added+' added');
+    toast('📂 Loaded from folder: '+(parts.join(', ')||'nothing changed'),'ok');
+  } catch(e){ toast('Could not read from folder.','err'); }
+}
+
+// ── Toast ──
+let _tt;
+function toast(msg,type){const el=document.getElementById('toast');el.textContent=msg;el.className=`toast show ${type||''}`;clearTimeout(_tt);_tt=setTimeout(()=>{el.className='toast';},3000);}
+
+// ── Keys ──
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeModal();
+  if(e.key==='Enter'&&document.getElementById('modal-bg').classList.contains('open')){
+    const add=document.getElementById('v-add');
+    if(add.style.display!=='none'&&document.activeElement.tagName!=='TEXTAREA')doAdd();
+  }
+});
+
+function toggleSbExport(e){
+  e.stopPropagation();
+  const menu=document.getElementById('sb-export-menu');
+  menu.style.display=menu.style.display==='none'?'block':'none';
+  if(menu.style.display==='block') updateExportLabel();
+}
+
+// ── Watchlist name ──
+let _listName = 'My Anime Watchlist';
+
+function startRename(){
+  const h1 = document.getElementById('list-title-display');
+  const inp = document.createElement('input');
+  inp.className = 'rename-input';
+  inp.value = _listName;
+  inp.style.width = Math.max(120, _listName.length * 11) + 'px';
+  h1.replaceWith(inp);
+  inp.focus();
+  inp.select();
+  const commit = () => {
+    const val = inp.value.trim() || 'My Anime Watchlist';
+    _listName = val;
+    document.title = val;
+    const newH1 = document.createElement('h1');
+    newH1.id = 'list-title-display';
+    newH1.title = 'Click to rename';
+    newH1.onclick = startRename;
+    newH1.innerHTML = `<span id="list-title-text">${val}</span><span class="rename-hint">✎ rename</span>`;
+    inp.replaceWith(newH1);
+  };
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', e => { if(e.key==='Enter') inp.blur(); if(e.key==='Escape'){inp.value=_listName;inp.blur();} });
+}
+
+// ── Sidebar search ──
+function onSbSearch(val){
+  // sync to main search, switch to watchlist view, then render
+  document.getElementById('search').value = val;
+  if(_currentView !== 'watchlist') switchView('watchlist');
+  render();
+}
+
+// ── Quick Log ──
+let _qlOpen = false;
+
+function updateQuickLogFab(){
+  const watching = DATA.filter(a => a.status === 'watching');
+  const fab = document.getElementById('ql-fab');
+  fab.classList.toggle('hidden', watching.length === 0);
+}
+
+function toggleQuickLog(){
+  _qlOpen = !_qlOpen;
+  document.getElementById('ql-panel').classList.toggle('open', _qlOpen);
+  if(_qlOpen) renderQuickLog();
+}
+
+function renderQuickLog(){
+  const watching = DATA.filter(a => a.status === 'watching');
+  const list = document.getElementById('ql-list');
+  if(!watching.length){
+    list.innerHTML = '<div class="ql-empty">No anime currently watching.<br>Set an anime to Watching to see it here.</div>';
+    return;
+  }
+  list.innerHTML = watching.map(a => {
+    const ep = parseInt(a.episodes) || 0;
+    const prog = a.progress || 0;
+    const done = ep > 0 && prog >= ep;
+    const progLabel = ep > 0 ? `${prog}/${ep}` : `${prog} eps`;
+    return `<div class="ql-item">
+      <div class="ql-item-title" title="${a.title}">${a.title}</div>
+      <div class="ql-item-prog">${progLabel}</div>
+      <button class="ql-plus" onclick="qlPlusOne(${a.id})" ${done?'disabled title="All episodes watched"':''}>+</button>
+    </div>`;
+  }).join('');
+}
+
+function qlPlusOne(id){
+  const a = DATA.find(x => x.id === id);
+  if(!a) return;
+  const ep = parseInt(a.episodes) || 0;
+  const newProg = Math.min((a.progress||0) + 1, ep || 99999);
+  setProgress(id, newProg);
+  // update the card input if visible
+  const inp = document.querySelector(`#card-${id} .prog-input`);
+  if(inp) inp.value = newProg;
+  renderQuickLog();
+  if(ep > 0 && newProg >= ep) toast(`✓ Finished ${a.title}!`, 'ok');
+}
+
+// ── Sidebar ──
+let _sidebarOpen=false;
+function toggleSidebar(){
+  _sidebarOpen=!_sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('open',_sidebarOpen);
+}
+function closeSidebarIfMobile(){
+  if(window.innerWidth<768){_sidebarOpen=false;document.getElementById('sidebar').classList.remove('open');}
+}
+
+// ── View switching ──
+let _currentView='watchlist';
+function switchView(v){
+  _currentView=v;
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.sb-item[id^="sb-"]').forEach(el=>el.classList.remove('active'));
+  const sbEl=document.getElementById('sb-'+v);
+  if(sbEl) sbEl.classList.add('active');
+  if(v==='dashboard') renderDashboard();
+  if(v==='lists') renderListsView();
+}
+
+// ── Dashboard ──
+function renderDashboard(){
+  if(!DATA.length){
+    document.getElementById('dash-content').innerHTML=`<div style="text-align:center;padding:4rem 2rem"><div style="font-size:2.5rem;margin-bottom:0.8rem">📊</div><div style="font-size:1rem;font-weight:600;color:var(--text2);margin-bottom:0.5rem">No data yet</div><div style="font-size:0.82rem;color:var(--text3)">Add some anime to your watchlist to see your stats.</div></div>`;
+    return;
+  }
+
+  const c={watching:0,completed:0,plan:0,dropped:0,unset:0};
+  let totalEps=0,watchedEps=0;
+  DATA.forEach(a=>{
+    const s=a.status||'unset';
+    if(c[s]!==undefined)c[s]++;else c.unset++;
+    const ep=parseInt(a.episodes);
+    if(!isNaN(ep)){totalEps+=ep;watchedEps+=Math.min(a.progress||0,ep);}
+  });
+  const pct=totalEps?Math.round(watchedEps/totalEps*100):0;
+  document.getElementById('dash-subtitle').textContent=`${DATA.length} anime · ${watchedEps.toLocaleString()} of ${totalEps.toLocaleString()} episodes watched`;
+
+  // Stat cards
+  document.getElementById('dash-stats').innerHTML=[
+    {label:'Total Anime',val:DATA.length,color:'var(--purple)'},
+    {label:'Watching',val:c.watching,color:'var(--blue)'},
+    {label:'Completed',val:c.completed,color:'var(--green)'},
+    {label:'Plan to Watch',val:c.plan,color:'var(--amber)'},
+    {label:'Dropped',val:c.dropped,color:'var(--red)'},
+    {label:'Episodes Watched',val:watchedEps.toLocaleString(),color:'var(--purple)'},
+    {label:'Total Episodes',val:totalEps.toLocaleString(),color:'var(--text2)'},
+    {label:'Overall Progress',val:pct+'%',color:'var(--green)'},
+  ].map(s=>`<div class="dash-card"><div class="dash-card-title">${s.label}</div><div class="dash-stat" style="color:${s.color}">${s.val}</div></div>`).join('');
+
+  // Pie chart
+  const pieColors={watching:'#60a5fa',completed:'#34d399',plan:'#fbbf24',dropped:'#f87171',unset:'#55556a'};
+  const pieLabels={watching:'Watching',completed:'Completed',plan:'Plan to Watch',dropped:'Dropped',unset:'Not Set'};
+  const pieData=Object.entries(c).filter(([,v])=>v>0);
+  const total=DATA.length||1;
+  const canvas=document.getElementById('pie-canvas');
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,130,130);
+  let startAngle=-Math.PI/2;
+  pieData.forEach(([key,val])=>{
+    const slice=(val/total)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(65,65);
+    ctx.arc(65,65,58,startAngle,startAngle+slice);
+    ctx.closePath();ctx.fillStyle=pieColors[key];ctx.fill();
+    startAngle+=slice;
+  });
+  // donut hole
+  ctx.beginPath();ctx.arc(65,65,32,0,Math.PI*2);ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--surface').trim()||'#16161f';ctx.fill();
+  // center text
+  ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()||'#e8e8f0';
+  ctx.font='bold 16px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(DATA.length,65,62);
+  ctx.font='10px system-ui';ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--text3').trim()||'#55556a';ctx.fillText('anime',65,76);
+
+  document.getElementById('pie-legend').innerHTML=pieData.map(([key,val])=>
+    `<div class="pie-leg-item"><div class="pie-dot" style="background:${pieColors[key]}"></div>${pieLabels[key]}<span class="pie-leg-val">${val}</span></div>`
+  ).join('');
+
+  // Category bars
+  const cats={};
+  DATA.forEach(a=>{if(a.category)cats[a.category]=(cats[a.category]||0)+1;});
+  const catEntries=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxCat=catEntries[0]?catEntries[0][1]:1;
+  document.getElementById('cat-bars').innerHTML=catEntries.length
+    ?catEntries.map(([cat,n])=>`<div class="bar-item"><div class="bar-label" title="${cat}">${cat}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxCat*100)}%;background:var(--purple)"></div></div><div class="bar-count">${n}</div></div>`).join('')
+    :`<div class="no-data">No categories set yet. Add a category when editing anime.</div>`;
+
+  // Episodes bar chart — top 15 by total eps
+  const epAnime=DATA.filter(a=>parseInt(a.episodes)>0&&!a.is18).sort((a,b)=>parseInt(b.episodes)-parseInt(a.episodes)).slice(0,15);
+  const maxEp=epAnime[0]?parseInt(epAnime[0].episodes):1;
+  document.getElementById('ep-bars').innerHTML=epAnime.length
+    ?epAnime.map(a=>{
+      const ep=parseInt(a.episodes)||0;
+      const prog=Math.min(a.progress||0,ep);
+      const progPct=ep?Math.round(prog/ep*100):0;
+      const totalPct=Math.round(ep/maxEp*100);
+      return`<div class="bar-item">
+        <div class="bar-label" title="${a.title}">${a.title}</div>
+        <div class="bar-track" style="position:relative">
+          <div style="position:absolute;inset:0;background:var(--border);border-radius:4px"></div>
+          <div style="position:absolute;top:0;left:0;height:100%;width:${totalPct}%;background:var(--surface3);border-radius:4px"></div>
+          <div style="position:absolute;top:0;left:0;height:100%;width:${Math.round(prog/maxEp*100)}%;background:${progPct>=100?'var(--green)':'var(--blue)'};border-radius:4px"></div>
+        </div>
+        <div class="bar-count" style="width:52px;font-size:0.68rem">${prog}/${ep}</div>
+      </div>`;
+    }).join('')
+    :`<div class="no-data">No episode data yet.</div>`;
+}
+
+// ── Custom Lists ──
+function clGenId(){ return 'cl_'+(++_clNextId)+'_'+Date.now(); }
+
+function renderListsView(){
+  if(_currentView!=='lists') return;
+  renderClNav();
+  renderClGrid();
+}
+
+function renderClNav(){
+  const nav=document.getElementById('cl-nav');
+  if(!nav) return;
+  const rows=CUSTOM_LISTS.map(cl=>`
+    <div class="cl-list-item${_activeListId===cl.id?' active':''}" onclick="setActiveList('${cl.id}')">
+      <div class="cl-list-dot" style="background:${cl.color}"></div>
+      <div class="cl-list-name">${esc(cl.name)}</div>
+      <div class="cl-list-count">${DATA.filter(a=>(a.lists||[]).includes(cl.id)).length}</div>
+      <div class="cl-list-actions">
+        <button class="cl-act-btn" onclick="event.stopPropagation();renameList('${cl.id}')" title="Rename">✎</button>
+        <button class="cl-act-btn del" onclick="event.stopPropagation();deleteList('${cl.id}')" title="Delete">✕</button>
+      </div>
+    </div>`).join('');
+  const createBtn=`<div class="cl-new-btn" onclick="openCreateList()">＋ New list</div>`;
+  nav.innerHTML=rows+createBtn;
+}
+
+function renderClGrid(){
+  const title=document.getElementById('cl-main-title');
+  const grid=document.getElementById('cl-grid');
+  const renBtn=document.getElementById('cl-rename-btn');
+  const delBtn=document.getElementById('cl-delete-btn');
+  if(!_activeListId||!CUSTOM_LISTS.find(l=>l.id===_activeListId)){
+    title.textContent=CUSTOM_LISTS.length?'← Select a list':'No lists yet — create one!';
+    grid.innerHTML=`<div class="cl-empty">${CUSTOM_LISTS.length?'Select a list from the left to see its anime.':'Click "+ New List" to get started.'}</div>`;
+    if(renBtn) renBtn.style.display='none';
+    if(delBtn) delBtn.style.display='none';
+    return;
+  }
+  const cl=CUSTOM_LISTS.find(l=>l.id===_activeListId);
+  const members=DATA.filter(a=>(a.lists||[]).includes(_activeListId));
+  title.innerHTML=`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${cl.color};margin-right:6px"></span>${esc(cl.name)} <span style="color:var(--text3);font-weight:400;font-size:0.78rem">${members.length} anime</span>`;
+  if(renBtn){renBtn.style.display='';} if(delBtn){delBtn.style.display='';}
+  if(!members.length){
+    grid.innerHTML=`<div class="cl-empty">No anime in this list yet.<br>Click the 📌 button on any card to add anime here.</div>`;
+    return;
+  }
+  const scMap={watching:'sw',completed:'sc',plan:'sp',dropped:'sd'};
+  grid.innerHTML=`<div class="grid">${members.map(a=>{
+    const sc=a.status?' '+(scMap[a.status]||''):'';
+    const total=parseInt(a.episodes)||0;
+    const prog=Math.min(a.progress||0,total||9999);
+    const pct=total>0?Math.round((prog/total)*100):0;
+    return`<div class="card${sc}" id="clcard-${a.id}">
+      <span class="card-num">#${DATA.indexOf(a)+1}</span>
+      <button class="remove-btn" onclick="removeFromList('${_activeListId}',${a.id})" title="Remove from list">✕</button>
+      <div class="card-top"><div class="card-title">${esc(a.title)}</div></div>
+      <div class="progress-row">
+        <input class="prog-input" type="number" min="0" max="${total||9999}" value="${prog}" onchange="setProgress(${a.id},this.value);renderClGrid()" title="Episodes watched">
+        <span class="prog-sep">/ ${total||'?'}</span>
+        <div class="prog-bar-wrap"><div class="${pct>=100?'prog-bar done':'prog-bar'}" style="width:${pct}%"></div></div>
+        <span style="font-size:0.65rem;color:var(--text3);min-width:28px;text-align:right">${total>0?pct+'%':''}</span>
+      </div>
+      <div class="card-footer">
+        ${a.episodes?`<span class="${a.is18?'ep-badge ep18':'ep-badge'}">${a.is18?'18+':a.episodes+' eps'}</span>`:'<span></span>'}
+        <select class="sts${sc}" onchange="setStatus(${a.id},this.value);renderClGrid()">${'<option value="">— Status</option><option value="watching">▶ Watching</option><option value="completed">✓ Completed</option><option value="plan">☆ Plan</option><option value="dropped">✕ Dropped</option>'}</select>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+  // restore status selects
+  members.forEach(a=>{const s=document.querySelector(`#clcard-${a.id} .sts`);if(s)s.value=a.status||'';});
+}
+
+function setActiveList(id){
+  _activeListId=id;
+  if(_currentView!=='lists') switchView('lists');
+  renderClNav();
+  renderClGrid();
+}
+
+function openCreateList(){
+  openModal('createlist');
+  document.getElementById('cl-create-name').value='';
+  // render color picker
+  const picker=document.getElementById('cl-color-picker');
+  let _pickedColor=CL_COLORS[CUSTOM_LISTS.length%CL_COLORS.length];
+  picker.innerHTML=CL_COLORS.map(c=>`
+    <div onclick="clPickColor(this,'${c}')" style="width:22px;height:22px;border-radius:50%;background:${c};cursor:pointer;border:2px solid ${c===_pickedColor?'#fff':'transparent'};box-sizing:border-box;transition:border-color 0.1s" data-color="${c}"></div>`).join('');
+  picker._selected=_pickedColor;
+  setTimeout(()=>document.getElementById('cl-create-name').focus(),100);
+}
+function clPickColor(el,color){
+  el.closest('#cl-color-picker')._selected=color;
+  el.closest('#cl-color-picker').querySelectorAll('div').forEach(d=>d.style.borderColor=d.dataset.color===color?'#fff':'transparent');
+}
+function doCreateList(){
+  const name=document.getElementById('cl-create-name').value.trim();
+  if(!name){toast('Enter a list name','err');return;}
+  const picker=document.getElementById('cl-color-picker');
+  const color=picker._selected||CL_COLORS[CUSTOM_LISTS.length%CL_COLORS.length];
+  const id=clGenId();
+  CUSTOM_LISTS.push({id,name,color});
+  _activeListId=id;
+  closeModal();
+  if(_currentView==='lists') renderListsView();
+  toast(`Created list "${name}"`, 'ok');
+}
+
+function openCreateList_inline(){
+  openModal('createlist');
+}
+function openAssignLists(animeId){
+  _assignTargetId=animeId;
+  const a=DATA.find(x=>x.id===animeId);
+  if(!a) return;
+  document.getElementById('assignlists-anime-name').textContent=a.title;
+  const container=document.getElementById('cl-assign-list');
+  if(!CUSTOM_LISTS.length){
+    container.innerHTML=`<div style="font-size:0.8rem;color:var(--text3);padding:8px 0;font-style:italic">No lists yet — create one below.</div>`;
+  } else {
+    container.innerHTML=CUSTOM_LISTS.map(cl=>`
+      <div class="cl-assign-row" onclick="clToggleAssign('${cl.id}',${animeId},this)">
+        <input type="checkbox" class="cl-assign-check" id="clchk-${cl.id}" ${(a.lists||[]).includes(cl.id)?'checked':''} onchange="clToggleAssign('${cl.id}',${animeId},this.closest('.cl-assign-row'))">
+        <div class="cl-list-dot" style="background:${cl.color}"></div>
+        <label class="cl-assign-label" for="clchk-${cl.id}">${esc(cl.name)}</label>
+      </div>`).join('');
+  }
+  document.getElementById('cl-inline-name').value='';
+  openModal('assignlists');
+}
+function clToggleAssign(listId, animeId, row){
+  const a=DATA.find(x=>x.id===animeId);
+  if(!a) return;
+  if(!a.lists) a.lists=[];
+  const chk=row.querySelector('input[type=checkbox]');
+  const has=a.lists.includes(listId);
+  if(has){ a.lists=a.lists.filter(id=>id!==listId); if(chk) chk.checked=false; }
+  else { a.lists.push(listId); if(chk) chk.checked=true; }
+  saveData();
+  render(); // update card list tags live
+  if(_currentView==='lists') renderClNav();
+}
+function clInlineCreate(){
+  const name=document.getElementById('cl-inline-name').value.trim();
+  if(!name){toast('Enter a name','err');return;}
+  const color=CL_COLORS[CUSTOM_LISTS.length%CL_COLORS.length];
+  const id=clGenId();
+  CUSTOM_LISTS.push({id,name,color});
+  document.getElementById('cl-inline-name').value='';
+  // auto-assign to current anime
+  if(_assignTargetId!==null){
+    const a=DATA.find(x=>x.id===_assignTargetId);
+    if(a){if(!a.lists)a.lists=[];a.lists.push(id);saveData();}
+  }
+  // re-render assign modal list
+  openAssignLists(_assignTargetId);
+  if(_currentView==='lists') renderClNav();
+  toast(`Created & assigned "${name}"`, 'ok');
+}
+function removeFromList(listId, animeId){
+  const a=DATA.find(x=>x.id===animeId);
+  if(!a) return;
+  a.lists=(a.lists||[]).filter(id=>id!==listId);
+  saveData();
+  renderClNav();
+  renderClGrid();
+}
+function renameActiveList(){
+  if(!_activeListId) return;
+  renameList(_activeListId);
+}
+function renameList(listId){
+  const cl=CUSTOM_LISTS.find(l=>l.id===listId);
+  if(!cl) return;
+  const name=prompt('Rename list:',cl.name);
+  if(name&&name.trim()){cl.name=name.trim();saveData();renderListsView();toast('List renamed','ok');}
+}
+function deleteActiveList(){
+  if(!_activeListId) return;
+  deleteList(_activeListId);
+}
+function deleteList(listId){
+  const cl=CUSTOM_LISTS.find(l=>l.id===listId);
+  if(!cl) return;
+  if(!confirm(`Delete list "${cl.name}"? Anime won't be removed, just unlinked.`)) return;
+  CUSTOM_LISTS=CUSTOM_LISTS.filter(l=>l.id!==listId);
+  DATA.forEach(a=>{if(a.lists)a.lists=a.lists.filter(id=>id!==listId);});
+  if(_activeListId===listId) _activeListId=CUSTOM_LISTS[0]?.id||null;
+  saveData();
+  render();
+  renderListsView();
+  toast(`Deleted list "${cl.name}"`, 'ok');
+}
+
+// ── Init ──
+loadData();
+document.title = _listName;
+updateSaveLocUI();
+refresh();
+</script>
 </body>
-
 </html>
