@@ -639,23 +639,19 @@ window.signOut = async () => {
   showToast('Signed out', 'success');
 };
 
+// Handle redirect result on page load, THEN listen for auth state
+getRedirectResult(auth).then(result => {
+  // result is non-null if we just came back from a Google redirect
+  // onAuthStateChanged below will handle setting up the UI
+}).catch(e => {
+  console.error('Redirect error:', e);
+  document.getElementById('loadingOverlay').classList.add('hidden');
+  document.getElementById('loginScreen').style.display = 'flex';
+  showToast('Sign-in failed: ' + (e.message || 'Unknown error'), 'error');
+});
+
 onAuthStateChanged(auth, async (user) => {
   const loading = document.getElementById('loadingOverlay');
-
-  // Handle redirect result first (fires after Google login redirect)
-  try {
-    const result = await getRedirectResult(auth);
-    if (result) {
-      // redirect just completed — user will be set by onAuthStateChanged
-    }
-  } catch(e) {
-    console.error('Redirect result error:', e);
-    loading.classList.add('hidden');
-    document.getElementById('loginScreen').style.display = 'flex';
-    showToast('Sign-in failed: ' + e.message, 'error');
-    return;
-  }
-
   if (user) {
     currentUser = user;
     document.getElementById('loadingText').textContent = 'Loading your anime list...';
