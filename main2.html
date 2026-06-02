@@ -1,1098 +1,2183 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Anime List</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#080b10;--surface:#0e1219;--surface2:#131820;--surface3:#1a2030;
-  --border:#1e2738;--border2:#253045;
-  --text:#dce8f5;--text-muted:#6b85a8;--text-dim:#3a4f6a;
-  --accent:#00c2ff;--accent2:#9b6dff;--accent3:#ff6b9d;
-  --green:#00e5a0;--orange:#ff9254;--red:#ff4757;--yellow:#ffd460;
-  --radius:8px;--radius-lg:14px;--radius-xl:20px;
-  --glow-blue:0 0 20px rgba(0,194,255,0.25);
-  --glow-purple:0 0 20px rgba(155,109,255,0.25);
-  --glow-green:0 0 20px rgba(0,229,160,0.2);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Anime List</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
 
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;overflow-x:hidden;}
+        :root {
+            --bg: #080b10;
+            --surface: #0e1219;
+            --surface2: #131820;
+            --surface3: #1a2030;
+            --border: #1e2738;
+            --border2: #253045;
+            --text: #dce8f5;
+            --text-muted: #6b85a8;
+            --text-dim: #3a4f6a;
+            --accent: #00c2ff;
+            --accent2: #9b6dff;
+            --accent3: #ff6b9d;
+            --green: #00e5a0;
+            --orange: #ff9254;
+            --red: #ff4757;
+            --yellow: #ffd460;
+            --radius: 8px;
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+            --glow-blue: 0 0 20px rgba(0, 194, 255, 0.25);
+            --glow-purple: 0 0 20px rgba(155, 109, 255, 0.25);
+            --glow-green: 0 0 20px rgba(0, 229, 160, 0.2);
+        }
 
-/* BACKGROUND TEXTURE */
-body::before{content:'';position:fixed;inset:0;background:
-  radial-gradient(ellipse 80% 50% at 20% -10%,rgba(0,194,255,0.06) 0%,transparent 60%),
-  radial-gradient(ellipse 60% 40% at 80% 110%,rgba(155,109,255,0.06) 0%,transparent 60%);
-  pointer-events:none;z-index:0;}
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-/* NAV */
-nav{position:sticky;top:0;z-index:100;background:rgba(8,11,16,0.92);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;
-  padding:0 2rem;gap:1.5rem;}
-nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.4;}
-.nav-logo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  letter-spacing:2px;cursor:pointer;text-transform:uppercase;}
-.nav-spacer{flex:1;}
-.nav-search{background:rgba(30,39,56,0.8);border:1px solid var(--border2);border-radius:var(--radius);
-  padding:7px 14px;color:var(--text);font:inherit;font-size:13px;width:220px;outline:none;
-  transition:all .2s;}
-.nav-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,194,255,0.1);}
-.nav-search::placeholder{color:var(--text-dim);}
+        /* BACKGROUND TEXTURE */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0, 194, 255, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 110%, rgba(155, 109, 255, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
-/* BANNER */
-.banner{height:240px;position:relative;overflow:hidden;
-  background:linear-gradient(135deg,#050b18 0%,#0a0f1e 30%,#080618 70%,#050b18 100%);}
-.banner-particles{position:absolute;inset:0;}
-.banner-particles::before,.banner-particles::after{content:'';position:absolute;border-radius:50%;filter:blur(60px);}
-.banner-particles::before{width:400px;height:400px;background:radial-gradient(circle,rgba(0,194,255,0.12),transparent 70%);top:-100px;left:10%;}
-.banner-particles::after{width:300px;height:300px;background:radial-gradient(circle,rgba(155,109,255,0.12),transparent 70%);bottom:-50px;right:20%;}
-.banner-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,194,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,194,255,0.04) 1px,transparent 1px);background-size:40px 40px;}
-.banner-gradient{position:absolute;bottom:0;left:0;right:0;height:160px;background:linear-gradient(transparent,var(--bg));}
-.banner-line{position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,var(--accent) 50%,transparent 100%);opacity:0.3;}
+        /* NAV */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(8, 11, 16, 0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            gap: 1.5rem;
+        }
 
-/* PROFILE */
-.profile-section{padding:0 2rem;margin-top:-70px;position:relative;z-index:1;max-width:1400px;
-  margin-left:auto;margin-right:auto;display:flex;align-items:flex-end;gap:1.5rem;padding-bottom:2rem;}
-.avatar{width:96px;height:96px;border-radius:50%;border:3px solid rgba(0,194,255,0.4);
-  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);
-  display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;
-  font-size:36px;font-weight:700;flex-shrink:0;cursor:pointer;
-  box-shadow:0 0 30px rgba(0,194,255,0.3),inset 0 1px 0 rgba(255,255,255,0.2);}
-.profile-name{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;
-  letter-spacing:1px;margin-bottom:5px;color:var(--text);}
-.profile-stats{display:flex;gap:2rem;color:var(--text-muted);font-size:13px;flex-wrap:wrap;}
-.profile-stats span{display:flex;align-items:center;gap:5px;}
-.profile-stats span::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:0.5;}
-.profile-stats span strong{color:var(--text);font-weight:600;}
+        nav::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.4;
+        }
 
-/* BUTTONS */
-.btn{padding:8px 16px;border-radius:var(--radius);border:1px solid var(--border2);
-  background:rgba(19,24,32,0.9);color:var(--text-muted);font:inherit;font-size:13px;
-  font-weight:500;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;
-  letter-spacing:0.3px;}
-.btn:hover{background:var(--surface3);border-color:var(--accent);color:var(--accent);
-  box-shadow:var(--glow-blue);}
-.btn-primary{background:linear-gradient(135deg,rgba(0,194,255,0.9),rgba(0,150,220,0.9));
-  border-color:var(--accent);color:#050b18;font-weight:600;}
-.btn-primary:hover{background:linear-gradient(135deg,var(--accent),rgba(0,160,230,1));
-  box-shadow:0 0 24px rgba(0,194,255,0.5);color:#050b18;}
-.btn-danger{border-color:rgba(255,71,87,0.4);color:var(--red);}
-.btn-danger:hover{background:rgba(255,71,87,0.1);box-shadow:0 0 16px rgba(255,71,87,0.2);}
-.btn-sm{padding:4px 10px;font-size:12px;}
-.btn-icon{padding:5px 9px;font-size:14px;line-height:1;}
-.btn-green{border-color:rgba(0,229,160,0.4);color:var(--green);}
-.btn-green:hover{background:rgba(0,229,160,0.08);box-shadow:var(--glow-green);}
+        .nav-logo {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
 
-/* MAIN LAYOUT */
-.main{max-width:1400px;margin:0 auto;padding:0 2rem 4rem;display:flex;gap:2rem;align-items:flex-start;position:relative;z-index:1;}
+        .nav-spacer {
+            flex: 1;
+        }
 
-/* SIDEBAR */
-.sidebar{width:210px;flex-shrink:0;position:sticky;top:76px;}
-.sidebar-section{margin-bottom:2rem;}
-.sidebar-title{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
-  color:var(--text-dim);margin-bottom:10px;padding:0 6px;}
-.sidebar-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:var(--radius);
-  cursor:pointer;transition:all .18s;text-decoration:none;color:var(--text-muted);font-size:13px;
-  font-weight:500;position:relative;border:1px solid transparent;}
-.sidebar-item:hover{background:var(--surface2);color:var(--text);border-color:var(--border);}
-.sidebar-item.active{background:linear-gradient(135deg,rgba(0,194,255,0.08),rgba(155,109,255,0.06));
-  color:var(--accent);border-color:rgba(0,194,255,0.2);}
-.sidebar-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2px;
-  border-radius:2px;background:var(--accent);box-shadow:0 0 8px var(--accent);}
-.sidebar-item .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px currentColor;}
-.sidebar-item .count{margin-left:auto;font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;
-  background:var(--surface3);border:1px solid var(--border);padding:1px 6px;border-radius:4px;}
-.sidebar-item.active .count{color:var(--accent);border-color:rgba(0,194,255,0.3);}
-.dot-watching{background:#00c2ff;box-shadow:0 0 6px #00c2ff;}
-.dot-completed{background:#00e5a0;box-shadow:0 0 6px #00e5a0;}
-.dot-paused{background:#ffd460;box-shadow:0 0 6px #ffd460;}
-.dot-dropped{background:#ff4757;box-shadow:0 0 6px #ff4757;}
-.dot-planning{background:#9b6dff;box-shadow:0 0 6px #9b6dff;}
-.dot-waiting{background:#ff9254;box-shadow:0 0 6px #ff9254;}
+        .nav-search {
+            background: rgba(30, 39, 56, 0.8);
+            border: 1px solid var(--border2);
+            border-radius: var(--radius);
+            padding: 7px 14px;
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+            width: 220px;
+            outline: none;
+            transition: all .2s;
+        }
 
-/* CONTENT */
-.content{flex:1;min-width:0;}
+        .nav-search:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.1);
+        }
 
-/* TOOLBAR */
-.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;padding:12px 16px;
-  background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);
-  box-shadow:0 4px 24px rgba(0,0,0,0.3);}
-.toolbar-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;
-  text-transform:uppercase;color:var(--text);}
-.toolbar-count{font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;
-  background:var(--surface3);border:1px solid var(--border);padding:2px 8px;border-radius:5px;}
-.toolbar-spacer{flex:1;}
-.toolbar-search{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
-  padding:6px 12px;color:var(--text);font:inherit;font-size:13px;outline:none;width:160px;transition:all .2s;}
-.toolbar-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,194,255,0.08);}
-.toolbar-search::placeholder{color:var(--text-dim);}
+        .nav-search::placeholder {
+            color: var(--text-dim);
+        }
 
-/* LIST TABLE */
-.list-table{width:100%;border-collapse:collapse;border-radius:var(--radius-lg);overflow:hidden;
-  border:1px solid var(--border);box-shadow:0 8px 40px rgba(0,0,0,0.4);}
-.list-table th{background:var(--surface);padding:10px 14px;text-align:left;font-size:10px;
-  font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);
-  border-bottom:1px solid var(--border);}
-.list-table th:nth-child(3),.list-table th:nth-child(4){text-align:center;}
-.list-table th:last-child{text-align:right;}
-.list-row{border-bottom:1px solid rgba(30,39,56,0.6);transition:all .15s;}
-.list-row:last-child{border-bottom:none;}
-.list-row:hover{background:rgba(0,194,255,0.03);}
-.list-row:hover .row-actions{opacity:1;}
-.list-row td{padding:10px 14px;vertical-align:middle;}
-.entry-num{font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;width:28px;}
-.entry-info{display:flex;align-items:center;gap:13px;}
-.cover-box{width:38px;height:54px;border-radius:6px;flex-shrink:0;display:flex;
-  align-items:center;justify-content:center;font-size:14px;overflow:hidden;}
-.entry-title{font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:2px;
-  cursor:pointer;transition:color .15s;letter-spacing:0.2px;}
-.entry-title:hover{color:var(--accent);}
-.entry-sub{font-size:11px;color:var(--text-dim);}
-.genre-tag{display:inline-block;font-size:10px;background:rgba(0,194,255,0.06);
-  border:1px solid rgba(0,194,255,0.12);border-radius:4px;padding:1px 7px;color:var(--text-muted);
-  margin:2px 2px 0 0;font-weight:500;}
-.entry-score{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;
-  display:block;text-align:center;}
-.score-high{color:var(--green);text-shadow:0 0 12px rgba(0,229,160,0.4);}
-.score-mid{color:var(--yellow);text-shadow:0 0 12px rgba(255,212,96,0.3);}
-.score-low{color:var(--orange);text-shadow:0 0 12px rgba(255,146,84,0.3);}
-.score-none{color:var(--text-dim);}
-.list-section-header{background:linear-gradient(135deg,var(--surface),var(--surface2));
-  padding:8px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
-.section-label{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;
-  text-transform:uppercase;}
-.section-bar{flex:1;height:2px;background:var(--surface3);border-radius:1px;overflow:hidden;}
-.section-bar-fill{height:100%;border-radius:1px;}
-.section-count{font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
-.progress-bar{display:block;width:70px;height:3px;background:var(--surface3);border-radius:2px;overflow:hidden;}
-.progress-fill{height:100%;border-radius:2px;}
-.row-actions{opacity:0;transition:opacity .15s;display:flex;gap:4px;justify-content:flex-end;}
-.ep-ctrl{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;}
-.ep-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:5px;color:var(--text-muted);
-  cursor:pointer;font-size:12px;padding:3px 8px;line-height:1.4;transition:all .15s;flex-shrink:0;font-weight:600;}
-.ep-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,194,255,0.08);}
-.ep-val{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);width:52px;text-align:center;white-space:nowrap;flex-shrink:0;}
+        /* BANNER */
+        .banner {
+            height: 240px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #050b18 0%, #0a0f1e 30%, #080618 70%, #050b18 100%);
+        }
 
-/* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:1.5rem;}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
-  padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;}
-.stat-card:nth-child(1)::before{background:linear-gradient(90deg,transparent,#00c2ff,transparent);}
-.stat-card:nth-child(2)::before{background:linear-gradient(90deg,transparent,#00e5a0,transparent);}
-.stat-card:nth-child(3)::before{background:linear-gradient(90deg,transparent,#ff4757,transparent);}
-.stat-card:nth-child(4)::before{background:linear-gradient(90deg,transparent,#9b6dff,transparent);}
-.stat-card:nth-child(5)::before{background:linear-gradient(90deg,transparent,#ff9254,transparent);}
-.stat-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3);}
-.stat-val{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;display:block;margin-bottom:2px;line-height:1;}
-.stat-lbl{font-size:10px;color:var(--text-dim);font-weight:500;text-transform:uppercase;letter-spacing:1px;}
+        .banner-particles {
+            position: absolute;
+            inset: 0;
+        }
 
-/* EMPTY STATE */
-.empty-state{text-align:center;padding:4rem 1rem;color:var(--text-dim);}
-.empty-state .big{font-size:52px;margin-bottom:1rem;filter:grayscale(0.3);}
-.empty-state p{margin-bottom:1.5rem;font-size:14px;color:var(--text-muted);}
+        .banner-particles::before,
+        .banner-particles::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+        }
 
-/* MODAL OVERLAY */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;
-  align-items:center;justify-content:center;backdrop-filter:blur(8px);}
-.overlay.hidden{display:none;}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-xl);
-  width:500px;max-width:95vw;max-height:90vh;overflow-y:auto;
-  box-shadow:0 32px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(0,194,255,0.05);}
-.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 0;}
-.modal-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
-.modal-close{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;
-  padding:0;line-height:1;transition:color .12s;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;}
-.modal-close:hover{color:var(--text);background:var(--surface3);}
-.modal-body{padding:20px 24px;}
-.form-group{margin-bottom:16px;}
-.form-label{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;
-  color:var(--text-dim);margin-bottom:6px;}
-.form-input,.form-select,.form-textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);
-  border-radius:var(--radius);padding:9px 13px;color:var(--text);font:inherit;font-size:13px;
-  outline:none;transition:all .18s;}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(0,194,255,0.08);}
-.form-select option{background:var(--surface2);}
-.form-textarea{min-height:70px;resize:vertical;}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.modal-footer{display:flex;gap:8px;justify-content:flex-end;padding:0 24px 20px;}
+        .banner-particles::before {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 194, 255, 0.12), transparent 70%);
+            top: -100px;
+            left: 10%;
+        }
 
-/* IMPORT/EXPORT PANEL */
-.io-panel{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-xl);
-  padding:28px;width:480px;max-width:95vw;box-shadow:0 32px 80px rgba(0,0,0,0.7);}
-.io-panel h2{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.io-panel p{font-size:12px;color:var(--text-muted);margin-bottom:20px;}
-.io-section{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--border);}
-.io-section:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
-.io-section-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:12px;}
-.io-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-.drop-zone{border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:24px;
-  text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);}
-.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);background:rgba(0,194,255,0.04);
-  box-shadow:0 0 20px rgba(0,194,255,0.08);}
-.drop-zone p{font-size:13px;color:var(--text-muted);margin:0;}
-.drop-zone .big{font-size:30px;margin-bottom:8px;}
-.drop-zone input[type=file]{display:none;}
-.import-mode{display:flex;gap:8px;margin-top:12px;}
-.mode-btn{flex:1;padding:9px;border-radius:var(--radius);border:1px solid var(--border2);
-  background:var(--surface2);color:var(--text-muted);font:inherit;font-size:12px;font-weight:500;
-  cursor:pointer;transition:all .18s;text-align:center;}
-.mode-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(0,194,255,0.07);}
-.import-preview{margin-top:12px;background:var(--surface3);border:1px solid var(--border);
-  border-radius:var(--radius);padding:12px 16px;font-size:12px;color:var(--text-muted);display:none;}
-.import-preview.show{display:block;}
-.preview-stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;}
-.preview-stat{color:var(--text);font-weight:600;font-size:13px;}
-.preview-stat span{color:var(--text-dim);font-weight:400;}
+        .banner-particles::after {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(155, 109, 255, 0.12), transparent 70%);
+            bottom: -50px;
+            right: 20%;
+        }
 
-/* TOAST */
-.toast{position:fixed;bottom:28px;right:28px;background:var(--surface2);border:1px solid var(--border2);
-  border-radius:var(--radius-lg);padding:13px 20px;font-size:13px;font-weight:600;z-index:300;
-  transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);
-  pointer-events:none;backdrop-filter:blur(12px);}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast.success{border-color:rgba(0,229,160,0.5);color:var(--green);box-shadow:var(--glow-green);}
-.toast.error{border-color:rgba(255,71,87,0.5);color:var(--red);}
+        .banner-grid {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(0, 194, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 194, 255, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
 
-/* CONFIRM DIALOG */
-.confirm-box{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-xl);
-  padding:28px;width:360px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.6);}
-.confirm-box p{margin-bottom:22px;color:var(--text-muted);font-size:14px;}
-.confirm-box strong{display:block;font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;
-  color:var(--text);margin-bottom:8px;letter-spacing:0.5px;}
-.confirm-actions{display:flex;gap:8px;justify-content:center;}
+        .banner-gradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 160px;
+            background: linear-gradient(transparent, var(--bg));
+        }
 
-/* LOGIN SCREEN */
-.login-screen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;align-items:center;justify-content:center;}
-.login-screen::before{content:'';position:absolute;inset:0;background:
-  radial-gradient(ellipse 70% 50% at 30% 20%,rgba(0,194,255,0.08) 0%,transparent 60%),
-  radial-gradient(ellipse 60% 50% at 70% 80%,rgba(155,109,255,0.08) 0%,transparent 60%);}
-.login-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-xl);
-  padding:48px 40px;width:420px;max-width:95vw;text-align:center;position:relative;z-index:1;
-  box-shadow:0 40px 100px rgba(0,0,0,0.6),0 0 0 1px rgba(0,194,255,0.05);}
-.login-logo{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;letter-spacing:4px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;}
-.login-tagline{font-size:13px;color:var(--text-muted);margin-bottom:36px;}
-.btn-google{width:100%;padding:12px;border-radius:var(--radius);border:1px solid var(--border2);
-  background:var(--surface2);color:var(--text);font:inherit;font-size:14px;font-weight:500;
-  cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;}
-.btn-google:hover{border-color:var(--accent);background:var(--surface3);box-shadow:var(--glow-blue);}
-.login-note{font-size:11px;color:var(--text-dim);margin-top:20px;line-height:1.6;}
-.user-menu-wrap{position:relative;}
-.user-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:40px;
-  padding:5px 12px 5px 5px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .2s;}
-.user-btn:hover{border-color:var(--accent);box-shadow:var(--glow-blue);}
-.user-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);}
-.user-avatar-letter{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#050b18;}
-.user-name{font-size:13px;font-weight:500;color:var(--text);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.user-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border2);
-  border-radius:var(--radius-lg);padding:8px;min-width:200px;box-shadow:0 16px 48px rgba(0,0,0,0.5);z-index:200;display:none;}
-.user-dropdown.open{display:block;}
-.user-dropdown-info{padding:8px 12px 12px;border-bottom:1px solid var(--border);margin-bottom:4px;}
-.user-dropdown-name{font-size:13px;font-weight:600;color:var(--text);}
-.user-dropdown-email{font-size:11px;color:var(--text-dim);margin-top:2px;}
-.user-dropdown-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--radius);
-  font-size:13px;color:var(--text-muted);cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;}
-.user-dropdown-item:hover{background:var(--surface2);color:var(--text);}
-.user-dropdown-item.danger{color:var(--red);}
-.user-dropdown-item.danger:hover{background:rgba(255,71,87,0.08);}
-.save-indicator{font-size:11px;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;transition:all .3s;}
-.save-indicator.saving{color:var(--yellow);}
-.save-indicator.saved{color:var(--green);}
-.loading-overlay{position:fixed;inset:0;z-index:400;background:var(--bg);display:flex;
-  align-items:center;justify-content:center;flex-direction:column;gap:16px;}
-.loading-overlay.hidden{display:none;}
-.spinner{width:40px;height:40px;border:3px solid var(--border2);border-top-color:var(--accent);
-  border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-size:14px;color:var(--text-muted);}
+        .banner-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
+            opacity: 0.3;
+        }
 
-@media(max-width:900px){
-  .main{flex-direction:column;}
-  .sidebar{width:100%;position:static;}
-  .stats-row{grid-template-columns:repeat(3,1fr);}
-  .form-row{grid-template-columns:1fr;}
-}
-</style>
+        /* PROFILE */
+        .profile-section {
+            padding: 0 2rem;
+            margin-top: -70px;
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: flex-end;
+            gap: 1.5rem;
+            padding-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            border: 3px solid rgba(0, 194, 255, 0.4);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            flex-shrink: 0;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(0, 194, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+            color: var(--text-muted);
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .profile-stats span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .profile-stats span::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.5;
+        }
+
+        .profile-stats span strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border2);
+            background: rgba(19, 24, 32, 0.9);
+            color: var(--text-muted);
+            font: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .btn:hover {
+            background: var(--surface3);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: var(--glow-blue);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(0, 194, 255, 0.9), rgba(0, 150, 220, 0.9));
+            border-color: var(--accent);
+            color: #050b18;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--accent), rgba(0, 160, 230, 1));
+            box-shadow: 0 0 24px rgba(0, 194, 255, 0.5);
+            color: #050b18;
+        }
+
+        .btn-danger {
+            border-color: rgba(255, 71, 87, 0.4);
+            color: var(--red);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 71, 87, 0.1);
+            box-shadow: 0 0 16px rgba(255, 71, 87, 0.2);
+        }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        .btn-icon {
+            padding: 5px 9px;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .btn-green {
+            border-color: rgba(0, 229, 160, 0.4);
+            color: var(--green);
+        }
+
+        .btn-green:hover {
+            background: rgba(0, 229, 160, 0.08);
+            box-shadow: var(--glow-green);
+        }
+
+        /* MAIN LAYOUT */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 210px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 76px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+            padding: 0 6px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all .18s;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: var(--surface2);
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .sidebar-item.active {
+            background: linear-gradient(135deg, rgba(0, 194, 255, 0.08), rgba(155, 109, 255, 0.06));
+            color: var(--accent);
+            border-color: rgba(0, 194, 255, 0.2);
+        }
+
+        .sidebar-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 2px;
+            border-radius: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .sidebar-item .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 0 6px currentColor;
+        }
+
+        .sidebar-item .count {
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--surface3);
+            border: 1px solid var(--border);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        .sidebar-item.active .count {
+            color: var(--accent);
+            border-color: rgba(0, 194, 255, 0.3);
+        }
+
+        .dot-watching {
+            background: #00c2ff;
+            box-shadow: 0 0 6px #00c2ff;
+        }
+
+        .dot-completed {
+            background: #00e5a0;
+            box-shadow: 0 0 6px #00e5a0;
+        }
+
+        .dot-paused {
+            background: #ffd460;
+            box-shadow: 0 0 6px #ffd460;
+        }
+
+        .dot-dropped {
+            background: #ff4757;
+            box-shadow: 0 0 6px #ff4757;
+        }
+
+        .dot-planning {
+            background: #9b6dff;
+            box-shadow: 0 0 6px #9b6dff;
+        }
+
+        .dot-waiting {
+            background: #ff9254;
+            box-shadow: 0 0 6px #ff9254;
+        }
+
+        /* CONTENT */
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* TOOLBAR */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            padding: 12px 16px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .toolbar-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text);
+        }
+
+        .toolbar-count {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--surface3);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 5px;
+        }
+
+        .toolbar-spacer {
+            flex: 1;
+        }
+
+        .toolbar-search {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 6px 12px;
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+            outline: none;
+            width: 160px;
+            transition: all .2s;
+        }
+
+        .toolbar-search:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.08);
+        }
+
+        .toolbar-search::placeholder {
+            color: var(--text-dim);
+        }
+
+        /* LIST TABLE */
+        .list-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .list-table th {
+            background: var(--surface);
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .list-table th:nth-child(3),
+        .list-table th:nth-child(4) {
+            text-align: center;
+        }
+
+        .list-table th:last-child {
+            text-align: right;
+        }
+
+        .list-row {
+            border-bottom: 1px solid rgba(30, 39, 56, 0.6);
+            transition: all .15s;
+        }
+
+        .list-row:last-child {
+            border-bottom: none;
+        }
+
+        .list-row:hover {
+            background: rgba(0, 194, 255, 0.03);
+        }
+
+        .list-row:hover .row-actions {
+            opacity: 1;
+        }
+
+        .list-row td {
+            padding: 10px 14px;
+            vertical-align: middle;
+        }
+
+        .entry-num {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            width: 28px;
+        }
+
+        .entry-info {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .cover-box {
+            width: 38px;
+            height: 54px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            overflow: hidden;
+        }
+
+        .entry-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            display: block;
+            margin-bottom: 2px;
+            cursor: pointer;
+            transition: color .15s;
+            letter-spacing: 0.2px;
+        }
+
+        .entry-title:hover {
+            color: var(--accent);
+        }
+
+        .entry-sub {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .genre-tag {
+            display: inline-block;
+            font-size: 10px;
+            background: rgba(0, 194, 255, 0.06);
+            border: 1px solid rgba(0, 194, 255, 0.12);
+            border-radius: 4px;
+            padding: 1px 7px;
+            color: var(--text-muted);
+            margin: 2px 2px 0 0;
+            font-weight: 500;
+        }
+
+        .entry-score {
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            display: block;
+            text-align: center;
+        }
+
+        .score-high {
+            color: var(--green);
+            text-shadow: 0 0 12px rgba(0, 229, 160, 0.4);
+        }
+
+        .score-mid {
+            color: var(--yellow);
+            text-shadow: 0 0 12px rgba(255, 212, 96, 0.3);
+        }
+
+        .score-low {
+            color: var(--orange);
+            text-shadow: 0 0 12px rgba(255, 146, 84, 0.3);
+        }
+
+        .score-none {
+            color: var(--text-dim);
+        }
+
+        .list-section-header {
+            background: linear-gradient(135deg, var(--surface), var(--surface2));
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .section-bar {
+            flex: 1;
+            height: 2px;
+            background: var(--surface3);
+            border-radius: 1px;
+            overflow: hidden;
+        }
+
+        .section-bar-fill {
+            height: 100%;
+            border-radius: 1px;
+        }
+
+        .section-count {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .progress-bar {
+            display: block;
+            width: 70px;
+            height: 3px;
+            background: var(--surface3);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        .row-actions {
+            opacity: 0;
+            transition: opacity .15s;
+            display: flex;
+            gap: 4px;
+            justify-content: flex-end;
+        }
+
+        .ep-ctrl {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            width: 100%;
+        }
+
+        .ep-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 5px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 3px 8px;
+            line-height: 1.4;
+            transition: all .15s;
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+
+        .ep-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 194, 255, 0.08);
+        }
+
+        .ep-val {
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text);
+            width: 52px;
+            text-align: center;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* STATS */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 14px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .stat-card:nth-child(1)::before {
+            background: linear-gradient(90deg, transparent, #00c2ff, transparent);
+        }
+
+        .stat-card:nth-child(2)::before {
+            background: linear-gradient(90deg, transparent, #00e5a0, transparent);
+        }
+
+        .stat-card:nth-child(3)::before {
+            background: linear-gradient(90deg, transparent, #ff4757, transparent);
+        }
+
+        .stat-card:nth-child(4)::before {
+            background: linear-gradient(90deg, transparent, #9b6dff, transparent);
+        }
+
+        .stat-card:nth-child(5)::before {
+            background: linear-gradient(90deg, transparent, #ff9254, transparent);
+        }
+
+        .stat-card:hover {
+            border-color: var(--border2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-val {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+
+        .stat-lbl {
+            font-size: 10px;
+            color: var(--text-dim);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-dim);
+        }
+
+        .empty-state .big {
+            font-size: 52px;
+            margin-bottom: 1rem;
+            filter: grayscale(0.3);
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* MODAL OVERLAY */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .overlay.hidden {
+            display: none;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: var(--radius-xl);
+            width: 500px;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 194, 255, 0.05);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px 0;
+        }
+
+        .modal-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 22px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            transition: color .12s;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            color: var(--text);
+            background: var(--surface3);
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: var(--radius);
+            padding: 9px 13px;
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+            outline: none;
+            transition: all .18s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.08);
+        }
+
+        .form-select option {
+            background: var(--surface2);
+        }
+
+        .form-textarea {
+            min-height: 70px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            padding: 0 24px 20px;
+        }
+
+        /* IMPORT/EXPORT PANEL */
+        .io-panel {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            width: 480px;
+            max-width: 95vw;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7);
+        }
+
+        .io-panel h2 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .io-panel p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .io-section {
+            margin-bottom: 22px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .io-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .io-section-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+
+        .io-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border2);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .2s;
+            background: var(--surface2);
+        }
+
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: rgba(0, 194, 255, 0.04);
+            box-shadow: 0 0 20px rgba(0, 194, 255, 0.08);
+        }
+
+        .drop-zone p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .drop-zone .big {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .drop-zone input[type=file] {
+            display: none;
+        }
+
+        .import-mode {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 9px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border2);
+            background: var(--surface2);
+            color: var(--text-muted);
+            font: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .18s;
+            text-align: center;
+        }
+
+        .mode-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 194, 255, 0.07);
+        }
+
+        .import-preview {
+            margin-top: 12px;
+            background: var(--surface3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            display: none;
+        }
+
+        .import-preview.show {
+            display: block;
+        }
+
+        .preview-stats {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .preview-stat {
+            color: var(--text);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .preview-stat span {
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: var(--radius-lg);
+            padding: 13px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 300;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
+            pointer-events: none;
+            backdrop-filter: blur(12px);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: rgba(0, 229, 160, 0.5);
+            color: var(--green);
+            box-shadow: var(--glow-green);
+        }
+
+        .toast.error {
+            border-color: rgba(255, 71, 87, 0.5);
+            color: var(--red);
+        }
+
+        /* CONFIRM DIALOG */
+        .confirm-box {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            width: 360px;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+        }
+
+        .confirm-box p {
+            margin-bottom: 22px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .confirm-box strong {
+            display: block;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        @media(max-width:900px) {
+            .main {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- LOADING OVERLAY -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">Loading AniTrack...</div>
-</div>
+    <nav>
+        <span class="nav-logo">AniTrack</span>
+        <div class="nav-spacer"></div>
+        <input class="nav-search" type="text" placeholder="Search anime..." id="navSearch"
+            oninput="filterSearch(this.value)">
+        <button class="btn" onclick="openIOModal()" title="Import / Export">⇅ Import / Export</button>
+        <button class="btn btn-primary" onclick="openAddModal()">＋ Add Anime</button>
+    </nav>
 
-<!-- LOGIN SCREEN -->
-<div class="login-screen" id="loginScreen" style="display:none;">
-  <div class="login-card">
-    <div class="login-logo">ANITRACK</div>
-    <div class="login-tagline">Your personal anime tracking companion</div>
-    <button class="btn-google" onclick="signInWithGoogle()">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-      </svg>
-      Continue with Google
-    </button>
-    <div class="login-note">Your anime list is saved to the cloud and syncs across all your devices.</div>
-  </div>
-</div>
-
-<nav>
-  <span class="nav-logo">AniTrack</span>
-  <div class="nav-spacer"></div>
-  <span class="save-indicator" id="saveIndicator"></span>
-  <input class="nav-search" type="text" placeholder="Search anime..." id="navSearch" oninput="filterSearch(this.value)">
-  <button class="btn" onclick="openIOModal()" title="Import / Export">⇅ Import / Export</button>
-  <button class="btn btn-primary" onclick="openAddModal()">＋ Add Anime</button>
-  <div class="user-menu-wrap" id="userMenuWrap" style="display:none;">
-    <div class="user-btn" onclick="toggleUserMenu()">
-      <div id="navUserAvatar" class="user-avatar-letter">?</div>
-      <span class="user-name" id="navUserName">User</span>
-      <span style="color:var(--text-dim);font-size:10px;">▾</span>
-    </div>
-    <div class="user-dropdown" id="userDropdown">
-      <div class="user-dropdown-info">
-        <div class="user-dropdown-name" id="ddName"></div>
-        <div class="user-dropdown-email" id="ddEmail"></div>
-      </div>
-      <button class="user-dropdown-item" onclick="openIOModal();closeUserMenu()">⇅ Import / Export</button>
-      <button class="user-dropdown-item danger" onclick="signOut()">⏻ Sign out</button>
-    </div>
-  </div>
-</nav>
-
-<div class="banner">
-  <div class="banner-particles"></div>
-  <div class="banner-grid"></div>
-  <div class="banner-gradient"></div>
-  <div class="banner-line"></div>
-</div>
-
-<div class="profile-section">
-  <div class="avatar" id="avatarEl">?</div>
-  <div class="profile-info">
-    <div class="profile-name" id="profileName">My Anime List</div>
-    <div class="profile-stats" id="profileStats">
-      <span>Anime: <strong id="statTotal">0</strong></span>
-      <span>Episodes: <strong id="statEps">0</strong></span>
-      <span>Days: <strong id="statDays">0</strong></span>
-      <span>Mean Score: <strong id="statMean">—</strong></span>
-    </div>
-  </div>
-</div>
-
-<div class="main">
-  <aside class="sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-title">Status</div>
-      <a href="#" class="sidebar-item active" id="tab-watching" onclick="switchTab('watching',this);return false;">
-        <span class="dot dot-watching"></span> Watching <span class="count" id="cnt-watching">0</span>
-      </a>
-      <a href="#" class="sidebar-item" id="tab-completed" onclick="switchTab('completed',this);return false;">
-        <span class="dot dot-completed"></span> Completed <span class="count" id="cnt-completed">0</span>
-      </a>
-      <a href="#" class="sidebar-item" id="tab-dropped" onclick="switchTab('dropped',this);return false;">
-        <span class="dot dot-dropped"></span> Dropped <span class="count" id="cnt-dropped">0</span>
-      </a>
-      <a href="#" class="sidebar-item" id="tab-planning" onclick="switchTab('planning',this);return false;">
-        <span class="dot dot-planning"></span> Plan to Watch <span class="count" id="cnt-planning">0</span>
-      </a>
-      <a href="#" class="sidebar-item" id="tab-waiting" onclick="switchTab('waiting',this);return false;">
-        <span class="dot dot-waiting"></span> Waiting <span class="count" id="cnt-waiting">0</span>
-      </a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-title">Tools</div>
-      <a href="#" class="sidebar-item" id="tab-dupes" onclick="switchTab('dupes',this);return false;" style="display:none;">
-        <span class="dot" style="background:#ff4757;box-shadow:0 0 6px #ff4757"></span> Duplicates <span class="count" id="cnt-dupes" style="color:#ff4757;border-color:rgba(255,71,87,0.3)">0</span>
-      </a>
-      <span id="no-tools-msg" style="font-size:12px;color:var(--text-dim);padding:4px 12px;display:block;">No issues found ✓</span>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-title">Sort By</div>
-      <a href="#" class="sidebar-item active" id="sort-score" onclick="setSort('score',this);return false;">Score</a>
-      <a href="#" class="sidebar-item" id="sort-title" onclick="setSort('title',this);return false;">Title</a>
-      <a href="#" class="sidebar-item" id="sort-progress" onclick="setSort('progress',this);return false;">Progress</a>
-      <a href="#" class="sidebar-item" id="sort-added" onclick="setSort('added',this);return false;">Date Added</a>
-    </div>
-  </aside>
-
-  <main class="content">
-    <div class="stats-row">
-      <div class="stat-card" onclick="switchTab('watching',document.getElementById('tab-watching'))"><span class="stat-val" style="color:#00c2ff;text-shadow:0 0 20px rgba(0,194,255,0.4)" id="sc-watching">0</span><span class="stat-lbl">Watching</span></div>
-      <div class="stat-card" onclick="switchTab('completed',document.getElementById('tab-completed'))"><span class="stat-val" style="color:#00e5a0;text-shadow:0 0 20px rgba(0,229,160,0.4)" id="sc-completed">0</span><span class="stat-lbl">Completed</span></div>
-      <div class="stat-card" onclick="switchTab('dropped',document.getElementById('tab-dropped'))"><span class="stat-val" style="color:#ff4757;text-shadow:0 0 20px rgba(255,71,87,0.4)" id="sc-dropped">0</span><span class="stat-lbl">Dropped</span></div>
-      <div class="stat-card" onclick="switchTab('planning',document.getElementById('tab-planning'))"><span class="stat-val" style="color:#9b6dff;text-shadow:0 0 20px rgba(155,109,255,0.4)" id="sc-planning">0</span><span class="stat-lbl">Plan to Watch</span></div>
-      <div class="stat-card" onclick="switchTab('waiting',document.getElementById('tab-waiting'))"><span class="stat-val" style="color:#ff9254;text-shadow:0 0 20px rgba(255,146,84,0.4)" id="sc-waiting">0</span><span class="stat-lbl">Waiting</span></div>
+    <div class="banner">
+        <div class="banner-particles"></div>
+        <div class="banner-grid"></div>
+        <div class="banner-gradient"></div>
+        <div class="banner-line"></div>
     </div>
 
-    <div class="toolbar">
-      <span class="toolbar-title" id="toolbarTitle">Watching</span>
-      <span class="toolbar-count" id="toolbarCount">0 entries</span>
-      <div class="toolbar-spacer"></div>
-      <input class="toolbar-search" type="text" placeholder="Filter..." id="filterBox" oninput="filterSearch(this.value)">
-      <button class="btn btn-primary btn-sm" onclick="openAddModal()">＋ Add</button>
-    </div>
-
-    <table class="list-table" id="animeTable">
-      <thead>
-        <tr>
-          <th style="width:28px">#</th>
-          <th>Title</th>
-          <th style="width:60px;text-align:center">Score</th>
-          <th style="width:160px;text-align:center;padding-left:0;padding-right:0">Progress</th>
-          <th style="width:130px;text-align:right">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-  </main>
-</div>
-
-<!-- ADD/EDIT MODAL -->
-<div class="overlay hidden" id="modalOverlay" onclick="closeModalIfBg(event)">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title" id="modalTitle">Add Anime</span>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="editId">
-      <div class="form-group">
-        <label class="form-label">Title *</label>
-        <input class="form-input" id="fTitle" type="text" placeholder="e.g. Fullmetal Alchemist: Brotherhood" autocomplete="off">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Sub-title / Info</label>
-          <input class="form-input" id="fSub" type="text" placeholder="e.g. Winter 2024">
+    <div class="profile-section">
+        <div class="avatar" id="avatarEl">?</div>
+        <div class="profile-info">
+            <div class="profile-name" id="profileName">My Anime List</div>
+            <div class="profile-stats" id="profileStats">
+                <span>Anime: <strong id="statTotal">0</strong></span>
+                <span>Episodes: <strong id="statEps">0</strong></span>
+                <span>Days: <strong id="statDays">0</strong></span>
+                <span>Mean Score: <strong id="statMean">—</strong></span>
+            </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Format</label>
-          <select class="form-select" id="fFormat">
-            <option>TV</option><option>Movie</option><option>OVA</option><option>ONA</option><option>Special</option>
-          </select>
+    </div>
+
+    <div class="main">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Status</div>
+                <a href="#" class="sidebar-item active" id="tab-watching"
+                    onclick="switchTab('watching',this);return false;">
+                    <span class="dot dot-watching"></span> Watching <span class="count" id="cnt-watching">0</span>
+                </a>
+                <a href="#" class="sidebar-item" id="tab-completed" onclick="switchTab('completed',this);return false;">
+                    <span class="dot dot-completed"></span> Completed <span class="count" id="cnt-completed">0</span>
+                </a>
+                <a href="#" class="sidebar-item" id="tab-dropped" onclick="switchTab('dropped',this);return false;">
+                    <span class="dot dot-dropped"></span> Dropped <span class="count" id="cnt-dropped">0</span>
+                </a>
+                <a href="#" class="sidebar-item" id="tab-planning" onclick="switchTab('planning',this);return false;">
+                    <span class="dot dot-planning"></span> Plan to Watch <span class="count" id="cnt-planning">0</span>
+                </a>
+                <a href="#" class="sidebar-item" id="tab-waiting" onclick="switchTab('waiting',this);return false;">
+                    <span class="dot dot-waiting"></span> Waiting <span class="count" id="cnt-waiting">0</span>
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Tools</div>
+                <a href="#" class="sidebar-item" id="tab-dupes" onclick="switchTab('dupes',this);return false;"
+                    style="display:none;">
+                    <span class="dot" style="background:#ff4757;box-shadow:0 0 6px #ff4757"></span> Duplicates <span
+                        class="count" id="cnt-dupes" style="color:#ff4757;border-color:rgba(255,71,87,0.3)">0</span>
+                </a>
+                <span id="no-tools-msg" style="font-size:12px;color:var(--text-dim);padding:4px 12px;display:block;">No
+                    issues found ✓</span>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Sort By</div>
+                <a href="#" class="sidebar-item active" id="sort-score"
+                    onclick="setSort('score',this);return false;">Score</a>
+                <a href="#" class="sidebar-item" id="sort-title" onclick="setSort('title',this);return false;">Title</a>
+                <a href="#" class="sidebar-item" id="sort-progress"
+                    onclick="setSort('progress',this);return false;">Progress</a>
+                <a href="#" class="sidebar-item" id="sort-added" onclick="setSort('added',this);return false;">Date
+                    Added</a>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="stats-row">
+                <div class="stat-card" onclick="switchTab('watching',document.getElementById('tab-watching'))"><span
+                        class="stat-val" style="color:#00c2ff;text-shadow:0 0 20px rgba(0,194,255,0.4)"
+                        id="sc-watching">0</span><span class="stat-lbl">Watching</span></div>
+                <div class="stat-card" onclick="switchTab('completed',document.getElementById('tab-completed'))"><span
+                        class="stat-val" style="color:#00e5a0;text-shadow:0 0 20px rgba(0,229,160,0.4)"
+                        id="sc-completed">0</span><span class="stat-lbl">Completed</span></div>
+                <div class="stat-card" onclick="switchTab('dropped',document.getElementById('tab-dropped'))"><span
+                        class="stat-val" style="color:#ff4757;text-shadow:0 0 20px rgba(255,71,87,0.4)"
+                        id="sc-dropped">0</span><span class="stat-lbl">Dropped</span></div>
+                <div class="stat-card" onclick="switchTab('planning',document.getElementById('tab-planning'))"><span
+                        class="stat-val" style="color:#9b6dff;text-shadow:0 0 20px rgba(155,109,255,0.4)"
+                        id="sc-planning">0</span><span class="stat-lbl">Plan to Watch</span></div>
+                <div class="stat-card" onclick="switchTab('waiting',document.getElementById('tab-waiting'))"><span
+                        class="stat-val" style="color:#ff9254;text-shadow:0 0 20px rgba(255,146,84,0.4)"
+                        id="sc-waiting">0</span><span class="stat-lbl">Waiting</span></div>
+            </div>
+
+            <div class="toolbar">
+                <span class="toolbar-title" id="toolbarTitle">Watching</span>
+                <span class="toolbar-count" id="toolbarCount">0 entries</span>
+                <div class="toolbar-spacer"></div>
+                <input class="toolbar-search" type="text" placeholder="Filter..." id="filterBox"
+                    oninput="filterSearch(this.value)">
+                <button class="btn btn-primary btn-sm" onclick="openAddModal()">＋ Add</button>
+            </div>
+
+            <table class="list-table" id="animeTable">
+                <thead>
+                    <tr>
+                        <th style="width:28px">#</th>
+                        <th>Title</th>
+                        <th style="width:60px;text-align:center">Score</th>
+                        <th style="width:160px;text-align:center;padding-left:0;padding-right:0">Progress</th>
+                        <th style="width:130px;text-align:right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </main>
+    </div>
+
+    <!-- ADD/EDIT MODAL -->
+    <div class="overlay hidden" id="modalOverlay" onclick="closeModalIfBg(event)">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title" id="modalTitle">Add Anime</span>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label class="form-label">Title *</label>
+                    <input class="form-input" id="fTitle" type="text"
+                        placeholder="e.g. Fullmetal Alchemist: Brotherhood" autocomplete="off">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Sub-title / Info</label>
+                        <input class="form-input" id="fSub" type="text" placeholder="e.g. Winter 2024">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Format</label>
+                        <select class="form-select" id="fFormat">
+                            <option>TV</option>
+                            <option>Movie</option>
+                            <option>OVA</option>
+                            <option>ONA</option>
+                            <option>Special</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="fStatus">
+                            <option value="watching">Watching</option>
+                            <option value="completed">Completed</option>
+                            <option value="dropped">Dropped</option>
+                            <option value="planning">Plan to Watch</option>
+                            <option value="waiting">Waiting</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Score (0–10, decimals ok)</label>
+                        <input class="form-input" id="fScore" type="number" min="0" max="10" step="0.1"
+                            placeholder="e.g. 8.5">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Episodes Watched</label>
+                        <input class="form-input" id="fEps" type="number" min="0" step="1" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Total Episodes</label>
+                        <input class="form-input" id="fTotal" type="number" min="0" step="1"
+                            placeholder="Leave blank if unknown">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Genres (comma-separated)</label>
+                    <input class="form-input" id="fGenres" type="text" placeholder="e.g. Action, Fantasy, Romance">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveAnime()">Save Anime</button>
+            </div>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Status</label>
-          <select class="form-select" id="fStatus">
-            <option value="watching">Watching</option>
-            <option value="completed">Completed</option>
-            <option value="dropped">Dropped</option>
-            <option value="planning">Plan to Watch</option>
-            <option value="waiting">Waiting</option>
-          </select>
+    </div>
+
+    <!-- CONFIRM DIALOG -->
+    <div class="overlay hidden" id="confirmOverlay">
+        <div class="confirm-box">
+            <strong id="confirmTitle"></strong>
+            <p id="confirmMsg"></p>
+            <div class="confirm-actions">
+                <button class="btn" onclick="closeConfirm()">Cancel</button>
+                <button class="btn btn-danger" id="confirmOkBtn">Delete</button>
+            </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Score (0–10, decimals ok)</label>
-          <input class="form-input" id="fScore" type="number" min="0" max="10" step="0.1" placeholder="e.g. 8.5">
+    </div>
+
+    <!-- IMPORT / EXPORT MODAL -->
+    <div class="overlay hidden" id="ioOverlay" onclick="closeIOIfBg(event)">
+        <div class="io-panel">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <h2>Import / Export</h2>
+                <button class="modal-close" onclick="closeIO()">×</button>
+            </div>
+            <p>Back up your list or move it between devices using JSON files.</p>
+
+            <!-- EXPORT -->
+            <div class="io-section">
+                <div class="io-section-title">Export</div>
+                <div class="io-row">
+                    <button class="btn btn-green" onclick="exportJSON()">⬇ Download animelist.json</button>
+                    <button class="btn" onclick="copyJSON()" id="copyBtn">⎘ Copy to clipboard</button>
+                </div>
+                <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;">
+                    <div style="font-size:12px;color:var(--text-dim)" id="exportInfo"></div>
+                    <button class="btn btn-danger btn-sm" onclick="clearAllData()" style="font-size:11px;">🗑 Clear all
+                        data</button>
+                </div>
+            </div>
+
+            <!-- IMPORT -->
+            <div class="io-section">
+                <div class="io-section-title">Import</div>
+                <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
+                    ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+                    <div class="big">📂</div>
+                    <p>Click to choose a file, or drag &amp; drop a <strong>.json</strong> here</p>
+                    <input type="file" id="fileInput" accept=".json,application/json" onchange="onFileChosen(event)">
+                </div>
+
+                <div class="import-mode">
+                    <button class="mode-btn active" id="mode-merge" onclick="setImportMode('merge')">
+                        Merge &nbsp;—&nbsp; keep existing + add new
+                    </button>
+                    <button class="mode-btn" id="mode-replace" onclick="setImportMode('replace')">
+                        Replace &nbsp;—&nbsp; overwrite everything
+                    </button>
+                </div>
+
+                <div class="import-preview" id="importPreview">
+                    <strong id="previewTitle" style="display:block;color:var(--text);margin-bottom:6px;"></strong>
+                    <div class="preview-stats" id="previewStats"></div>
+                    <div id="statusWarning"
+                        style="display:none;margin-top:8px;font-size:11px;color:var(--orange);line-height:1.5;"></div>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-top:12px;">
+                    <button class="btn btn-primary" id="doImportBtn" onclick="doImport()" style="display:none;">⬆
+                        Import</button>
+                    <button class="btn btn-danger" id="clearImportBtn" onclick="clearImport()" style="display:none;">✕
+                        Clear</button>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Episodes Watched</label>
-          <input class="form-input" id="fEps" type="number" min="0" step="1" placeholder="0">
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const STORAGE_KEY = 'anitrack_v4';
+        const STATUS_COLORS = { watching: '#3db4f2', completed: '#56d364', paused: '#e3b341', dropped: '#f85149', planning: '#9254cc', waiting: '#f0883e' };
+        const STATUS_NAMES = { watching: 'Watching', completed: 'Completed', paused: 'Plan to Watch', dropped: 'Dropped', planning: 'Plan to Watch', waiting: 'Waiting' };
+        const AVG_EP_MINS = 24;
+
+        let db = { watching: [], completed: [], paused: [], dropped: [], planning: [], waiting: [] };
+        const DEFAULT_DB = { watching: [], completed: [], paused: [], dropped: [], planning: [], waiting: [] };
+        let currentTab = 'watching';
+        let currentSearch = '';
+        let currentSort = 'score';
+        let editingId = null;
+
+        // ── STORAGE ──────────────────────────────────────────────
+        function loadDB() {
+            // No persistence — data lives in memory only, clears on refresh
+        }
+        function saveDB() {
+            // Intentionally empty — no localStorage saving
+        }
+        function allAnime() {
+            return Object.values(db).flat();
+        }
+
+        // ── IDs ───────────────────────────────────────────────────
+        function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+        // ── PROFILE STATS ─────────────────────────────────────────
+        function updateStats() {
+            const all = allAnime();
+            const total = all.length;
+            const eps = all.reduce((s, a) => s + (+a.eps || 0), 0);
+            const days = ((eps * AVG_EP_MINS) / 60 / 24).toFixed(1);
+            const scored = all.filter(a => a.score !== null && a.score !== '');
+            const mean = scored.length ? (scored.reduce((s, a) => s + (+a.score), 0) / scored.length).toFixed(2) : '—';
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statEps').textContent = eps.toLocaleString();
+            document.getElementById('statDays').textContent = days;
+            document.getElementById('statMean').textContent = mean;
+
+            const firstLetter = (document.getElementById('profileName').textContent || '?')[0].toUpperCase();
+            document.getElementById('avatarEl').textContent = firstLetter;
+
+            Object.keys(db).forEach(s => {
+                const n = db[s].length;
+                const cntEl = document.getElementById('cnt-' + s);
+                const scEl = document.getElementById('sc-' + s);
+                if (cntEl) cntEl.textContent = n;
+                if (scEl) scEl.textContent = n;
+            });
+            // update dupe count
+            const dupeCount = getDupesFlat().length;
+            const dupesEl = document.getElementById('cnt-dupes');
+            const dupeTab = document.getElementById('tab-dupes');
+            const noToolsMsg = document.getElementById('no-tools-msg');
+            if (dupesEl) {
+                dupesEl.textContent = dupeCount;
+                dupeTab.style.display = dupeCount > 0 ? '' : 'none';
+                if (noToolsMsg) noToolsMsg.style.display = dupeCount > 0 ? 'none' : 'block';
+            }
+        }
+
+        // ── DUPLICATES ────────────────────────────────────────────
+        function getDupes() {
+            const all = allAnime();
+            const seen = {};
+            all.forEach(a => {
+                const key = a.title.trim().toLowerCase();
+                if (!seen[key]) seen[key] = [];
+                seen[key].push(a);
+            });
+            // Return only groups with more than one entry, flattened with group info
+            const groups = Object.values(seen).filter(g => g.length > 1);
+            return groups;
+        }
+
+        function getDupesFlat() {
+            return getDupes().flat();
+        }
+
+        // ── RENDER ────────────────────────────────────────────────
+        function getList() {
+            if (currentTab === 'dupes') return getDupesFlat();
+            let list = [...(db[currentTab] || [])];
+            if (currentSearch) {
+                const q = currentSearch.toLowerCase();
+                list = list.filter(a => a.title.toLowerCase().includes(q) || (a.sub || '').toLowerCase().includes(q));
+            }
+            // sort
+            if (currentSort === 'title') list.sort((a, b) => a.title.localeCompare(b.title));
+            else if (currentSort === 'score') list.sort((a, b) => (b.score === '' || b.score === null ? -1 : +b.score) - (a.score === '' || a.score === null ? -1 : +a.score));
+            else if (currentSort === 'progress') {
+                list.sort((a, b) => {
+                    const pa = a.total ? (+a.eps / +a.total) : 0, pb = b.total ? (+b.eps / +b.total) : 0;
+                    return pb - pa;
+                });
+            } else if (currentSort === 'added') list.sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0));
+            return list;
+        }
+
+        function scoreClass(s) {
+            if (s === null || s === '' || s === undefined) return 'score-none';
+            const n = +s;
+            if (n >= 9) return 'score-high';
+            if (n >= 7) return 'score-mid';
+            return 'score-low';
+        }
+
+        function renderList() {
+            const tbody = document.getElementById('tableBody');
+
+            // ── DUPES VIEW ──
+            if (currentTab === 'dupes') {
+                const groups = getDupes();
+                document.getElementById('toolbarTitle').textContent = 'Duplicates';
+                document.getElementById('toolbarCount').textContent = groups.length + ' group' + (groups.length === 1 ? '' : 's');
+
+                if (groups.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5">
+        <div class="empty-state">
+          <div class="big">✅</div>
+          <p style="color:var(--green)">No duplicates found — your list is clean!</p>
         </div>
-        <div class="form-group">
-          <label class="form-label">Total Episodes</label>
-          <input class="form-input" id="fTotal" type="number" min="0" step="1" placeholder="Leave blank if unknown">
+      </td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                groups.forEach(group => {
+                    // Group header
+                    html += `<tr><td colspan="5" style="padding:0"><div class="list-section-header">
+        <span class="section-label" style="color:#ff4757">⚠ ${escHtml(group[0].title)}</span>
+        <div class="section-bar"><div class="section-bar-fill" style="background:#ff4757;width:100%"></div></div>
+        <span class="section-count" style="color:#ff4757">${group.length} copies</span>
+      </div></td></tr>`;
+
+                    group.forEach((a, i) => {
+                        const scoreVal = (a.score !== null && a.score !== '') ? (+a.score).toFixed(1) : '—';
+                        const eps = +a.eps || 0;
+                        const tot = a.total ? +a.total : null;
+                        const statusColor = STATUS_COLORS[a.status] || '#888';
+                        const statusName = STATUS_NAMES[a.status] || a.status;
+                        html += `<tr class="list-row" data-id="${a.id}" style="background:rgba(255,71,87,0.03);">
+          <td class="entry-num">${i + 1}</td>
+          <td>
+            <div class="entry-info">
+              <div class="cover-box" style="background:${statusColor}22;border:1px solid ${statusColor}44;color:${statusColor};overflow:hidden;padding:0;">
+                ${a.cover ? `<img src="${a.cover}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='▶'">` : '▶'}
+              </div>
+              <div>
+                <span class="entry-title" onclick="openEditModal('${a.id}')">${escHtml(a.title)}</span>
+                <span class="entry-sub" style="display:flex;align-items:center;gap:6px;">
+                  <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${statusColor}"></span>
+                  ${statusName}${a.sub ? ' · ' + escHtml(a.sub) : ''}
+                </span>
+              </div>
+            </div>
+          </td>
+          <td style="text-align:center"><span class="entry-score ${scoreClass(a.score)}">${scoreVal}</span></td>
+          <td style="text-align:center;padding-left:0;padding-right:0;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div class="ep-ctrl">
+                <span class="ep-val">${eps}${tot ? '/' + tot : ''}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="row-actions" style="opacity:1;">
+              <button class="btn btn-sm btn-icon" title="Edit" onclick="openEditModal('${a.id}')">✎</button>
+              <button class="btn btn-sm btn-icon btn-danger" title="Delete this copy" onclick="confirmDelete('${a.id}')">✕</button>
+            </div>
+          </td>
+        </tr>`;
+                    });
+                });
+
+                tbody.innerHTML = html;
+                return;
+            }
+
+            // ── NORMAL VIEW ──
+            const list = getList();
+            const color = STATUS_COLORS[currentTab];
+
+            document.getElementById('toolbarTitle').textContent = STATUS_NAMES[currentTab];
+            document.getElementById('toolbarCount').textContent = list.length + ' entr' + (list.length === 1 ? 'y' : 'ies');
+
+            if (list.length === 0) {
+                const total = currentTab === 'dupes' ? 0 : (db[currentTab] || []).length;
+                if (total === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5">
+        <div class="empty-state">
+          <div class="big">📋</div>
+          <p>No anime in <b>${STATUS_NAMES[currentTab]}</b> yet.</p>
+          <button class="btn btn-primary" onclick="openAddModal()">＋ Add Your First Anime</button>
         </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Genres (comma-separated)</label>
-        <input class="form-input" id="fGenres" type="text" placeholder="e.g. Action, Fantasy, Romance">
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveAnime()">Save Anime</button>
-    </div>
-  </div>
-</div>
+      </td></tr>`;
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-dim)">No results for "${currentSearch}"</td></tr>`;
+                }
+                return;
+            }
 
-<!-- CONFIRM DIALOG -->
-<div class="overlay hidden" id="confirmOverlay">
-  <div class="confirm-box">
-    <strong id="confirmTitle"></strong>
-    <p id="confirmMsg"></p>
-    <div class="confirm-actions">
-      <button class="btn" onclick="closeConfirm()">Cancel</button>
-      <button class="btn btn-danger" id="confirmOkBtn">Delete</button>
-    </div>
-  </div>
-</div>
+            let html = `<tr><td colspan="5" style="padding:0"><div class="list-section-header">
+    <span class="section-label" style="color:${color}">${STATUS_NAMES[currentTab]}</span>
+    <div class="section-bar"><div class="section-bar-fill" style="background:${color};width:100%"></div></div>
+    <span class="section-count">${list.length}</span>
+  </div></td></tr>`;
 
-<!-- IMPORT / EXPORT MODAL -->
-<div class="overlay hidden" id="ioOverlay" onclick="closeIOIfBg(event)">
-  <div class="io-panel">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-      <h2>Import / Export</h2>
-      <button class="modal-close" onclick="closeIO()">×</button>
-    </div>
-    <p>Back up your list or move it between devices using JSON files.</p>
+            list.forEach((a, i) => {
+                const scoreVal = (a.score !== null && a.score !== '') ? (+a.score).toFixed(1) : '—';
+                const eps = +a.eps || 0;
+                const tot = a.total ? +a.total : null;
+                const pct = tot && eps ? Math.min(100, Math.round(eps / tot * 100)) : 0;
+                const genres = (a.genres || []).slice(0, 2).map(g => `<span class="genre-tag">${g}</span>`).join('');
 
-    <!-- EXPORT -->
-    <div class="io-section">
-      <div class="io-section-title">Export</div>
-      <div class="io-row">
-        <button class="btn btn-green" onclick="exportJSON()">⬇ Download animelist.json</button>
-        <button class="btn" onclick="copyJSON()" id="copyBtn">⎘ Copy to clipboard</button>
-      </div>
-      <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;">
-        <div style="font-size:12px;color:var(--text-dim)" id="exportInfo"></div>
-        <button class="btn btn-danger btn-sm" onclick="clearAllData()" style="font-size:11px;">🗑 Clear all data</button>
-      </div>
-    </div>
+                html += `<tr class="list-row" data-id="${a.id}">
+      <td class="entry-num">${i + 1}</td>
+      <td>
+        <div class="entry-info">
+          <div class="cover-box" style="background:${color}22;border:1px solid ${color}44;color:${color};overflow:hidden;padding:0;">
+            ${a.cover ? `<img src="${a.cover}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='▶'">` : '▶'}
+          </div>
+          <div>
+            <span class="entry-title" onclick="openEditModal('${a.id}')">${escHtml(a.title)}</span>
+            <span class="entry-sub">${escHtml(a.sub || '')}</span>
+            <div>${genres}</div>
+          </div>
+        </div>
+      </td>
+      <td style="text-align:center">
+        <span class="entry-score ${scoreClass(a.score)}">${scoreVal}</span>
+      </td>
+      <td style="text-align:center;padding-left:0;padding-right:0;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <div class="ep-ctrl">
+            <button class="ep-btn" onclick="adjustEps('${a.id}',-1)">−</button>
+            <span class="ep-val">${eps}${tot ? '/' + tot : ''}</span>
+            <button class="ep-btn" onclick="adjustEps('${a.id}',1)">+</button>
+          </div>
+          ${tot && eps > 0 && eps < tot ? `<span class="progress-bar" style="width:80px;display:block;"><span class="progress-fill" style="width:${pct}%;background:${color}"></span></span>` : ''}
+        </div>
+      </td>
+      <td>
+        <div class="row-actions">
+          <button class="btn btn-sm btn-icon" title="Edit" onclick="openEditModal('${a.id}')">✎</button>
+          <button class="btn btn-sm btn-icon btn-danger" title="Delete" onclick="confirmDelete('${a.id}')">✕</button>
+        </div>
+      </td>
+    </tr>`;
+            });
 
-    <!-- IMPORT -->
-    <div class="io-section">
-      <div class="io-section-title">Import</div>
-      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-        <div class="big">📂</div>
-        <p>Click to choose a file, or drag &amp; drop a <strong>.json</strong> here</p>
-        <input type="file" id="fileInput" accept=".json,application/json" onchange="onFileChosen(event)">
-      </div>
+            tbody.innerHTML = html;
+        }
 
-      <div class="import-mode">
-        <button class="mode-btn active" id="mode-merge" onclick="setImportMode('merge')">
-          Merge &nbsp;—&nbsp; keep existing + add new
-        </button>
-        <button class="mode-btn" id="mode-replace" onclick="setImportMode('replace')">
-          Replace &nbsp;—&nbsp; overwrite everything
-        </button>
-      </div>
+        // ── EP ADJUSTMENT ─────────────────────────────────────────
+        function adjustEps(id, delta) {
+            const anime = findAnime(id);
+            if (!anime) return;
+            const newEps = Math.max(0, (+anime.eps || 0) + delta);
+            if (anime.total && newEps > +anime.total) return;
+            anime.eps = newEps;
+            // auto-complete
+            if (anime.total && newEps === +anime.total && currentTab === 'watching') {
+                anime.status = 'completed';
+                db.watching = db.watching.filter(a => a.id !== id);
+                db.completed.unshift(anime);
+                showToast('Moved to Completed! 🎉', 'success');
+            }
+            saveDB(); updateStats(); renderList();
+        }
 
-      <div class="import-preview" id="importPreview">
-        <strong id="previewTitle" style="display:block;color:var(--text);margin-bottom:6px;"></strong>
-        <div class="preview-stats" id="previewStats"></div>
-        <div id="statusWarning" style="display:none;margin-top:8px;font-size:11px;color:var(--orange);line-height:1.5;"></div>
-      </div>
+        // ── FIND ─────────────────────────────────────────────────
+        function findAnime(id) {
+            for (const status of Object.keys(db)) {
+                const found = db[status].find(a => a.id === id);
+                if (found) return found;
+            }
+            return null;
+        }
+        function removeAnime(id) {
+            for (const status of Object.keys(db)) {
+                const idx = db[status].findIndex(a => a.id === id);
+                if (idx > -1) { db[status].splice(idx, 1); return; }
+            }
+        }
 
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button class="btn btn-primary" id="doImportBtn" onclick="doImport()" style="display:none;">⬆ Import</button>
-        <button class="btn btn-danger" id="clearImportBtn" onclick="clearImport()" style="display:none;">✕ Clear</button>
-      </div>
-    </div>
-  </div>
-</div>
+        // ── MODAL ─────────────────────────────────────────────────
+        function openAddModal() {
+            editingId = null;
+            document.getElementById('modalTitle').textContent = 'Add Anime';
+            document.getElementById('editId').value = '';
+            document.getElementById('fTitle').value = '';
+            document.getElementById('fSub').value = '';
+            document.getElementById('fFormat').value = 'TV';
+            document.getElementById('fStatus').value = currentTab;
+            document.getElementById('fScore').value = '';
+            document.getElementById('fEps').value = '0';
+            document.getElementById('fTotal').value = '';
+            document.getElementById('fGenres').value = '';
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            setTimeout(() => document.getElementById('fTitle').focus(), 50);
+        }
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+        function openEditModal(id) {
+            const a = findAnime(id);
+            if (!a) return;
+            editingId = id;
+            document.getElementById('modalTitle').textContent = 'Edit Anime';
+            document.getElementById('editId').value = id;
+            document.getElementById('fTitle').value = a.title || '';
+            document.getElementById('fSub').value = a.sub || '';
+            document.getElementById('fFormat').value = a.format || 'TV';
+            document.getElementById('fStatus').value = a.status || 'watching';
+            document.getElementById('fScore').value = (a.score !== null && a.score !== '') ? a.score : '';
+            document.getElementById('fEps').value = a.eps || 0;
+            document.getElementById('fTotal').value = a.total || '';
+            document.getElementById('fGenres').value = (a.genres || []).join(', ');
+            document.getElementById('modalOverlay').classList.remove('hidden');
+            setTimeout(() => document.getElementById('fTitle').focus(), 50);
+        }
 
-<!-- FIREBASE -->
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.add('hidden');
+        }
+        function closeModalIfBg(e) {
+            if (e.target === document.getElementById('modalOverlay')) closeModal();
+        }
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAfK6PSgcByWwbZSoRtCw2ub23r6S0IWEY",
-  authDomain: "storageu-e10f0.firebaseapp.com",
-  projectId: "storageu-e10f0",
-  storageBucket: "storageu-e10f0.firebasestorage.app",
-  messagingSenderId: "1097677803506",
-  appId: "1:1097677803506:web:46625b551bc6f42549e56b"
-};
+        function saveAnime() {
+            const title = document.getElementById('fTitle').value.trim();
+            if (!title) { showToast('Title is required', 'error'); return; }
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db_firestore = getFirestore(app);
-const provider = new GoogleAuthProvider();
+            const status = document.getElementById('fStatus').value;
+            const scoreRaw = document.getElementById('fScore').value.trim();
+            const score = scoreRaw === '' ? null : Math.min(10, Math.max(0, +scoreRaw));
+            const eps = Math.max(0, parseInt(document.getElementById('fEps').value) || 0);
+            const totalRaw = document.getElementById('fTotal').value.trim();
+            const total = totalRaw === '' ? null : parseInt(totalRaw) || null;
+            const genreStr = document.getElementById('fGenres').value.trim();
+            const genres = genreStr ? genreStr.split(',').map(g => g.trim()).filter(Boolean) : [];
 
-let currentUser = null;
-let saveTimeout = null;
+            if (editingId) {
+                // update
+                const oldAnime = findAnime(editingId);
+                if (!oldAnime) return;
+                const oldStatus = oldAnime.status;
+                Object.assign(oldAnime, { title, sub: document.getElementById('fSub').value.trim(), format: document.getElementById('fFormat').value, status, score, eps, total, genres });
+                if (oldStatus !== status) {
+                    db[oldStatus] = db[oldStatus].filter(a => a.id !== editingId);
+                    db[status].unshift(oldAnime);
+                }
+                showToast('Anime updated ✓', 'success');
+            } else {
+                const anime = { id: genId(), title, sub: document.getElementById('fSub').value.trim(), format: document.getElementById('fFormat').value, status, score, eps, total, genres, addedAt: Date.now() };
+                db[status].unshift(anime);
+                showToast('Anime added ✓', 'success');
+            }
 
-// ── AUTH ──────────────────────────────────────────────────
-window.signInWithGoogle = async () => {
-  const btn = document.querySelector('.btn-google');
-  btn.disabled = true;
-  btn.textContent = 'Signing in...';
-  try {
-    await signInWithPopup(auth, provider);
-  } catch(e) {
-    btn.disabled = false;
-    btn.innerHTML = `<svg viewBox="0 0 24 24" style="width:20px;height:20px" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Continue with Google`;
-    if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
-      showToast('Sign-in failed: ' + e.message, 'error');
-    }
-  }
-};
+            saveDB(); updateStats();
+            if (status !== currentTab) { switchTab(status, document.getElementById('tab-' + status)); }
+            else renderList();
+            closeModal();
+        }
 
-window.signOut = async () => {
-  closeUserMenu();
-  await fbSignOut(auth);
-  currentUser = null;
-  db = {watching:[],completed:[],paused:[],dropped:[],planning:[],waiting:[]};
-  updateStats(); renderList();
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('userMenuWrap').style.display = 'none';
-  document.getElementById('saveIndicator').textContent = '';
-  showToast('Signed out', 'success');
-};
+        // ── DELETE ────────────────────────────────────────────────
+        let pendingDeleteId = null;
+        function confirmDelete(id) {
+            const a = findAnime(id);
+            if (!a) return;
+            pendingDeleteId = id;
+            document.getElementById('confirmTitle').textContent = a.title;
+            document.getElementById('confirmMsg').textContent = 'Remove this anime from your list?';
+            document.getElementById('confirmOkBtn').onclick = doDelete;
+            document.getElementById('confirmOverlay').classList.remove('hidden');
+        }
+        function doDelete() {
+            if (!pendingDeleteId) return;
+            removeAnime(pendingDeleteId);
+            saveDB(); updateStats();
+            // if we're in dupes view and no more dupes, go back to watching
+            if (currentTab === 'dupes' && getDupes().length === 0) {
+                switchTab('watching', document.getElementById('tab-watching'));
+            } else {
+                renderList();
+            }
+            closeConfirm();
+            showToast('Anime removed', 'success');
+        }
+        function closeConfirm() {
+            document.getElementById('confirmOverlay').classList.add('hidden');
+            pendingDeleteId = null;
+        }
 
-onAuthStateChanged(auth, async (user) => {
-  const loading = document.getElementById('loadingOverlay');
-  if (user) {
-    currentUser = user;
-    document.getElementById('loadingText').textContent = 'Loading your anime list...';
-    await loadFromFirestore(user.uid);
-    // update UI
-    const letter = user.displayName ? user.displayName[0].toUpperCase() : user.email[0].toUpperCase();
-    const avatarEl = document.getElementById('navUserAvatar');
-    if (user.photoURL) {
-      avatarEl.outerHTML = `<img id="navUserAvatar" class="user-avatar" src="${user.photoURL}" referrerpolicy="no-referrer">`;
-    } else {
-      avatarEl.textContent = letter;
-    }
-    document.getElementById('navUserName').textContent = user.displayName || user.email;
-    document.getElementById('ddName').textContent = user.displayName || '';
-    document.getElementById('ddEmail').textContent = user.email;
-    document.getElementById('profileName').textContent = user.displayName || 'My Anime List';
-    document.getElementById('avatarEl').textContent = letter;
-    document.getElementById('userMenuWrap').style.display = '';
-    document.getElementById('loginScreen').style.display = 'none';
-    loading.classList.add('hidden');
-    updateStats(); renderList();
-  } else {
-    loading.classList.add('hidden');
-    document.getElementById('loginScreen').style.display = 'flex';
-    document.getElementById('userMenuWrap').style.display = 'none';
-  }
-});
+        // ── TABS / SORT ───────────────────────────────────────────
+        function switchTab(status, el) {
+            currentTab = status;
+            currentSearch = '';
+            document.getElementById('filterBox').value = '';
+            document.getElementById('navSearch').value = '';
+            document.querySelectorAll('.sidebar-item[id^="tab-"]').forEach(s => s.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderList();
+        }
 
-// ── FIRESTORE ─────────────────────────────────────────────
-async function loadFromFirestore(uid) {
-  try {
-    const snap = await getDoc(doc(db_firestore, 'users', uid));
-    if (snap.exists()) {
-      const data = snap.data();
-      if (data.animelist) {
-        db = data.animelist;
-        // ensure all status keys exist
-        ['watching','completed','paused','dropped','planning','waiting'].forEach(k=>{
-          if(!db[k]) db[k] = [];
+        function setSort(s, el) {
+            currentSort = s;
+            document.querySelectorAll('.sidebar-item[id^="sort-"]').forEach(x => x.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderList();
+        }
+
+        function filterSearch(val) {
+            currentSearch = val;
+            // sync both search boxes
+            document.getElementById('filterBox').value = val;
+            document.getElementById('navSearch').value = val;
+            renderList();
+        }
+
+        // ── TOAST ─────────────────────────────────────────────────
+        let toastTimer;
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + type + ' show';
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { t.className = 'toast'; }, 2400);
+        }
+
+        // ── UTILS ─────────────────────────────────────────────────
+        function escHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+        // keyboard shortcut: Escape closes modals
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') { closeModal(); closeConfirm(); }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !document.getElementById('modalOverlay').classList.contains('hidden')) {
+                saveAnime();
+            }
         });
-      }
-    }
-  } catch(e) {
-    showToast('Could not load cloud data', 'error');
-  }
-}
 
-window.saveDB = function() {
-  if (!currentUser) return;
-  // debounce saves — wait 1.5s after last change
-  clearTimeout(saveTimeout);
-  setSaveIndicator('saving');
-  saveTimeout = setTimeout(async () => {
-    try {
-      await setDoc(doc(db_firestore, 'users', currentUser.uid), { animelist: db });
-      setSaveIndicator('saved');
-    } catch(e) {
-      showToast('Save failed — check connection', 'error');
-      setSaveIndicator('');
-    }
-  }, 1500);
-};
+        // ── IMPORT / EXPORT ───────────────────────────────────────
+        let importData = null;
+        let importMode = 'merge';
 
-function setSaveIndicator(state) {
-  const el = document.getElementById('saveIndicator');
-  if (state === 'saving') {
-    el.className = 'save-indicator saving';
-    el.textContent = '● Saving...';
-  } else if (state === 'saved') {
-    el.className = 'save-indicator saved';
-    el.textContent = '✓ Saved';
-    setTimeout(() => { el.textContent = ''; el.className = 'save-indicator'; }, 2500);
-  } else {
-    el.textContent = '';
-    el.className = 'save-indicator';
-  }
-}
+        function openIOModal() {
+            importData = null;
+            importMode = 'merge';
+            document.getElementById('importPreview').classList.remove('show');
+            document.getElementById('doImportBtn').style.display = 'none';
+            document.getElementById('clearImportBtn').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('dropZone').querySelector('p').textContent = 'Click to choose a file, or drag & drop a .json here';
+            document.getElementById('dropZone').querySelector('.big').textContent = '📂';
+            setImportMode('merge');
+            updateExportInfo();
+            document.getElementById('ioOverlay').classList.remove('hidden');
+        }
+        function closeIO() { document.getElementById('ioOverlay').classList.add('hidden'); }
+        function closeIOIfBg(e) { if (e.target === document.getElementById('ioOverlay')) closeIO(); }
 
-// ── USER MENU ─────────────────────────────────────────────
-window.toggleUserMenu = () => {
-  document.getElementById('userDropdown').classList.toggle('open');
-};
-window.closeUserMenu = () => {
-  document.getElementById('userDropdown').classList.remove('open');
-};
-document.addEventListener('click', e => {
-  const wrap = document.getElementById('userMenuWrap');
-  if (wrap && !wrap.contains(e.target)) closeUserMenu();
-});
+        function updateExportInfo() {
+            const all = allAnime();
+            document.getElementById('exportInfo').textContent = all.length
+                ? `Your list has ${all.length} entr${all.length === 1 ? 'y' : 'ies'} across all statuses.`
+                : 'Your list is empty — nothing to export yet.';
+        }
 
-// ── APP SCRIPT ────────────────────────────────────────────
-const STORAGE_KEY = 'anitrack_v4';
-const STATUS_COLORS = {watching:'#00c2ff',completed:'#00e5a0',paused:'#ffd460',dropped:'#ff4757',planning:'#9b6dff',waiting:'#ff9254'};
-const STATUS_NAMES = {watching:'Watching',completed:'Completed',paused:'Plan to Watch',dropped:'Dropped',planning:'Plan to Watch',waiting:'Waiting'};
-const AVG_EP_MINS = 24;
+        function clearAllData() {
+            if (!confirm('This will permanently delete your entire anime list. Are you sure?')) return;
+            Object.keys(localStorage).filter(k => k.startsWith('anitrack_')).forEach(k => localStorage.removeItem(k));
+            db = { watching: [], completed: [], paused: [], dropped: [], planning: [], waiting: [] };
+            updateStats();
+            switchTab('watching', document.getElementById('tab-watching'));
+            closeIO();
+            showToast('All data cleared', 'success');
+        }
 
-let db = {watching:[],completed:[],paused:[],dropped:[],planning:[],waiting:[]};
-let currentTab = 'watching';
-let currentSearch = '';
-let currentSort = 'score';
-let editingId = null;
+        function exportJSON() {
+            const all = allAnime();
+            if (!all.length) { showToast('Nothing to export yet', 'error'); return; }
+            const payload = { version: 2, exportedAt: new Date().toISOString(), anime: all };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'animelist_' + new Date().toISOString().slice(0, 10) + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Exported ' + all.length + ' anime ✓', 'success');
+        }
 
-function loadDB(){} // handled by Firestore
+        function copyJSON() {
+            const all = allAnime();
+            if (!all.length) { showToast('Nothing to copy yet', 'error'); return; }
+            const payload = { version: 2, exportedAt: new Date().toISOString(), anime: all };
+            navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = '✓ Copied!';
+                showToast('Copied to clipboard ✓', 'success');
+                setTimeout(() => { btn.textContent = '⎘ Copy to clipboard'; }, 2000);
+            }).catch(() => showToast('Copy failed — try download instead', 'error'));
+        }
 
-function allAnime(){
-  return Object.values(db).flat();
-}
+        function setImportMode(m) {
+            importMode = m;
+            document.getElementById('mode-merge').classList.toggle('active', m === 'merge');
+            document.getElementById('mode-replace').classList.toggle('active', m === 'replace');
+            if (importData) showImportPreview(importData);
+        }
 
-// ── PROFILE STATS ─────────────────────────────────────────
-function updateStats(){
-  const all = allAnime();
-  const total = all.length;
-  const eps = all.reduce((s,a)=>s+(+a.eps||0),0);
-  const days = ((eps * AVG_EP_MINS)/60/24).toFixed(1);
-  const scored = all.filter(a=>a.score!==null&&a.score!=='');
-  const mean = scored.length ? (scored.reduce((s,a)=>s+(+a.score),0)/scored.length).toFixed(2) : '—';
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('statEps').textContent = eps.toLocaleString();
-  document.getElementById('statDays').textContent = days;
-  document.getElementById('statMean').textContent = mean;
-  const firstLetter = (document.getElementById('profileName').textContent||'?')[0].toUpperCase();
-  document.getElementById('avatarEl').textContent = firstLetter;
-  Object.keys(db).forEach(s=>{
-    const n = db[s].length;
-    const cntEl = document.getElementById('cnt-'+s);
-    const scEl = document.getElementById('sc-'+s);
-    if(cntEl) cntEl.textContent = n;
-    if(scEl) scEl.textContent = n;
-  });
-  const dupeCount = getDupesFlat().length;
-  const dupesEl = document.getElementById('cnt-dupes');
-  const dupeTab = document.getElementById('tab-dupes');
-  const noToolsMsg = document.getElementById('no-tools-msg');
-  if(dupesEl){
-    dupesEl.textContent = dupeCount;
-    dupeTab.style.display = dupeCount > 0 ? '' : 'none';
-    if(noToolsMsg) noToolsMsg.style.display = dupeCount > 0 ? 'none' : 'block';
-  }
-}
+        function parseImportFile(text) {
+            const raw = JSON.parse(text);
+            // Support multiple shapes:
+            // 1. Our own export: { version, exportedAt, anime: [...] }
+            // 2. Flat array: [ {...}, {...} ]
+            // 3. Keyed by status: { watching:[...], completed:[...], ... }
+            let animeList = [];
+            if (Array.isArray(raw)) {
+                animeList = raw;
+            } else if (raw.anime && Array.isArray(raw.anime)) {
+                animeList = raw.anime;
+            } else {
+                const keys = ['watching', 'completed', 'paused', 'dropped', 'planning', 'waiting'];
+                keys.forEach(k => { if (Array.isArray(raw[k])) animeList.push(...raw[k]); });
+                if (!animeList.length) throw new Error('Unrecognised format');
+            }
 
-// ── DUPLICATES ────────────────────────────────────────────
-function getDupes(){
-  const all=allAnime(), seen={};
-  all.forEach(a=>{ const k=a.title.trim().toLowerCase(); if(!seen[k]) seen[k]=[]; seen[k].push(a); });
-  return Object.values(seen).filter(g=>g.length>1);
-}
-function getDupesFlat(){ return getDupes().flat(); }
+            // Debug: log all unique raw status values
+            const uniqueStatuses = [...new Set(animeList.map(a => (a.status || '').toLowerCase().trim()))];
+            console.log('[AniTrack] Unique status values found in file:', uniqueStatuses);
 
-// ── RENDER ────────────────────────────────────────────────
-function getList(){
-  if(currentTab==='dupes') return getDupesFlat();
-  let list=[...(db[currentTab]||[])];
-  if(currentSearch){ const q=currentSearch.toLowerCase(); list=list.filter(a=>a.title.toLowerCase().includes(q)||(a.sub||'').toLowerCase().includes(q)); }
-  if(currentSort==='title') list.sort((a,b)=>a.title.localeCompare(b.title));
-  else if(currentSort==='score') list.sort((a,b)=>(b.score===''||b.score===null?-1:+b.score)-(a.score===''||a.score===null?-1:+a.score));
-  else if(currentSort==='progress'){ list.sort((a,b)=>{ const pa=a.total?(+a.eps/+a.total):0,pb=b.total?(+b.eps/+b.total):0; return pb-pa; }); }
-  else if(currentSort==='added') list.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
-  return list;
-}
-function scoreClass(s){ if(s===null||s===''||s===undefined) return 'score-none'; const n=+s; if(n>=9) return 'score-high'; if(n>=7) return 'score-mid'; return 'score-low'; }
+            return animeList.map(a => {
+                // ── episodes watched (progress) ──
+                // "progress" = eps watched, "eps" = eps watched, "episodes_watched" = eps watched
+                const epsWatched = +a.progress || +a.eps || +a.episodes_watched || 0;
 
-function renderList(){
-  const tbody=document.getElementById('tableBody');
-  if(currentTab==='dupes'){
-    const groups=getDupes();
-    document.getElementById('toolbarTitle').textContent='Duplicates';
-    document.getElementById('toolbarCount').textContent=groups.length+' group'+(groups.length===1?'':'s');
-    if(groups.length===0){ tbody.innerHTML=`<tr><td colspan="5"><div class="empty-state"><div class="big">✅</div><p style="color:var(--green)">No duplicates — your list is clean!</p></div></td></tr>`; return; }
-    let html='';
-    groups.forEach(group=>{
-      html+=`<tr><td colspan="5" style="padding:0"><div class="list-section-header"><span class="section-label" style="color:#ff4757">⚠ ${escHtml(group[0].title)}</span><div class="section-bar"><div class="section-bar-fill" style="background:#ff4757;width:100%"></div></div><span class="section-count" style="color:#ff4757">${group.length} copies</span></div></td></tr>`;
-      group.forEach((a,i)=>{
-        const sv=(a.score!==null&&a.score!=='')?(+a.score).toFixed(1):'—', eps=+a.eps||0, tot=a.total?+a.total:null;
-        const sc=STATUS_COLORS[a.status]||'#888', sn=STATUS_NAMES[a.status]||a.status;
-        html+=`<tr class="list-row" style="background:rgba(255,71,87,0.03);"><td class="entry-num">${i+1}</td>
-          <td><div class="entry-info"><div class="cover-box" style="background:${sc}22;border:1px solid ${sc}44;color:${sc};overflow:hidden;padding:0;">${a.cover?`<img src="${a.cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='▶'">`:'▶'}</div>
-          <div><span class="entry-title" onclick="openEditModal('${a.id}')">${escHtml(a.title)}</span><span class="entry-sub"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${sc};margin-right:4px"></span>${sn}</span></div></div></td>
-          <td style="text-align:center"><span class="entry-score ${scoreClass(a.score)}">${sv}</span></td>
-          <td style="text-align:center"><span class="ep-val">${eps}${tot?'/'+tot:''}</span></td>
-          <td><div class="row-actions" style="opacity:1;"><button class="btn btn-sm btn-icon" onclick="openEditModal('${a.id}')">✎</button><button class="btn btn-sm btn-icon btn-danger" onclick="confirmDelete('${a.id}')">✕</button></div></td></tr>`;
-      });
-    });
-    tbody.innerHTML=html; return;
-  }
-  const list=getList(), color=STATUS_COLORS[currentTab];
-  document.getElementById('toolbarTitle').textContent=STATUS_NAMES[currentTab];
-  document.getElementById('toolbarCount').textContent=list.length+' entr'+(list.length===1?'y':'ies');
-  if(list.length===0){
-    const total=(db[currentTab]||[]).length;
-    tbody.innerHTML=total===0
-      ?`<tr><td colspan="5"><div class="empty-state"><div class="big">📋</div><p>No anime in <b>${STATUS_NAMES[currentTab]}</b> yet.</p><button class="btn btn-primary" onclick="openAddModal()">＋ Add Your First Anime</button></div></td></tr>`
-      :`<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-dim)">No results for "${currentSearch}"</td></tr>`;
-    return;
-  }
-  let html=`<tr><td colspan="5" style="padding:0"><div class="list-section-header"><span class="section-label" style="color:${color}">${STATUS_NAMES[currentTab]}</span><div class="section-bar"><div class="section-bar-fill" style="background:${color};width:100%"></div></div><span class="section-count">${list.length}</span></div></td></tr>`;
-  list.forEach((a,i)=>{
-    const sv=(a.score!==null&&a.score!=='')?(+a.score).toFixed(1):'—', eps=+a.eps||0, tot=a.total?+a.total:null;
-    const pct=tot&&eps?Math.min(100,Math.round(eps/tot*100)):0;
-    const genres=(a.genres||[]).slice(0,2).map(g=>`<span class="genre-tag">${g}</span>`).join('');
-    html+=`<tr class="list-row" data-id="${a.id}"><td class="entry-num">${i+1}</td>
-      <td><div class="entry-info"><div class="cover-box" style="background:${color}22;border:1px solid ${color}44;color:${color};overflow:hidden;padding:0;">${a.cover?`<img src="${a.cover}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='▶'">`:'▶'}</div>
-      <div><span class="entry-title" onclick="openEditModal('${a.id}')">${escHtml(a.title)}</span><span class="entry-sub">${escHtml(a.sub||'')}</span><div>${genres}</div></div></div></td>
-      <td style="text-align:center"><span class="entry-score ${scoreClass(a.score)}">${sv}</span></td>
-      <td style="text-align:center;padding-left:0;padding-right:0;"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;"><div class="ep-ctrl">
-        <button class="ep-btn" onclick="adjustEps('${a.id}',-1)">−</button>
-        <span class="ep-val">${eps}${tot?'/'+tot:''}</span>
-        <button class="ep-btn" onclick="adjustEps('${a.id}',1)">+</button>
-      </div>${tot&&eps>0&&eps<tot?`<span class="progress-bar" style="width:80px;display:block;"><span class="progress-fill" style="width:${pct}%;background:${color}"></span></span>`:''}</div></td>
-      <td><div class="row-actions"><button class="btn btn-sm btn-icon" onclick="openEditModal('${a.id}')">✎</button><button class="btn btn-sm btn-icon btn-danger" onclick="confirmDelete('${a.id}')">✕</button></div></td></tr>`;
-  });
-  tbody.innerHTML=html;
-}
+                // ── total episodes ──
+                // "episodes" = total, "total" = total, "total_episodes" = total
+                const epsTotal = (a.episodes !== undefined && a.episodes !== null && a.episodes !== '')
+                    ? +a.episodes
+                    : (a.total !== undefined && a.total !== null && a.total !== '')
+                        ? +a.total
+                        : null;
 
-// ── EP ADJUSTMENT ─────────────────────────────────────────
-function adjustEps(id,delta){
-  const anime=findAnime(id); if(!anime) return;
-  const newEps=Math.max(0,(+anime.eps||0)+delta);
-  if(anime.total&&newEps>+anime.total) return;
-  anime.eps=newEps;
-  if(anime.total&&newEps===+anime.total&&currentTab==='watching'){
-    anime.status='completed'; db.watching=db.watching.filter(a=>a.id!==id); db.completed.unshift(anime);
-    showToast('Moved to Completed! 🎉','success');
-  }
-  saveDB(); updateStats(); renderList();
-}
-window.adjustEps=adjustEps;
+                // ── genres ──
+                // "category" = comma-separated string, "genres" = array or string
+                let genres = [];
+                const genreSource = a.category || a.genres;
+                if (Array.isArray(genreSource)) {
+                    genres = genreSource.map(g => g.trim()).filter(Boolean);
+                } else if (typeof genreSource === 'string' && genreSource.trim()) {
+                    genres = genreSource.split(',').map(g => g.trim()).filter(Boolean);
+                }
 
-function findAnime(id){ for(const s of Object.keys(db)){ const f=db[s].find(a=>a.id===id); if(f) return f; } return null; }
-function removeAnime(id){ for(const s of Object.keys(db)){ const idx=db[s].findIndex(a=>a.id===id); if(idx>-1){db[s].splice(idx,1);return;} } }
+                // ── status ──
+                const rawStatus = (a.status || '').toLowerCase().trim();
+                let status = 'planning';
+                if (['watching', 'currently watching', 'watching now'].includes(rawStatus)) status = 'watching';
+                else if (['completed', 'complete', 'finished', 'done', 'watched'].includes(rawStatus)) status = 'completed';
+                else if (['on hold', 'onhold', 'on-hold', 'on_hold', 'paused', 'hold'].includes(rawStatus)) status = 'planning';
+                else if (['dropped', 'drop', 'abandoned'].includes(rawStatus)) status = 'dropped';
+                else if (['plan to watch', 'plan_to_watch', 'plantowatch', 'planning', 'want to watch', 'plan', 'ptw'].includes(rawStatus)) status = 'planning';
+                else if (['waiting', 'wait', 'airing', 'next season'].includes(rawStatus)) status = 'waiting';
+                else console.warn(`[AniTrack] Unrecognised status: "${a.status}" for "${a.title}" — defaulting to planning`);
 
-// ── MODAL ─────────────────────────────────────────────────
-window.openAddModal=function(){
-  editingId=null; document.getElementById('modalTitle').textContent='Add Anime';
-  ['editId','fTitle','fSub','fScore','fEps','fTotal','fGenres'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('fFormat').value='TV';
-  document.getElementById('fStatus').value=currentTab==='dupes'?'watching':currentTab;
-  document.getElementById('fEps').value='0';
-  document.getElementById('modalOverlay').classList.remove('hidden');
-  setTimeout(()=>document.getElementById('fTitle').focus(),50);
-};
-window.openEditModal=function(id){
-  const a=findAnime(id); if(!a) return;
-  editingId=id; document.getElementById('modalTitle').textContent='Edit Anime';
-  document.getElementById('editId').value=id;
-  document.getElementById('fTitle').value=a.title||'';
-  document.getElementById('fSub').value=a.sub||'';
-  document.getElementById('fFormat').value=a.format||'TV';
-  document.getElementById('fStatus').value=a.status||'watching';
-  document.getElementById('fScore').value=(a.score!==null&&a.score!=='') ? a.score : '';
-  document.getElementById('fEps').value=a.eps||0;
-  document.getElementById('fTotal').value=a.total||'';
-  document.getElementById('fGenres').value=(a.genres||[]).join(', ');
-  document.getElementById('modalOverlay').classList.remove('hidden');
-  setTimeout(()=>document.getElementById('fTitle').focus(),50);
-};
-window.closeModal=function(){ document.getElementById('modalOverlay').classList.add('hidden'); };
-window.closeModalIfBg=function(e){ if(e.target===document.getElementById('modalOverlay')) closeModal(); };
-window.saveAnime=function(){
-  const title=document.getElementById('fTitle').value.trim();
-  if(!title){showToast('Title is required','error');return;}
-  const status=document.getElementById('fStatus').value;
-  const scoreRaw=document.getElementById('fScore').value.trim();
-  const score=scoreRaw===''?null:Math.min(10,Math.max(0,+scoreRaw));
-  const eps=Math.max(0,parseInt(document.getElementById('fEps').value)||0);
-  const totalRaw=document.getElementById('fTotal').value.trim();
-  const total=totalRaw===''?null:parseInt(totalRaw)||null;
-  const genres=document.getElementById('fGenres').value.trim().split(',').map(g=>g.trim()).filter(Boolean);
-  if(editingId){
-    const old=findAnime(editingId); if(!old) return;
-    const oldStatus=old.status;
-    Object.assign(old,{title,sub:document.getElementById('fSub').value.trim(),format:document.getElementById('fFormat').value,status,score,eps,total,genres});
-    if(oldStatus!==status){ db[oldStatus]=db[oldStatus].filter(a=>a.id!==editingId); db[status].unshift(old); }
-    showToast('Anime updated ✓','success');
-  } else {
-    db[status].unshift({id:genId(),title,sub:document.getElementById('fSub').value.trim(),format:document.getElementById('fFormat').value,status,score,eps,total,genres,addedAt:Date.now()});
-    showToast('Anime added ✓','success');
-  }
-  saveDB(); updateStats();
-  if(status!==currentTab&&currentTab!=='dupes') switchTab(status,document.getElementById('tab-'+status));
-  else renderList();
-  closeModal();
-};
+                // ── sub/note ──
+                const sub = a.sub || a.note || a.notes || '';
 
-// ── DELETE ────────────────────────────────────────────────
-let pendingDeleteId=null;
-window.confirmDelete=function(id){
-  const a=findAnime(id); if(!a) return;
-  pendingDeleteId=id;
-  document.getElementById('confirmTitle').textContent=a.title;
-  document.getElementById('confirmMsg').textContent='Remove this anime from your list?';
-  document.getElementById('confirmOkBtn').onclick=doDelete;
-  document.getElementById('confirmOverlay').classList.remove('hidden');
-};
-function doDelete(){
-  if(!pendingDeleteId) return;
-  removeAnime(pendingDeleteId); saveDB(); updateStats();
-  if(currentTab==='dupes'&&getDupes().length===0) switchTab('watching',document.getElementById('tab-watching'));
-  else renderList();
-  closeConfirm(); showToast('Anime removed','success');
-}
-window.closeConfirm=function(){ document.getElementById('confirmOverlay').classList.add('hidden'); pendingDeleteId=null; };
+                // ── score (0 means unscored) ──
+                const score = (!a.score || +a.score === 0) ? null : +a.score;
 
-// ── TABS / SORT ───────────────────────────────────────────
-window.switchTab=function(status,el){
-  currentTab=status; currentSearch='';
-  document.getElementById('filterBox').value=''; document.getElementById('navSearch').value='';
-  document.querySelectorAll('.sidebar-item[id^="tab-"]').forEach(s=>s.classList.remove('active'));
-  if(el) el.classList.add('active'); renderList();
-};
-window.setSort=function(s,el){
-  currentSort=s;
-  document.querySelectorAll('.sidebar-item[id^="sort-"]').forEach(x=>x.classList.remove('active'));
-  if(el) el.classList.add('active'); renderList();
-};
-window.filterSearch=function(val){
-  currentSearch=val;
-  document.getElementById('filterBox').value=val; document.getElementById('navSearch').value=val; renderList();
-};
+                // ── cover ──
+                const cover = a.cover || a.image || a.cover_url || null;
 
-// ── TOAST ─────────────────────────────────────────────────
-let toastTimer;
-window.showToast=function(msg,type='success'){
-  const t=document.getElementById('toast'); t.textContent=msg; t.className='toast '+type+' show';
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>{t.className='toast';},2400);
-};
+                return {
+                    id: a.id || genId(),
+                    title: a.title || 'Untitled',
+                    sub: typeof sub === 'string' ? sub : '',
+                    format: a.format || 'TV',
+                    status,
+                    _rawStatus: rawStatus,
+                    score,
+                    eps: epsWatched,
+                    total: epsTotal,
+                    genres,
+                    cover,
+                    addedAt: a.addedAt || Date.now()
+                };
+            });
+        }
 
-// ── UTILS ─────────────────────────────────────────────────
-function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function genId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+        function showImportPreview(list) {
+            const counts = { watching: 0, completed: 0, paused: 0, dropped: 0, planning: 0, waiting: 0 };
+            const unknownStatuses = new Set();
+            list.forEach(a => {
+                if (counts[a.status] !== undefined) counts[a.status]++;
+                if (a._rawStatus && !['watching', 'completed', 'paused', 'dropped', 'planning'].includes(a.status)) {
+                    unknownStatuses.add(a._rawStatus);
+                }
+            });
 
-// ── IMPORT / EXPORT ───────────────────────────────────────
-let importData=null, importMode='merge';
-window.openIOModal=function(){
-  importData=null; importMode='merge';
-  document.getElementById('importPreview').classList.remove('show');
-  document.getElementById('doImportBtn').style.display='none';
-  document.getElementById('clearImportBtn').style.display='none';
-  document.getElementById('fileInput').value='';
-  document.getElementById('dropZone').querySelector('p').textContent='Click to choose a file, or drag & drop a .json here';
-  document.getElementById('dropZone').querySelector('.big').textContent='📂';
-  setImportMode('merge'); updateExportInfo();
-  document.getElementById('ioOverlay').classList.remove('hidden');
-};
-window.closeIO=function(){ document.getElementById('ioOverlay').classList.add('hidden'); };
-window.closeIOIfBg=function(e){ if(e.target===document.getElementById('ioOverlay')) closeIO(); };
-function updateExportInfo(){
-  const all=allAnime();
-  document.getElementById('exportInfo').textContent=all.length?`Your list has ${all.length} entr${all.length===1?'y':'ies'}.`:'Your list is empty.';
-}
-window.exportJSON=function(){
-  const all=allAnime(); if(!all.length){showToast('Nothing to export yet','error');return;}
-  const blob=new Blob([JSON.stringify({version:2,exportedAt:new Date().toISOString(),anime:all},null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob); const a=document.createElement('a');
-  a.href=url; a.download='animelist_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
-  URL.revokeObjectURL(url); showToast('Exported '+all.length+' anime ✓','success');
-};
-window.copyJSON=function(){
-  const all=allAnime(); if(!all.length){showToast('Nothing to copy yet','error');return;}
-  navigator.clipboard.writeText(JSON.stringify({version:2,exportedAt:new Date().toISOString(),anime:all},null,2))
-    .then(()=>{ const btn=document.getElementById('copyBtn'); btn.textContent='✓ Copied!'; showToast('Copied ✓','success'); setTimeout(()=>{btn.textContent='⎘ Copy to clipboard';},2000); })
-    .catch(()=>showToast('Copy failed','error'));
-};
-window.setImportMode=function(m){
-  importMode=m;
-  document.getElementById('mode-merge').classList.toggle('active',m==='merge');
-  document.getElementById('mode-replace').classList.toggle('active',m==='replace');
-  if(importData) showImportPreview(importData);
-};
-function parseImportFile(text){
-  const raw=JSON.parse(text); let animeList=[];
-  if(Array.isArray(raw)) animeList=raw;
-  else if(raw.anime&&Array.isArray(raw.anime)) animeList=raw.anime;
-  else { ['watching','completed','paused','dropped','planning','waiting'].forEach(k=>{if(Array.isArray(raw[k])) animeList.push(...raw[k]);}); if(!animeList.length) throw new Error('Unrecognised format'); }
-  console.log('[AniTrack] Statuses:',[...new Set(animeList.map(a=>(a.status||'').toLowerCase().trim()))]);
-  return animeList.map(a=>{
-    const epsWatched=+a.progress||+a.eps||0;
-    const epsTotal=(a.episodes!=null&&a.episodes!=='')?+a.episodes:(a.total!=null&&a.total!=='')?+a.total:null;
-    let genres=[]; const gs=a.category||a.genres;
-    if(Array.isArray(gs)) genres=gs.map(g=>g.trim()).filter(Boolean);
-    else if(typeof gs==='string'&&gs.trim()) genres=gs.split(',').map(g=>g.trim()).filter(Boolean);
-    const r=(a.status||'').toLowerCase().trim(); let status='planning';
-    if(['watching','currently watching'].includes(r)) status='watching';
-    else if(['completed','complete','finished','done','watched'].includes(r)) status='completed';
-    else if(['on hold','onhold','on-hold','on_hold','paused','hold'].includes(r)) status='planning';
-    else if(['dropped','drop','abandoned'].includes(r)) status='dropped';
-    else if(['plan to watch','plan_to_watch','plantowatch','planning','want to watch','plan','ptw'].includes(r)) status='planning';
-    else if(['waiting','wait','airing','next season'].includes(r)) status='waiting';
-    return {id:a.id||genId(),title:a.title||'Untitled',sub:String(a.sub||a.note||a.notes||''),format:a.format||'TV',status,_rawStatus:r,score:(!a.score||+a.score===0)?null:+a.score,eps:epsWatched,total:epsTotal,genres,cover:a.cover||a.image||null,addedAt:a.addedAt||Date.now()};
-  });
-}
-function showImportPreview(list){
-  const counts={watching:0,completed:0,paused:0,dropped:0,planning:0,waiting:0};
-  list.forEach(a=>{if(counts[a.status]!==undefined) counts[a.status]++;});
-  const existing=allAnime().length;
-  document.getElementById('previewTitle').textContent=importMode==='merge'?`Will add ${list.length} entries (${existing} existing kept)`:`Will replace all ${existing} entries with ${list.length} new ones`;
-  document.getElementById('previewStats').innerHTML=Object.entries(counts).filter(([,v])=>v>0).map(([k,v])=>`<span class="preview-stat">${v} <span>${k}</span></span>`).join('');
-  document.getElementById('importPreview').classList.add('show');
-  document.getElementById('doImportBtn').style.display='';
-  document.getElementById('clearImportBtn').style.display='';
-}
-window.onFileChosen=function(e){const f=e.target.files[0];if(f) readImportFile(f);};
-window.onDragOver=function(e){e.preventDefault();document.getElementById('dropZone').classList.add('drag-over');};
-window.onDragLeave=function(){document.getElementById('dropZone').classList.remove('drag-over');};
-window.onDrop=function(e){e.preventDefault();document.getElementById('dropZone').classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f) readImportFile(f);};
-function readImportFile(file){
-  if(!file.name.endsWith('.json')&&file.type!=='application/json'){showToast('Please drop a .json file','error');return;}
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    try{ importData=parseImportFile(ev.target.result); document.getElementById('dropZone').querySelector('.big').textContent='✅'; document.getElementById('dropZone').querySelector('p').textContent=`"${file.name}" — ${importData.length} entries`; showImportPreview(importData); }
-    catch(err){ showToast('Invalid JSON or unsupported format','error'); document.getElementById('dropZone').querySelector('.big').textContent='❌'; document.getElementById('dropZone').querySelector('p').textContent='Could not parse file.'; }
-  };
-  reader.readAsText(file);
-}
-window.clearImport=function(){
-  importData=null; document.getElementById('fileInput').value='';
-  document.getElementById('dropZone').querySelector('.big').textContent='📂';
-  document.getElementById('dropZone').querySelector('p').textContent='Click to choose a file, or drag & drop a .json here';
-  document.getElementById('importPreview').classList.remove('show');
-  document.getElementById('doImportBtn').style.display='none';
-  document.getElementById('clearImportBtn').style.display='none';
-};
-window.doImport=function(){
-  if(!importData||!importData.length){showToast('No file loaded','error');return;}
-  if(importMode==='replace') db={watching:[],completed:[],paused:[],dropped:[],planning:[],waiting:[]};
-  let added=0,skipped=0;
-  const existingIds=new Set(allAnime().map(a=>a.id));
-  importData.forEach(a=>{ if(importMode==='merge'&&existingIds.has(a.id)) skipped++; else{db[a.status].push(a);added++;} });
-  saveDB(); updateStats();
-  switchTab(currentTab,document.getElementById('tab-'+currentTab));
-  closeIO(); showToast(importMode==='replace'?`Imported ${added} anime ✓`:`Added ${added}${skipped?' ('+skipped+' dupes skipped)':''}  ✓`,'success');
-};
-window.clearAllData=function(){
-  if(!confirm('Delete your entire anime list?')) return;
-  db={watching:[],completed:[],paused:[],dropped:[],planning:[],waiting:[]};
-  saveDB(); updateStats(); switchTab('watching',document.getElementById('tab-watching')); closeIO();
-  showToast('All data cleared','success');
-};
+            const existing = allAnime().length;
+            const merged = importMode === 'merge'
+                ? `Will add ${list.length} entries (${existing} existing kept)`
+                : `Will replace all ${existing} existing entries with ${list.length} new ones`;
 
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeModal();closeConfirm();closeIO();}
-  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'&&!document.getElementById('modalOverlay').classList.contains('hidden')) saveAnime();
-});
+            document.getElementById('previewTitle').textContent = merged;
+            const statsEl = document.getElementById('previewStats');
+            statsEl.innerHTML = Object.entries(counts).filter(([, v]) => v > 0).map(([k, v]) =>
+                `<span class="preview-stat">${v} <span>${k}</span></span>`
+            ).join('');
 
-updateStats();
-renderList();
-</script>
+            // Show unrecognised raw status values so user knows what's unmapped
+            const unknowns = [...new Set(list.filter(a => a._rawStatus).map(a => a._rawStatus))].filter(r =>
+                !['watching', 'currently watching', 'watching now', 'completed', 'complete', 'finished', 'done', 'watched',
+                    'on hold', 'onhold', 'on-hold', 'on_hold', 'paused', 'hold', 'dropped', 'drop', 'abandoned',
+                    'plan to watch', 'plan_to_watch', 'plantowatch', 'planning', 'want to watch', 'plan', 'ptw', 'waiting', 'wait'].includes(r)
+            );
+            const warnEl = document.getElementById('statusWarning');
+            if (unknowns.length) {
+                warnEl.style.display = 'block';
+                warnEl.textContent = `⚠ Unrecognised status values (mapped to Planning): ${unknowns.map(s => '"' + s + '"').join(', ')}`;
+            } else {
+                warnEl.style.display = 'none';
+            }
+
+            document.getElementById('importPreview').classList.add('show');
+            document.getElementById('doImportBtn').style.display = '';
+            document.getElementById('clearImportBtn').style.display = '';
+        }
+
+        function onFileChosen(e) {
+            const file = e.target.files[0];
+            if (file) readImportFile(file);
+        }
+        function onDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
+        function onDragLeave() { document.getElementById('dropZone').classList.remove('drag-over'); }
+        function onDrop(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file) readImportFile(file);
+        }
+
+        function readImportFile(file) {
+            if (!file.name.endsWith('.json') && file.type !== 'application/json') {
+                showToast('Please drop a .json file', 'error'); return;
+            }
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    importData = parseImportFile(ev.target.result);
+                    document.getElementById('dropZone').querySelector('.big').textContent = '✅';
+                    document.getElementById('dropZone').querySelector('p').textContent = `"${file.name}" loaded — ${importData.length} entries found`;
+                    showImportPreview(importData);
+                } catch (err) {
+                    showToast('Invalid JSON or unsupported format', 'error');
+                    document.getElementById('dropZone').querySelector('.big').textContent = '❌';
+                    document.getElementById('dropZone').querySelector('p').textContent = 'Could not parse file. Make sure it\'s a valid AniTrack or compatible JSON.';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearImport() {
+            importData = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('dropZone').querySelector('.big').textContent = '📂';
+            document.getElementById('dropZone').querySelector('p').textContent = 'Click to choose a file, or drag & drop a .json here';
+            document.getElementById('importPreview').classList.remove('show');
+            document.getElementById('doImportBtn').style.display = 'none';
+            document.getElementById('clearImportBtn').style.display = 'none';
+        }
+
+        function doImport() {
+            if (!importData || !importData.length) { showToast('No file loaded', 'error'); return; }
+
+            if (importMode === 'replace') {
+                db = { watching: [], completed: [], paused: [], dropped: [], planning: [], waiting: [] };
+            }
+
+            let added = 0, skipped = 0;
+            const existingIds = new Set(allAnime().map(a => a.id));
+
+            importData.forEach(a => {
+                if (importMode === 'merge' && existingIds.has(a.id)) {
+                    skipped++;
+                } else {
+                    db[a.status].push(a);
+                    added++;
+                }
+            });
+
+            saveDB(); updateStats();
+            switchTab(currentTab, document.getElementById('tab-' + currentTab));
+            closeIO();
+
+            const msg = importMode === 'replace'
+                ? `Imported ${added} anime ✓`
+                : `Added ${added} anime${skipped ? ' (' + skipped + ' duplicates skipped)' : ''}  ✓`;
+            showToast(msg, 'success');
+        }
+
+        // ── INIT ─────────────────────────────────────────────────
+        loadDB();
+        updateStats();
+        renderList();
+    </script>
 </body>
+
 </html>
