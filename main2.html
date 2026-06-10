@@ -169,7 +169,7 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 .ep-val{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);width:52px;text-align:center;white-space:nowrap;flex-shrink:0;}
 
 /* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:1.5rem;}
+.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:1.5rem;}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
   padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;}
@@ -178,6 +178,7 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 .stat-card:nth-child(3)::before{background:linear-gradient(90deg,transparent,#ff4757,transparent);}
 .stat-card:nth-child(4)::before{background:linear-gradient(90deg,transparent,#9b6dff,transparent);}
 .stat-card:nth-child(5)::before{background:linear-gradient(90deg,transparent,#ff9254,transparent);}
+.stat-card:nth-child(6)::before{background:linear-gradient(90deg,transparent,#ff6b9d,transparent);}
 .stat-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3);}
 .stat-val{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;display:block;margin-bottom:2px;line-height:1;}
 .stat-lbl{font-size:10px;color:var(--text-dim);font-weight:500;text-transform:uppercase;letter-spacing:1px;}
@@ -362,6 +363,9 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
       <a href="#" class="sidebar-item" id="tab-waiting" onclick="switchTab('waiting',this);return false;">
         <span class="dot dot-waiting"></span> Waiting <span class="count" id="cnt-waiting">0</span>
       </a>
+      <a href="#" class="sidebar-item" id="tab-nsfw" onclick="switchTab('nsfw',this);return false;">
+        <span class="dot" style="background:#ff6b9d;box-shadow:0 0 6px #ff6b9d"></span> NSFW / 18+ <span class="count" id="cnt-nsfw">0</span>
+      </a>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-title">Tools</div>
@@ -404,6 +408,9 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
       </div>
       <div class="stat-card" onclick="switchTab('waiting',document.getElementById('tab-waiting'))">
         <span class="stat-val" style="color:#ff9254;text-shadow:0 0 20px rgba(255,146,84,0.4)" id="sc-waiting">0</span><span class="stat-lbl">Waiting</span>
+      </div>
+      <div class="stat-card" onclick="switchTab('nsfw',document.getElementById('tab-nsfw'))">
+        <span class="stat-val" style="color:#ff6b9d;text-shadow:0 0 20px rgba(255,107,157,0.4)" id="sc-nsfw">0</span><span class="stat-lbl">NSFW / 18+</span>
       </div>
     </div>
 
@@ -464,6 +471,7 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
             <option value="dropped">Dropped</option>
             <option value="planning">Plan to Watch</option>
             <option value="waiting">Waiting</option>
+            <option value="nsfw">NSFW / 18+</option>
           </select>
         </div>
         <div class="form-group">
@@ -621,11 +629,11 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 <div class="toast" id="toast"></div>
 
 <script>
-const STATUS_COLORS = {watching:'#00c2ff',completed:'#00e5a0',dropped:'#ff4757',planning:'#9b6dff',waiting:'#ff9254'};
-const STATUS_NAMES  = {watching:'Watching',completed:'Completed',dropped:'Dropped',planning:'Plan to Watch',waiting:'Waiting'};
+const STATUS_COLORS = {watching:'#00c2ff',completed:'#00e5a0',dropped:'#ff4757',planning:'#9b6dff',waiting:'#ff9254',nsfw:'#ff6b9d'};
+const STATUS_NAMES  = {watching:'Watching',completed:'Completed',dropped:'Dropped',planning:'Plan to Watch',waiting:'Waiting',nsfw:'NSFW / 18+'};
 const AVG_EP_MINS   = 24;
 
-let db = {watching:[],completed:[],dropped:[],planning:[],waiting:[]};
+let db = {watching:[],completed:[],dropped:[],planning:[],waiting:[],nsfw:[]};
 let currentTab = 'watching', currentSearch = '', currentSort = 'score', editingId = null;
 
 function saveDB(){}  // memory only — data clears on refresh
@@ -946,7 +954,7 @@ function parseImportFile(text){
   const raw=JSON.parse(text); let list=[];
   if(Array.isArray(raw)) list=raw;
   else if(raw.anime&&Array.isArray(raw.anime)) list=raw.anime;
-  else { ['watching','completed','dropped','planning','waiting'].forEach(k=>{if(Array.isArray(raw[k])) list.push(...raw[k]);}); if(!list.length) throw new Error('Unrecognised format'); }
+  else { ['watching','completed','dropped','planning','waiting','nsfw'].forEach(k=>{if(Array.isArray(raw[k])) list.push(...raw[k]);}); if(!list.length) throw new Error('Unrecognised format'); }
   return list.map(a=>{
     const ew=+a.progress||+a.eps||0, et=(a.episodes!=null&&a.episodes!=='')?+a.episodes:(a.total!=null&&a.total!=='')?+a.total:null;
     let genres=[]; const gs=a.category||a.genres;
@@ -958,11 +966,12 @@ function parseImportFile(text){
     else if(['dropped','drop','abandoned'].includes(r)) status='dropped';
     else if(['plan to watch','plan_to_watch','plantowatch','planning','want to watch','plan','ptw','on hold','onhold','on-hold','paused','hold'].includes(r)) status='planning';
     else if(['waiting','wait','airing','next season'].includes(r)) status='waiting';
+    else if(['nsfw','18+','adult','ecchi','hentai'].includes(r)) status='nsfw';
     return {id:a.id||genId(),title:a.title||'Untitled',sub:String(a.sub||a.note||a.notes||''),format:a.format||'TV',status,score:(!a.score||+a.score===0)?null:+a.score,eps:ew,total:et,genres,cover:a.cover||a.image||null,addedAt:a.addedAt||Date.now()};
   });
 }
 function showImportPreview(list){
-  const counts={watching:0,completed:0,dropped:0,planning:0,waiting:0};
+  const counts={watching:0,completed:0,dropped:0,planning:0,waiting:0,nsfw:0};
   list.forEach(a=>{if(counts[a.status]!==undefined) counts[a.status]++;});
   const existing=allAnime().length;
   document.getElementById('previewTitle').textContent=importMode==='merge'?`Will add ${list.length} entries (${existing} existing kept)`:`Will replace all ${existing} entries with ${list.length} new ones`;
@@ -993,7 +1002,7 @@ function clearImport(){
 }
 function doImport(){
   if(!importData||!importData.length){showToast('No file loaded','error');return;}
-  if(importMode==='replace') db={watching:[],completed:[],dropped:[],planning:[],waiting:[]};
+  if(importMode==='replace') db={watching:[],completed:[],dropped:[],planning:[],waiting:[],nsfw:[]};
   let added=0,skipped=0; const existingIds=new Set(allAnime().map(a=>a.id));
   importData.forEach(a=>{ if(importMode==='merge'&&existingIds.has(a.id)) skipped++; else{db[a.status].push(a);added++;} });
   saveDB(); updateStats(); updateWatchingBanner(); scanBrokenCovers();
@@ -1002,7 +1011,7 @@ function doImport(){
 }
 function clearAllData(){
   if(!confirm('Delete your entire anime list?')) return;
-  db={watching:[],completed:[],dropped:[],planning:[],waiting:[]};
+  db={watching:[],completed:[],dropped:[],planning:[],waiting:[],nsfw:[]};
   saveDB(); updateStats(); updateWatchingBanner(); switchTab('watching',document.getElementById('tab-watching')); closeIO();
   showToast('All data cleared','success');
 }
@@ -1110,7 +1119,7 @@ function renderReadonlyView(anime){
   const scored=anime.filter(a=>a.score||a.sc);
   const mean=scored.length?(scored.reduce((s,a)=>s+(+(a.score||a.sc)),0)/scored.length).toFixed(1):'—';
   document.getElementById('roMeta').textContent=`${anime.length} anime · ${eps.toLocaleString()} episodes · Mean score: ${mean}`;
-  const statuses=[{k:'watching',l:'Watching',c:'#00c2ff'},{k:'completed',l:'Completed',c:'#00e5a0'},{k:'dropped',l:'Dropped',c:'#ff4757'},{k:'planning',l:'Plan to Watch',c:'#9b6dff'},{k:'waiting',l:'Waiting',c:'#ff9254'}];
+  const statuses=[{k:'watching',l:'Watching',c:'#00c2ff'},{k:'completed',l:'Completed',c:'#00e5a0'},{k:'dropped',l:'Dropped',c:'#ff4757'},{k:'planning',l:'Plan to Watch',c:'#9b6dff'},{k:'waiting',l:'Waiting',c:'#ff9254'},{k:'nsfw',l:'NSFW / 18+',c:'#ff6b9d'}];
   let html=`<div class="ro-stats-bar">${statuses.map(s=>{const n=anime.filter(a=>(a.status||a.s)===s.k).length;return n?`<div class="ro-stat"><span class="ro-stat-val" style="color:${s.c}">${n}</span><span class="ro-stat-lbl">${s.l}</span></div>`:''}).join('')}</div>`;
   statuses.forEach(({k,l,c})=>{
     const list=anime.filter(a=>(a.status||a.s)===k); if(!list.length) return;
