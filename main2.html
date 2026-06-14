@@ -524,13 +524,14 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
       <h2>Import / Export</h2>
       <button class="modal-close" onclick="closeIO()">×</button>
     </div>
-    <p>Back up your list or move it between devices using JSON files.</p>
+    <p>Back up your list or move it between devices using JSON or TXT files.</p>
     <div class="io-section">
       <div class="io-section-title">Export</div>
       <div class="io-row">
-        <button class="btn btn-green" onclick="exportJSON()">⬇ Download animelist.json</button>
-        <button class="btn" onclick="copyJSON()" id="copyBtn">⎘ Copy to clipboard</button>
-        <button class="btn" onclick="openShareModal()" style="border-color:rgba(155,109,255,0.4);color:var(--accent2);">📤 Share List</button>
+        <button class="btn btn-green" onclick="exportJSON()">⬇ JSON</button>
+        <button class="btn btn-green" onclick="exportTXT()" style="border-color:rgba(0,229,160,0.4);">⬇ TXT</button>
+        <button class="btn" onclick="copyJSON()" id="copyBtn">⎘ Copy JSON</button>
+        <button class="btn" onclick="openShareModal()" style="border-color:rgba(155,109,255,0.4);color:var(--accent2);">📤 Share</button>
       </div>
       <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;">
         <div style="font-size:12px;color:var(--text-dim)" id="exportInfo"></div>
@@ -541,8 +542,8 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
       <div class="io-section-title">Import</div>
       <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
         <div class="big">📂</div>
-        <p>Click to choose a file, or drag &amp; drop a <strong>.json</strong> here</p>
-        <input type="file" id="fileInput" accept=".json,application/json" onchange="onFileChosen(event)">
+        <p>Click to choose a file, or drag &amp; drop a <strong>.json</strong> or <strong>.txt</strong> here</p>
+        <input type="file" id="fileInput" accept=".json,.txt,application/json,text/plain" onchange="onFileChosen(event)">
       </div>
       <div class="import-mode">
         <button class="mode-btn active" id="mode-merge" onclick="setImportMode('merge')">Merge — keep existing + add new</button>
@@ -821,7 +822,7 @@ function openAddModal(){
   editingId=null; document.getElementById('modalTitle').textContent='Add Anime';
   ['fTitle','fSub','fScore','fGenres','fCover'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('editId').value=''; document.getElementById('fFormat').value='TV';
-  document.getElementById('fStatus').value=currentTab==='dupes'?'watching':currentTab;
+  document.getElementById('fStatus').value=currentTab==='dupes'||currentTab==='broken'?'watching':currentTab==='nsfw'?'nsfw':currentTab;
   document.getElementById('fEps').value='0'; document.getElementById('fTotal').value='';
   document.getElementById('modalOverlay').classList.remove('hidden');
   setTimeout(()=>document.getElementById('fTitle').focus(),50);
@@ -931,6 +932,32 @@ function openIOModal(){
 function closeIO(){ document.getElementById('ioOverlay').classList.add('hidden'); }
 function closeIOIfBg(e){ if(e.target===document.getElementById('ioOverlay')) closeIO(); }
 
+function exportTXT(){
+  const all=allAnime(); if(!all.length){showToast('Nothing to export yet','error');return;}
+  const STATUS_LABELS = {watching:'Watching',completed:'Completed',dropped:'Dropped',planning:'Plan to Watch',waiting:'Waiting',nsfw:'NSFW / 18+'};
+  const groups = {};
+  all.forEach(a=>{ if(!groups[a.status]) groups[a.status]=[]; groups[a.status].push(a); });
+  const lines = ['ANITRACK — Anime List Export', `Exported: ${new Date().toLocaleDateString()}`, `Total: ${all.length} anime`, ''];
+  const order = ['watching','completed','planning','waiting','dropped','nsfw'];
+  order.forEach(status=>{
+    const list = groups[status]; if(!list||!list.length) return;
+    lines.push(`── ${(STATUS_LABELS[status]||status).toUpperCase()} (${list.length}) ──`);
+    list.forEach((a,i)=>{
+      const score = (a.score!==null&&a.score!=='') ? `${(+a.score).toFixed(1)}/10` : 'Unscored';
+      const progress = a.total ? `${a.eps||0}/${a.total} eps` : a.eps ? `${a.eps} eps` : '';
+      const genres = (a.genres||[]).length ? `[${a.genres.join(', ')}]` : '';
+      lines.push(`${i+1}. ${a.title}${a.sub?' ('+a.sub+')':''}`);
+      lines.push(`   Score: ${score}${progress?' | Progress: '+progress:''}${genres?' | '+genres:''}`);
+      if(a.cover) lines.push(`   Cover: ${a.cover}`);
+    });
+    lines.push('');
+  });
+  const blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download='animelist_'+new Date().toISOString().slice(0,10)+'.txt'; a.click();
+  URL.revokeObjectURL(url); showToast('Exported as TXT ✓','success');
+}
+
 function exportJSON(){
   const all=allAnime(); if(!all.length){showToast('Nothing to export yet','error');return;}
   const blob=new Blob([JSON.stringify({version:2,exportedAt:new Date().toISOString(),anime:all},null,2)],{type:'application/json'});
@@ -984,14 +1011,77 @@ function onFileChosen(e){ const f=e.target.files[0]; if(f) readImportFile(f); }
 function onDragOver(e){ e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
 function onDragLeave(){ document.getElementById('dropZone').classList.remove('drag-over'); }
 function onDrop(e){ e.preventDefault(); document.getElementById('dropZone').classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f) readImportFile(f); }
+
 function readImportFile(file){
-  if(!file.name.endsWith('.json')&&file.type!=='application/json'){showToast('Please drop a .json file','error');return;}
+  const isTxt = file.name.endsWith('.txt') || file.type==='text/plain';
+  const isJson = file.name.endsWith('.json') || file.type==='application/json';
+  if(!isTxt && !isJson){ showToast('Please drop a .json or .txt file','error'); return; }
   const reader=new FileReader();
   reader.onload=ev=>{
-    try{ importData=parseImportFile(ev.target.result); document.getElementById('dropZone').querySelector('.big').textContent='✅'; document.getElementById('dropZone').querySelector('p').textContent=`"${file.name}" — ${importData.length} entries found`; showImportPreview(importData); }
-    catch(err){ showToast('Invalid JSON or unsupported format','error'); document.getElementById('dropZone').querySelector('.big').textContent='❌'; document.getElementById('dropZone').querySelector('p').textContent='Could not parse file.'; }
+    try{
+      importData = isTxt ? parseTXTFile(ev.target.result) : parseImportFile(ev.target.result);
+      document.getElementById('dropZone').querySelector('.big').textContent='✅';
+      document.getElementById('dropZone').querySelector('p').textContent=`"${file.name}" — ${importData.length} entries found`;
+      showImportPreview(importData);
+    } catch(err){
+      showToast('Could not parse file: '+err.message,'error');
+      document.getElementById('dropZone').querySelector('.big').textContent='❌';
+      document.getElementById('dropZone').querySelector('p').textContent='Could not parse file.';
+    }
   };
   reader.readAsText(file);
+}
+
+function parseTXTFile(text){
+  // Parse our own TXT export format
+  const STATUS_MAP = {
+    'WATCHING':'watching','COMPLETED':'completed','DROPPED':'dropped',
+    'PLAN TO WATCH':'planning','WAITING':'waiting','NSFW / 18+':'nsfw'
+  };
+  const lines = text.split('\n');
+  const anime = [];
+  let currentStatus = 'planning';
+  let currentAnime = null;
+
+  for(let i=0; i<lines.length; i++){
+    const line = lines[i];
+    // Section header: ── WATCHING (12) ──
+    const sectionMatch = line.match(/^──\s+(.+?)\s+\(\d+\)\s+──/);
+    if(sectionMatch){
+      const label = sectionMatch[1].trim();
+      currentStatus = STATUS_MAP[label] || 'planning';
+      currentAnime = null;
+      continue;
+    }
+    // Anime entry: "1. Title (sub)"
+    const entryMatch = line.match(/^\d+\.\s+(.+?)(?:\s+\((.+?)\))?$/);
+    if(entryMatch){
+      if(currentAnime) anime.push(currentAnime);
+      currentAnime = {
+        id: genId(), title: entryMatch[1].trim(),
+        sub: entryMatch[2]||'', status: currentStatus,
+        score: null, eps: 0, total: null, genres: [], cover: null, format:'TV', addedAt: Date.now()
+      };
+      continue;
+    }
+    // Score/progress line: "   Score: 8.5/10 | Progress: 12/24 eps | [Action, Fantasy]"
+    if(currentAnime && line.trim().startsWith('Score:')){
+      const scoreMatch = line.match(/Score:\s*([\d.]+)\/10/);
+      if(scoreMatch) currentAnime.score = +scoreMatch[1];
+      const progressMatch = line.match(/Progress:\s*(\d+)(?:\/(\d+))?\s*eps/);
+      if(progressMatch){ currentAnime.eps=+progressMatch[1]; if(progressMatch[2]) currentAnime.total=+progressMatch[2]; }
+      const genreMatch = line.match(/\[(.+?)\]/);
+      if(genreMatch) currentAnime.genres = genreMatch[1].split(',').map(g=>g.trim());
+      continue;
+    }
+    // Cover line
+    if(currentAnime && line.trim().startsWith('Cover:')){
+      currentAnime.cover = line.replace(/^\s*Cover:\s*/,'').trim() || null;
+    }
+  }
+  if(currentAnime) anime.push(currentAnime);
+  if(!anime.length) throw new Error('No anime entries found in TXT file');
+  return anime;
 }
 function clearImport(){
   importData=null; document.getElementById('fileInput').value='';
@@ -1055,7 +1145,8 @@ function getBrokenAnime(){
   return allAnime().filter(a => brokenIds.has(a.id));
 }
 
-// ── USERNAME ───────────────────────────────────────────────
+
+
 let currentUsername = 'My Anime List';
 
 function openUsernameEdit(){
