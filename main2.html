@@ -569,8 +569,8 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
       <div class="io-section-title">Import</div>
       <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
         <div class="big">📂</div>
-        <p>Click to choose a file, or drag &amp; drop a <strong>.json</strong> or <strong>.txt</strong> here</p>
-        <input type="file" id="fileInput" accept=".json,.txt,application/json,text/plain" onchange="onFileChosen(event)">
+        <p>Click to choose a file, or drag &amp; drop <strong>.json</strong>, <strong>.txt</strong>, or <strong>MAL .xml</strong> here</p>
+        <input type="file" id="fileInput" accept=".json,.txt,.xml,application/json,text/plain,text/xml,application/xml" onchange="onFileChosen(event)">
       </div>
       <div class="import-mode">
         <button class="mode-btn active" id="mode-merge" onclick="setImportMode('merge')">Merge — keep existing + add new</button>
@@ -1052,13 +1052,14 @@ function onDragLeave(){ document.getElementById('dropZone').classList.remove('dr
 function onDrop(e){ e.preventDefault(); document.getElementById('dropZone').classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f) readImportFile(f); }
 
 function readImportFile(file){
-  const isTxt = file.name.endsWith('.txt') || file.type==='text/plain';
+  const isTxt  = file.name.endsWith('.txt') || file.type==='text/plain';
   const isJson = file.name.endsWith('.json') || file.type==='application/json';
-  if(!isTxt && !isJson){ showToast('Please drop a .json or .txt file','error'); return; }
+  const isXml  = file.name.endsWith('.xml') || file.type.includes('xml');
+  if(!isTxt && !isJson && !isXml){ showToast('Please drop a .json, .txt, or .xml file','error'); return; }
   const reader=new FileReader();
   reader.onload=ev=>{
     try{
-      importData = isTxt ? parseTXTFile(ev.target.result) : parseImportFile(ev.target.result);
+      importData = isXml ? parseMALXML(ev.target.result) : isTxt ? parseTXTFile(ev.target.result) : parseImportFile(ev.target.result);
       document.getElementById('dropZone').querySelector('.big').textContent='✅';
       document.getElementById('dropZone').querySelector('p').textContent=`"${file.name}" — ${importData.length} entries found`;
       showImportPreview(importData);
@@ -1069,6 +1070,55 @@ function readImportFile(file){
     }
   };
   reader.readAsText(file);
+}
+
+function parseMALXML(text){
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(text, 'text/xml');
+  if(xml.querySelector('parsererror')) throw new Error('Invalid XML file');
+
+  const entries = xml.querySelectorAll('anime');
+  if(!entries.length) throw new Error('No <anime> entries found — make sure this is a MyAnimeList export XML');
+
+  // MAL status codes: 1=Watching, 2=Completed, 3=On-Hold, 4=Dropped, 6=Plan to Watch
+  const MAL_STATUS_MAP = {
+    'Watching':'watching', 'Completed':'completed', 'On-Hold':'planning',
+    'Dropped':'dropped', 'Plan to Watch':'planning',
+    '1':'watching','2':'completed','3':'planning','4':'dropped','6':'planning'
+  };
+
+  const getText = (node, tag) => {
+    const el = node.querySelector(tag);
+    return el ? el.textContent.trim() : '';
+  };
+
+  const anime = [];
+  entries.forEach(entry => {
+    const title   = getText(entry,'series_title');
+    if(!title) return;
+    const epsTotal  = parseInt(getText(entry,'series_episodes')) || null;
+    const epsWatched= parseInt(getText(entry,'my_watched_episodes')) || 0;
+    const scoreRaw  = parseFloat(getText(entry,'my_score')) || 0;
+    const statusRaw = getText(entry,'my_status');
+    const status    = MAL_STATUS_MAP[statusRaw] || 'planning';
+
+    anime.push({
+      id: genId(),
+      title,
+      sub: '',
+      format: 'TV',
+      status,
+      score: scoreRaw > 0 ? scoreRaw : null,
+      eps: epsWatched,
+      total: epsTotal,
+      genres: [],
+      cover: null,
+      addedAt: Date.now()
+    });
+  });
+
+  if(!anime.length) throw new Error('No valid anime entries found in the XML');
+  return anime;
 }
 
 function parseTXTFile(text){
