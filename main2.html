@@ -390,6 +390,33 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
       <a href="#" class="sidebar-item" id="sort-progress" onclick="setSort('progress',this);return false;">Progress</a>
       <a href="#" class="sidebar-item" id="sort-added" onclick="setSort('added',this);return false;">Date Added</a>
     </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Filter by Format</div>
+      <a href="#" class="sidebar-item format-filter-item active" data-format="all" onclick="setFormatFilter('all',this);return false;">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--text-dim);flex-shrink:0;"></span> All Formats
+      </a>
+      <a href="#" class="sidebar-item format-filter-item" data-format="TV" onclick="setFormatFilter('TV',this);return false;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#00c2ff;flex-shrink:0;"></span> TV
+      </a>
+      <a href="#" class="sidebar-item format-filter-item" data-format="TV Short" onclick="setFormatFilter('TV Short',this);return false;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#00d4c2;flex-shrink:0;"></span> TV Short
+      </a>
+      <a href="#" class="sidebar-item format-filter-item" data-format="Movie" onclick="setFormatFilter('Movie',this);return false;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#9b6dff;flex-shrink:0;"></span> Movie
+      </a>
+      <a href="#" class="sidebar-item format-filter-item" data-format="Special" onclick="setFormatFilter('Special',this);return false;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#ff9254;flex-shrink:0;"></span> Special
+      </a>
+      <a href="#" class="sidebar-item format-filter-item" data-format="OVA" onclick="setFormatFilter('OVA',this);return false;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#00e5a0;flex-shrink:0;"></span> OVA
+      </a>
+      <a href="#" class="sidebar-item format-filter-item" data-format="ONA" onclick="setFormatFilter('ONA',this);return false;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#ffd460;flex-shrink:0;"></span> ONA
+      </a>
+      <a href="#" class="sidebar-item format-filter-item" data-format="Music" onclick="setFormatFilter('Music',this);return false;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#ff6b9d;flex-shrink:0;"></span> Music
+      </a>
+    </div>
   </aside>
 
   <main class="content">
@@ -458,7 +485,7 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
         <div class="form-group">
           <label class="form-label">Format</label>
           <select class="form-select" id="fFormat">
-            <option>TV</option><option>Movie</option><option>OVA</option><option>ONA</option><option>Special</option>
+            <option>TV</option><option>TV Short</option><option>Movie</option><option>Special</option><option>OVA</option><option>ONA</option><option>Music</option>
           </select>
         </div>
       </div>
@@ -635,7 +662,7 @@ const STATUS_NAMES  = {watching:'Watching',completed:'Completed',dropped:'Droppe
 const AVG_EP_MINS   = 24;
 
 let db = {watching:[],completed:[],dropped:[],planning:[],waiting:[],nsfw:[]};
-let currentTab = 'watching', currentSearch = '', currentSort = 'score', editingId = null;
+let currentTab = 'watching', currentSearch = '', currentSort = 'score', editingId = null, currentFormatFilter = 'all';
 
 function saveDB(){}  // memory only — data clears on refresh
 function allAnime(){ return Object.values(db).flat(); }
@@ -693,12 +720,20 @@ function scoreClass(s){ if(s===null||s===''||s===undefined) return 'score-none';
 function getList(){
   if(currentTab==='dupes') return getDupesFlat();
   let list=[...(db[currentTab]||[])];
+  if(currentFormatFilter!=='all') list=list.filter(a=>(a.format||'TV')===currentFormatFilter);
   if(currentSearch){ const q=currentSearch.toLowerCase(); list=list.filter(a=>a.title.toLowerCase().includes(q)||(a.sub||'').toLowerCase().includes(q)); }
   if(currentSort==='title') list.sort((a,b)=>a.title.localeCompare(b.title));
   else if(currentSort==='score') list.sort((a,b)=>(b.score===''||b.score===null?-1:+b.score)-(a.score===''||a.score===null?-1:+a.score));
   else if(currentSort==='progress') list.sort((a,b)=>{ const pa=a.total?(+a.eps/+a.total):0,pb=b.total?(+b.eps/+b.total):0; return pb-pa; });
   else if(currentSort==='added') list.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
   return list;
+}
+
+function setFormatFilter(fmt, el){
+  currentFormatFilter = fmt;
+  document.querySelectorAll('.format-filter-item').forEach(x=>x.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderList();
 }
 
 function renderList(){
@@ -772,14 +807,18 @@ function renderList(){
   }
 
   const list=getList(), color=STATUS_COLORS[currentTab];
-  document.getElementById('toolbarTitle').textContent=STATUS_NAMES[currentTab];
+  document.getElementById('toolbarTitle').textContent=STATUS_NAMES[currentTab]+(currentFormatFilter!=='all'?` · ${currentFormatFilter}`:'');
   document.getElementById('toolbarCount').textContent=list.length+' entr'+(list.length===1?'y':'ies');
 
   if(!list.length){
     const total=(db[currentTab]||[]).length;
-    tbody.innerHTML=total===0
-      ?`<tr><td colspan="5"><div class="empty-state"><div class="big">📋</div><p>No anime in <b>${STATUS_NAMES[currentTab]}</b> yet.</p><button class="btn btn-primary" onclick="openAddModal()">＋ Add Your First Anime</button></div></td></tr>`
-      :`<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-dim)">No results for "${escHtml(currentSearch)}"</td></tr>`;
+    if(total===0){
+      tbody.innerHTML=`<tr><td colspan="5"><div class="empty-state"><div class="big">📋</div><p>No anime in <b>${STATUS_NAMES[currentTab]}</b> yet.</p><button class="btn btn-primary" onclick="openAddModal()">＋ Add Your First Anime</button></div></td></tr>`;
+    } else if(currentFormatFilter!=='all'){
+      tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-dim)">No <b>${currentFormatFilter}</b> entries in ${STATUS_NAMES[currentTab]}</td></tr>`;
+    } else {
+      tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-dim)">No results for "${escHtml(currentSearch)}"</td></tr>`;
+    }
     return;
   }
 
