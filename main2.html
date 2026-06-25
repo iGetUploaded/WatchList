@@ -96,6 +96,15 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 .dot-planning{background:#9b6dff;box-shadow:0 0 6px #9b6dff;}
 .dot-waiting{background:#ff9254;box-shadow:0 0 6px #ff9254;}
 
+.dropdown-select-wrap{position:relative;margin-bottom:8px;}
+.dropdown-select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);
+  padding:9px 30px 9px 12px;color:var(--text);font:inherit;font-size:13px;font-weight:500;outline:none;
+  cursor:pointer;appearance:none;-webkit-appearance:none;transition:all .18s;}
+.dropdown-select:hover{border-color:var(--accent);}
+.dropdown-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,194,255,0.08);}
+.dropdown-select option{background:var(--surface2);color:var(--text);}
+.dropdown-chevron{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:12px;pointer-events:none;}
+
 /* CONTENT */
 .content{flex:1;min-width:0;}
 
@@ -347,7 +356,14 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 <div class="main">
   <aside class="sidebar">
     <div class="sidebar-section">
-      <div class="sidebar-title">Status</div>
+      <div style="position:relative;">
+        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:13px;pointer-events:none;">🔍</span>
+        <input type="text" class="form-input" id="sidebarFilterBox" placeholder="Filter" oninput="filterSearch(this.value)" style="padding-left:32px;">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Lists</div>
       <a href="#" class="sidebar-item active" id="tab-watching" onclick="switchTab('watching',this);return false;">
         <span class="dot dot-watching"></span> Watching <span class="count" id="cnt-watching">0</span>
       </a>
@@ -367,6 +383,35 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
         <span class="dot" style="background:#ff6b9d;box-shadow:0 0 6px #ff6b9d"></span> NSFW / 18+ <span class="count" id="cnt-nsfw">0</span>
       </a>
     </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Filters</div>
+
+      <div class="dropdown-select-wrap">
+        <select class="dropdown-select" id="formatFilterSelect" onchange="setFormatFilter(this.value)">
+          <option value="all">Format: All</option>
+          <option value="TV">TV</option>
+          <option value="TV Short">TV Short</option>
+          <option value="Movie">Movie</option>
+          <option value="Special">Special</option>
+          <option value="OVA">OVA</option>
+          <option value="ONA">ONA</option>
+          <option value="Music">Music</option>
+        </select>
+        <span class="dropdown-chevron">⌄</span>
+      </div>
+
+      <div class="dropdown-select-wrap">
+        <select class="dropdown-select" id="sortSelect" onchange="setSort(this.value)">
+          <option value="score">Sort: Score</option>
+          <option value="title">Sort: Title</option>
+          <option value="progress">Sort: Progress</option>
+          <option value="added">Sort: Date Added</option>
+        </select>
+        <span class="dropdown-chevron">⌄</span>
+      </div>
+    </div>
+
     <div class="sidebar-section">
       <div class="sidebar-title">Tools</div>
       <a href="#" class="sidebar-item" id="tab-dupes" onclick="switchTab('dupes',this);return false;" style="display:none;">
@@ -382,40 +427,6 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
         <span style="font-size:14px">📤</span> Share List
       </a>
       <span id="no-tools-msg" style="font-size:12px;color:var(--text-dim);padding:4px 12px;display:block;">No issues found ✓</span>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-title">Sort By</div>
-      <a href="#" class="sidebar-item active" id="sort-score" onclick="setSort('score',this);return false;">Score</a>
-      <a href="#" class="sidebar-item" id="sort-title" onclick="setSort('title',this);return false;">Title</a>
-      <a href="#" class="sidebar-item" id="sort-progress" onclick="setSort('progress',this);return false;">Progress</a>
-      <a href="#" class="sidebar-item" id="sort-added" onclick="setSort('added',this);return false;">Date Added</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-title">Filter by Format</div>
-      <a href="#" class="sidebar-item format-filter-item active" data-format="all" onclick="setFormatFilter('all',this);return false;">
-        <span style="width:7px;height:7px;border-radius:50%;background:var(--text-dim);flex-shrink:0;"></span> All Formats
-      </a>
-      <a href="#" class="sidebar-item format-filter-item" data-format="TV" onclick="setFormatFilter('TV',this);return false;">
-        <span style="width:7px;height:7px;border-radius:50%;background:#00c2ff;flex-shrink:0;"></span> TV
-      </a>
-      <a href="#" class="sidebar-item format-filter-item" data-format="TV Short" onclick="setFormatFilter('TV Short',this);return false;">
-        <span style="width:7px;height:7px;border-radius:50%;background:#00d4c2;flex-shrink:0;"></span> TV Short
-      </a>
-      <a href="#" class="sidebar-item format-filter-item" data-format="Movie" onclick="setFormatFilter('Movie',this);return false;">
-        <span style="width:7px;height:7px;border-radius:50%;background:#9b6dff;flex-shrink:0;"></span> Movie
-      </a>
-      <a href="#" class="sidebar-item format-filter-item" data-format="Special" onclick="setFormatFilter('Special',this);return false;">
-        <span style="width:7px;height:7px;border-radius:50%;background:#ff9254;flex-shrink:0;"></span> Special
-      </a>
-      <a href="#" class="sidebar-item format-filter-item" data-format="OVA" onclick="setFormatFilter('OVA',this);return false;">
-        <span style="width:7px;height:7px;border-radius:50%;background:#00e5a0;flex-shrink:0;"></span> OVA
-      </a>
-      <a href="#" class="sidebar-item format-filter-item" data-format="ONA" onclick="setFormatFilter('ONA',this);return false;">
-        <span style="width:7px;height:7px;border-radius:50%;background:#ffd460;flex-shrink:0;"></span> ONA
-      </a>
-      <a href="#" class="sidebar-item format-filter-item" data-format="Music" onclick="setFormatFilter('Music',this);return false;">
-        <span style="width:7px;height:7px;border-radius:50%;background:#ff6b9d;flex-shrink:0;"></span> Music
-      </a>
     </div>
   </aside>
 
@@ -729,10 +740,8 @@ function getList(){
   return list;
 }
 
-function setFormatFilter(fmt, el){
+function setFormatFilter(fmt){
   currentFormatFilter = fmt;
-  document.querySelectorAll('.format-filter-item').forEach(x=>x.classList.remove('active'));
-  if(el) el.classList.add('active');
   renderList();
 }
 
@@ -929,18 +938,22 @@ function closeConfirm(){ document.getElementById('confirmOverlay').classList.add
 // ── TABS / SORT ────────────────────────────────────────────
 function switchTab(status,el){
   currentTab=status; currentSearch='';
-  document.getElementById('filterBox').value=''; document.getElementById('navSearch').value='';
+  const fb=document.getElementById('filterBox'); if(fb) fb.value='';
+  const ns=document.getElementById('navSearch'); if(ns) ns.value='';
+  const sb=document.getElementById('sidebarFilterBox'); if(sb) sb.value='';
   document.querySelectorAll('.sidebar-item[id^="tab-"]').forEach(s=>s.classList.remove('active'));
   if(el) el.classList.add('active'); renderList();
 }
-function setSort(s,el){
+function setSort(s){
   currentSort=s;
-  document.querySelectorAll('.sidebar-item[id^="sort-"]').forEach(x=>x.classList.remove('active'));
-  if(el) el.classList.add('active'); renderList();
+  renderList();
 }
 function filterSearch(val){
   currentSearch=val;
-  document.getElementById('filterBox').value=val; document.getElementById('navSearch').value=val; renderList();
+  const fb=document.getElementById('filterBox'); if(fb) fb.value=val;
+  const ns=document.getElementById('navSearch'); if(ns) ns.value=val;
+  const sb=document.getElementById('sidebarFilterBox'); if(sb) sb.value=val;
+  renderList();
 }
 
 // ── TOAST ──────────────────────────────────────────────────
