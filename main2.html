@@ -33,10 +33,6 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:2px;cursor:pointer;text-transform:uppercase;}
 .nav-spacer{flex:1;}
-.nav-search{background:rgba(30,39,56,0.8);border:1px solid var(--border2);border-radius:var(--radius);
-  padding:7px 14px;color:var(--text);font:inherit;font-size:13px;width:220px;outline:none;transition:all .2s;}
-.nav-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,194,255,0.1);}
-.nav-search::placeholder{color:var(--text-dim);}
 
 /* BANNER */
 .banner{height:240px;position:relative;overflow:hidden;
@@ -104,6 +100,70 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 .dropdown-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,194,255,0.08);}
 .dropdown-select option{background:var(--surface2);color:var(--text);}
 .dropdown-chevron{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:12px;pointer-events:none;}
+
+/* CHECKBOX DROPDOWN (Rating filter) */
+.checkbox-dropdown-wrap{position:relative;margin-bottom:8px;}
+.checkbox-dropdown-trigger{text-align:left;font:inherit;}
+.checkbox-dropdown-wrap .dropdown-chevron{transition:transform .15s;}
+.checkbox-dropdown-wrap.open .dropdown-chevron{transform:translateY(-50%) rotate(180deg);}
+.checkbox-dropdown-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface2);
+  border:1px solid var(--border2);border-radius:var(--radius-lg);padding:6px;z-index:80;
+  box-shadow:0 16px 40px rgba(0,0,0,0.5);max-height:260px;overflow-y:auto;}
+.checkbox-dropdown-wrap.open .checkbox-dropdown-menu{display:block;}
+.checkbox-dropdown-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;
+  font-size:12px;color:var(--text-muted);transition:background .12s;}
+.checkbox-dropdown-item:hover{background:var(--surface3);color:var(--text);}
+.checkbox-dropdown-item input[type=checkbox]{display:none;}
+.checkbox-custom{width:15px;height:15px;border-radius:4px;border:1.5px solid var(--border2);background:var(--surface3);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.checkbox-dropdown-item input:checked ~ .checkbox-custom{background:var(--accent);border-color:var(--accent);}
+.checkbox-dropdown-item input:checked ~ .checkbox-custom::after{content:'✓';font-size:10px;color:#050b18;font-weight:700;}
+.checkbox-label{flex:1;line-height:1.3;}
+
+/* VIEW TOGGLE */
+.view-toggle{display:flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:2px;}
+.view-toggle-btn{background:none;border:none;color:var(--text-dim);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:14px;transition:all .15s;line-height:1;}
+.view-toggle-btn:hover{color:var(--text-muted);}
+.view-toggle-btn.active{background:var(--surface3);color:var(--accent);box-shadow:0 0 0 1px rgba(0,194,255,0.2);}
+
+/* GRID VIEW */
+.anime-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;}
+.grid-card{position:relative;border-radius:var(--radius-lg);overflow:visible;}
+.grid-card-inner{border-radius:var(--radius-lg);overflow:hidden;background:var(--surface);border:1px solid var(--border);transition:all .2s;cursor:pointer;}
+.grid-card:hover .grid-card-inner{border-color:var(--accent);box-shadow:0 12px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(0,194,255,0.15);transform:translateY(-3px);}
+.grid-card-cover-wrap{position:relative;width:100%;aspect-ratio:2/3;background:var(--surface3);overflow:hidden;}
+.grid-card-cover{width:100%;height:100%;object-fit:cover;display:block;}
+.grid-card-cover-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;}
+.grid-card-score-badge{position:absolute;top:6px;left:6px;background:rgba(8,11,16,0.85);backdrop-filter:blur(4px);border-radius:6px;padding:3px 7px;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:3px;}
+.grid-card-status-dot{position:absolute;top:6px;right:6px;width:9px;height:9px;border-radius:50%;box-shadow:0 0 8px currentColor;}
+.grid-card-progress-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(0,0,0,0.4);}
+.grid-card-progress-fill{height:100%;}
+.grid-card-info{padding:8px 10px;}
+.grid-card-title{font-size:12px;font-weight:600;color:var(--text);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:3px;min-height:31px;}
+.grid-card-meta{font-size:10px;color:var(--text-dim);display:flex;align-items:center;gap:5px;}
+.grid-card-eps{font-family:'JetBrains Mono',monospace;}
+.grid-card-actions{position:absolute;top:6px;left:6px;right:6px;display:flex;justify-content:flex-end;gap:4px;opacity:0;transition:opacity .15s;}
+.grid-card:hover .grid-card-actions{opacity:1;}
+.grid-card-actions button{background:rgba(8,11,16,0.85);backdrop-filter:blur(4px);border:1px solid var(--border2);border-radius:5px;color:var(--text-muted);width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all .15s;}
+.grid-card-actions button:hover{color:var(--accent);border-color:var(--accent);}
+.grid-card-actions button.danger:hover{color:var(--red);border-color:var(--red);}
+
+/* HOVER PREVIEW POPUP */
+.grid-card-preview{position:absolute;top:0;left:calc(100% + 10px);width:240px;background:var(--surface2);border:1px solid var(--border2);
+  border-radius:var(--radius-lg);padding:14px;box-shadow:0 20px 50px rgba(0,0,0,0.6);z-index:60;opacity:0;visibility:hidden;
+  transform:translateX(-8px);transition:opacity .15s,transform .15s;pointer-events:none;}
+.grid-card:hover .grid-card-preview{opacity:1;visibility:visible;transform:translateX(0);pointer-events:auto;}
+.grid-card-preview-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3;}
+.grid-card-preview-row{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;}
+.grid-card-preview-badge{font-size:10px;background:var(--surface3);border:1px solid var(--border);border-radius:4px;padding:2px 6px;color:var(--text-muted);}
+.grid-card-preview-genres{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.grid-card-preview-meta{font-size:11px;color:var(--text-dim);line-height:1.7;margin-top:8px;}
+.grid-card-preview-meta b{color:var(--text-muted);font-weight:600;}
+
+@media(max-width:900px){
+  .anime-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
+  .grid-card-preview{display:none;}
+}
 
 /* CONTENT */
 .content{flex:1;min-width:0;}
@@ -299,7 +359,6 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 <nav>
   <span class="nav-logo">AniTrack</span>
   <div class="nav-spacer"></div>
-  <input class="nav-search" type="text" placeholder="Search anime..." id="navSearch" oninput="filterSearch(this.value)">
   <button class="btn" onclick="openIOModal()">⇅ Import / Export</button>
   <button class="btn btn-primary" onclick="openAddModal()">＋ Add Anime</button>
 </nav>
@@ -356,14 +415,10 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 <div class="main">
   <aside class="sidebar">
     <div class="sidebar-section">
-      <div style="position:relative;">
-        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:13px;pointer-events:none;">🔍</span>
-        <input type="text" class="form-input" id="sidebarFilterBox" placeholder="Filter" oninput="filterSearch(this.value)" style="padding-left:32px;">
-      </div>
-    </div>
-
-    <div class="sidebar-section">
       <div class="sidebar-title">Lists</div>
+      <a href="#" class="sidebar-item" id="tab-all" onclick="switchTab('all',this);return false;">
+        <span class="dot" style="background:var(--text-muted);box-shadow:0 0 6px var(--text-muted)"></span> All <span class="count" id="cnt-all">0</span>
+      </a>
       <a href="#" class="sidebar-item active" id="tab-watching" onclick="switchTab('watching',this);return false;">
         <span class="dot dot-watching"></span> Watching <span class="count" id="cnt-watching">0</span>
       </a>
@@ -409,6 +464,45 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
           <option value="added">Sort: Date Added</option>
         </select>
         <span class="dropdown-chevron">⌄</span>
+      </div>
+
+      <div class="checkbox-dropdown-wrap" id="ratingDropdownWrap">
+        <button class="dropdown-select checkbox-dropdown-trigger" onclick="toggleRatingDropdown()" type="button">
+          <span id="ratingDropdownLabel">Rating: All</span>
+        </button>
+        <span class="dropdown-chevron" id="ratingChevron">⌄</span>
+        <div class="checkbox-dropdown-menu" id="ratingDropdownMenu">
+          <label class="checkbox-dropdown-item">
+            <input type="checkbox" value="PG" onchange="toggleRatingFilter('PG',this.checked)">
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">PG – Children</span>
+          </label>
+          <label class="checkbox-dropdown-item">
+            <input type="checkbox" value="PG13" onchange="toggleRatingFilter('PG13',this.checked)">
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">PG 13 – Teens 13 and Older</span>
+          </label>
+          <label class="checkbox-dropdown-item">
+            <input type="checkbox" value="G" onchange="toggleRatingFilter('G',this.checked)">
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">G – All Ages</span>
+          </label>
+          <label class="checkbox-dropdown-item">
+            <input type="checkbox" value="R" onchange="toggleRatingFilter('R',this.checked)">
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">R – 17+, Violence &amp; Profanity</span>
+          </label>
+          <label class="checkbox-dropdown-item">
+            <input type="checkbox" value="R+" onchange="toggleRatingFilter('R+',this.checked)">
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">R+ – Profanity &amp; Mild Nudity</span>
+          </label>
+          <label class="checkbox-dropdown-item">
+            <input type="checkbox" value="Rx" onchange="toggleRatingFilter('Rx',this.checked)">
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">Rx – Hentai</span>
+          </label>
+        </div>
       </div>
     </div>
 
@@ -457,6 +551,10 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
       <span class="toolbar-count" id="toolbarCount">0 entries</span>
       <div class="toolbar-spacer"></div>
       <input class="toolbar-search" type="text" placeholder="Filter..." id="filterBox" oninput="filterSearch(this.value)">
+      <div class="view-toggle">
+        <button class="view-toggle-btn active" id="viewBtnTable" onclick="setViewMode('table')" title="Table view">☰</button>
+        <button class="view-toggle-btn" id="viewBtnGrid" onclick="setViewMode('grid')" title="Grid view">▦</button>
+      </div>
       <button class="btn btn-primary btn-sm" onclick="openAddModal()">＋ Add</button>
     </div>
 
@@ -472,6 +570,8 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
       </thead>
       <tbody id="tableBody"></tbody>
     </table>
+
+    <div class="anime-grid" id="animeGrid" style="display:none;"></div>
   </main>
 </div>
 
@@ -530,6 +630,18 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
       <div class="form-group">
         <label class="form-label">Genres (comma-separated)</label>
         <input class="form-input" id="fGenres" type="text" placeholder="e.g. Action, Fantasy, Romance">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rating</label>
+        <select class="form-select" id="fRating">
+          <option value="">Not set</option>
+          <option value="G">G – All Ages</option>
+          <option value="PG">PG – Children</option>
+          <option value="PG13">PG 13 – Teens 13 and Older</option>
+          <option value="R">R – 17+, Violence &amp; Profanity</option>
+          <option value="R+">R+ – Profanity &amp; Mild Nudity</option>
+          <option value="Rx">Rx – Hentai</option>
+        </select>
       </div>
       <div class="form-group">
         <label class="form-label">Cover Image URL</label>
@@ -668,12 +780,13 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 <div class="toast" id="toast"></div>
 
 <script>
-const STATUS_COLORS = {watching:'#00c2ff',completed:'#00e5a0',dropped:'#ff4757',planning:'#9b6dff',waiting:'#ff9254',nsfw:'#ff6b9d'};
-const STATUS_NAMES  = {watching:'Watching',completed:'Completed',dropped:'Dropped',planning:'Plan to Watch',waiting:'Waiting',nsfw:'NSFW / 18+'};
+const STATUS_COLORS = {all:'#6b85a8',watching:'#00c2ff',completed:'#00e5a0',dropped:'#ff4757',planning:'#9b6dff',waiting:'#ff9254',nsfw:'#ff6b9d'};
+const STATUS_NAMES  = {all:'All Anime',watching:'Watching',completed:'Completed',dropped:'Dropped',planning:'Plan to Watch',waiting:'Waiting',nsfw:'NSFW / 18+'};
 const AVG_EP_MINS   = 24;
 
 let db = {watching:[],completed:[],dropped:[],planning:[],waiting:[],nsfw:[]};
-let currentTab = 'watching', currentSearch = '', currentSort = 'score', editingId = null, currentFormatFilter = 'all';
+let currentTab = 'watching', currentSearch = '', currentSort = 'score', editingId = null, currentFormatFilter = 'all', currentViewMode = 'table';
+let currentRatingFilters = new Set();
 
 function saveDB(){}  // memory only — data clears on refresh
 function allAnime(){ return Object.values(db).flat(); }
@@ -687,6 +800,7 @@ function updateStats(){
   document.getElementById('statEps').textContent   = eps.toLocaleString();
   document.getElementById('statDays').textContent  = ((eps*AVG_EP_MINS)/60/24).toFixed(1);
   document.getElementById('statMean').textContent  = scored.length?(scored.reduce((s,a)=>s+(+a.score),0)/scored.length).toFixed(2):'—';
+  const allCnt = document.getElementById('cnt-all'); if(allCnt) allCnt.textContent = all.length;
   Object.keys(db).forEach(s=>{
     const n = db[s].length;
     const c = document.getElementById('cnt-'+s), sc = document.getElementById('sc-'+s);
@@ -730,8 +844,9 @@ function scoreClass(s){ if(s===null||s===''||s===undefined) return 'score-none';
 
 function getList(){
   if(currentTab==='dupes') return getDupesFlat();
-  let list=[...(db[currentTab]||[])];
+  let list = currentTab==='all' ? allAnime() : [...(db[currentTab]||[])];
   if(currentFormatFilter!=='all') list=list.filter(a=>(a.format||'TV')===currentFormatFilter);
+  if(currentRatingFilters.size>0) list=list.filter(a=>a.rating && currentRatingFilters.has(a.rating));
   if(currentSearch){ const q=currentSearch.toLowerCase(); list=list.filter(a=>a.title.toLowerCase().includes(q)||(a.sub||'').toLowerCase().includes(q)); }
   if(currentSort==='title') list.sort((a,b)=>a.title.localeCompare(b.title));
   else if(currentSort==='score') list.sort((a,b)=>(b.score===''||b.score===null?-1:+b.score)-(a.score===''||a.score===null?-1:+a.score));
@@ -745,8 +860,47 @@ function setFormatFilter(fmt){
   renderList();
 }
 
+// ── RATING FILTER DROPDOWN ──────────────────────────────────
+const RATING_LABELS = {PG:'PG',PG13:'PG13',G:'G',R:'R',"R+":'R+',Rx:'Rx'};
+
+function toggleRatingDropdown(){
+  document.getElementById('ratingDropdownWrap').classList.toggle('open');
+}
+function toggleRatingFilter(rating, checked){
+  if(checked) currentRatingFilters.add(rating);
+  else currentRatingFilters.delete(rating);
+  updateRatingDropdownLabel();
+  renderList();
+}
+function updateRatingDropdownLabel(){
+  const label = document.getElementById('ratingDropdownLabel');
+  if(currentRatingFilters.size===0){
+    label.textContent = 'Rating: All';
+  } else if(currentRatingFilters.size===1){
+    label.textContent = 'Rating: ' + RATING_LABELS[[...currentRatingFilters][0]];
+  } else {
+    label.textContent = `Rating: ${currentRatingFilters.size} selected`;
+  }
+}
+// Close rating dropdown when clicking outside
+document.addEventListener('click', e=>{
+  const wrap = document.getElementById('ratingDropdownWrap');
+  if(wrap && !wrap.contains(e.target)) wrap.classList.remove('open');
+});
+
 function renderList(){
   const tbody = document.getElementById('tableBody');
+
+  // Dupes/broken always use table layout — force table visible, grid hidden
+  if(currentTab==='broken' || currentTab==='dupes'){
+    document.getElementById('animeTable').style.display='';
+    document.getElementById('animeGrid').style.display='none';
+    document.getElementById('viewBtnGrid').style.opacity='0.3';
+    document.getElementById('viewBtnGrid').style.pointerEvents='none';
+  } else {
+    document.getElementById('viewBtnGrid').style.opacity='1';
+    document.getElementById('viewBtnGrid').style.pointerEvents='';
+  }
 
   if(currentTab==='broken'){
     const list = getBrokenAnime();
@@ -818,16 +972,26 @@ function renderList(){
   const list=getList(), color=STATUS_COLORS[currentTab];
   document.getElementById('toolbarTitle').textContent=STATUS_NAMES[currentTab]+(currentFormatFilter!=='all'?` · ${currentFormatFilter}`:'');
   document.getElementById('toolbarCount').textContent=list.length+' entr'+(list.length===1?'y':'ies');
+  document.getElementById('animeTable').style.display = currentViewMode==='table' ? '' : 'none';
+  document.getElementById('animeGrid').style.display   = currentViewMode==='grid'  ? '' : 'none';
 
   if(!list.length){
-    const total=(db[currentTab]||[]).length;
+    const total = currentTab==='all' ? allAnime().length : (db[currentTab]||[]).length;
+    let emptyHtml;
     if(total===0){
-      tbody.innerHTML=`<tr><td colspan="5"><div class="empty-state"><div class="big">📋</div><p>No anime in <b>${STATUS_NAMES[currentTab]}</b> yet.</p><button class="btn btn-primary" onclick="openAddModal()">＋ Add Your First Anime</button></div></td></tr>`;
+      emptyHtml=`<div class="empty-state"><div class="big">📋</div><p>No anime in <b>${STATUS_NAMES[currentTab]}</b> yet.</p><button class="btn btn-primary" onclick="openAddModal()">＋ Add Your First Anime</button></div>`;
     } else if(currentFormatFilter!=='all'){
-      tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-dim)">No <b>${currentFormatFilter}</b> entries in ${STATUS_NAMES[currentTab]}</td></tr>`;
+      emptyHtml=`<div style="text-align:center;padding:2rem;color:var(--text-dim)">No <b>${currentFormatFilter}</b> entries in ${STATUS_NAMES[currentTab]}</div>`;
     } else {
-      tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-dim)">No results for "${escHtml(currentSearch)}"</td></tr>`;
+      emptyHtml=`<div style="text-align:center;padding:2rem;color:var(--text-dim)">No results for "${escHtml(currentSearch)}"</div>`;
     }
+    tbody.innerHTML=`<tr><td colspan="5">${emptyHtml}</td></tr>`;
+    document.getElementById('animeGrid').innerHTML=emptyHtml;
+    return;
+  }
+
+  if(currentViewMode==='grid'){
+    renderGrid(list, color);
     return;
   }
 
@@ -835,18 +999,80 @@ function renderList(){
   list.forEach((a,i)=>{
     const sv=(a.score!==null&&a.score!=='')?(+a.score).toFixed(1):'—',eps=+a.eps||0,tot=a.total?+a.total:null,pct=tot&&eps?Math.min(100,Math.round(eps/tot*100)):0;
     const genres=(a.genres||[]).slice(0,2).map(g=>`<span class="genre-tag">${escHtml(g)}</span>`).join('');
+    const rowColor = currentTab==='all' ? (STATUS_COLORS[a.status]||color) : color;
+    const statusDot = currentTab==='all' ? `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${rowColor};margin-right:5px;vertical-align:middle;"></span>` : '';
     html+=`<tr class="list-row" style="animation-delay:${i*0.03}s"><td class="entry-num">${i+1}</td>
-      <td><div class="entry-info"><div class="cover-box" style="background:${color}22;border:1px solid ${color}44;color:${color};overflow:hidden;padding:0;">${a.cover?`<img src="${a.cover}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='▶';this.parentElement.style.padding='0'">`:'▶'}</div>
-      <div><span class="entry-title" onclick="openEditModal('${a.id}')">${escHtml(a.title)}</span><span class="entry-sub">${escHtml(a.sub||'')}</span><div>${genres}</div></div></div></td>
+      <td><div class="entry-info"><div class="cover-box" style="background:${rowColor}22;border:1px solid ${rowColor}44;color:${rowColor};overflow:hidden;padding:0;">${a.cover?`<img src="${a.cover}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='▶';this.parentElement.style.padding='0'">`:'▶'}</div>
+      <div><span class="entry-title" onclick="openEditModal('${a.id}')">${escHtml(a.title)}</span><span class="entry-sub">${statusDot}${currentTab==='all'?STATUS_NAMES[a.status]+(a.sub?' · ':''):''}${escHtml(a.sub||'')}</span><div>${genres}</div></div></div></td>
       <td style="text-align:center"><span class="entry-score ${scoreClass(a.score)}">${sv}</span></td>
       <td style="text-align:center;padding-left:0;padding-right:0;"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
         <div class="ep-ctrl"><button class="ep-btn" onclick="adjustEps('${a.id}',-1)">−</button><span class="ep-val">${eps}${tot?'/'+tot:''}</span><button class="ep-btn" onclick="adjustEps('${a.id}',1)">+</button></div>
-        ${tot&&eps>0&&eps<tot?`<span class="progress-bar"><span class="progress-fill" style="width:${pct}%;background:${color}"></span></span>`:''}
+        ${tot&&eps>0&&eps<tot?`<span class="progress-bar"><span class="progress-fill" style="width:${pct}%;background:${rowColor}"></span></span>`:''}
       </div></td>
       <td><div class="row-actions"><button class="btn btn-sm btn-icon" title="Edit" onclick="openEditModal('${a.id}')">✎</button><button class="btn btn-sm btn-icon btn-danger" title="Delete" onclick="confirmDelete('${a.id}')">✕</button></div></td>
     </tr>`;
   });
   tbody.innerHTML=html;
+}
+
+// ── VIEW MODE / GRID ────────────────────────────────────────
+function setViewMode(mode){
+  currentViewMode = mode;
+  document.getElementById('viewBtnTable').classList.toggle('active', mode==='table');
+  document.getElementById('viewBtnGrid').classList.toggle('active', mode==='grid');
+  renderList();
+}
+
+function renderGrid(list, fallbackColor){
+  document.getElementById('animeTable').style.display='none';
+  const grid = document.getElementById('animeGrid');
+  grid.style.display='';
+
+  grid.innerHTML = list.map(a=>{
+    const color = currentTab==='all' ? (STATUS_COLORS[a.status]||fallbackColor) : fallbackColor;
+    const sv = (a.score!==null&&a.score!=='') ? (+a.score).toFixed(1) : null;
+    const eps = +a.eps||0, tot = a.total?+a.total:null;
+    const pct = tot&&eps ? Math.min(100,Math.round(eps/tot*100)) : 0;
+    const genres = (a.genres||[]).slice(0,4);
+    const statusName = STATUS_NAMES[a.status]||a.status;
+
+    return `<div class="grid-card">
+      <div class="grid-card-inner" onclick="openEditModal('${a.id}')">
+        <div class="grid-card-cover-wrap">
+          ${a.cover
+            ? `<img class="grid-card-cover" src="${escHtml(a.cover)}" loading="lazy" onerror="this.outerHTML='<div class=grid-card-cover-placeholder>🎬</div>'">`
+            : `<div class="grid-card-cover-placeholder">🎬</div>`}
+          ${sv ? `<div class="grid-card-score-badge" style="color:${scoreClass(a.score)==='score-high'?'var(--green)':scoreClass(a.score)==='score-mid'?'var(--yellow)':'var(--orange)'}">⭐ ${sv}</div>` : ''}
+          <span class="grid-card-status-dot" style="background:${color};color:${color};"></span>
+          <div class="grid-card-actions">
+            <button onclick="event.stopPropagation();openEditModal('${a.id}')" title="Edit">✎</button>
+            <button class="danger" onclick="event.stopPropagation();confirmDelete('${a.id}')" title="Delete">✕</button>
+          </div>
+          ${tot&&eps>0&&eps<tot ? `<div class="grid-card-progress-bar"><div class="grid-card-progress-fill" style="width:${pct}%;background:${color}"></div></div>` : ''}
+        </div>
+        <div class="grid-card-info">
+          <div class="grid-card-title">${escHtml(a.title)}</div>
+          <div class="grid-card-meta">
+            <span>${a.format||'TV'}</span>
+            ${tot||eps ? `<span class="grid-card-eps">· ${eps}${tot?'/'+tot:''}</span>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="grid-card-preview">
+        <div class="grid-card-preview-title">${escHtml(a.title)}</div>
+        <div class="grid-card-preview-row">
+          <span class="grid-card-preview-badge">${a.format||'TV'}</span>
+          ${currentTab==='all' ? `<span class="grid-card-preview-badge" style="color:${color}">${statusName}</span>` : ''}
+        </div>
+        ${genres.length ? `<div class="grid-card-preview-genres">${genres.map(g=>`<span class="genre-tag">${escHtml(g)}</span>`).join('')}</div>` : ''}
+        <div class="grid-card-preview-meta">
+          <div><b>Score:</b> ${sv ? sv+'/10' : 'Unscored'}</div>
+          <div><b>Progress:</b> ${eps}${tot?'/'+tot+' eps':eps?' eps':' — not started'}</div>
+          ${a.sub ? `<div><b>Info:</b> ${escHtml(a.sub)}</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ── EPISODES ──────────────────────────────────────────────
@@ -870,8 +1096,9 @@ function openAddModal(){
   editingId=null; document.getElementById('modalTitle').textContent='Add Anime';
   ['fTitle','fSub','fScore','fGenres','fCover'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('editId').value=''; document.getElementById('fFormat').value='TV';
-  document.getElementById('fStatus').value=currentTab==='dupes'||currentTab==='broken'?'watching':currentTab==='nsfw'?'nsfw':currentTab;
+  document.getElementById('fStatus').value=(currentTab==='dupes'||currentTab==='broken'||currentTab==='all')?'watching':currentTab==='nsfw'?'nsfw':currentTab;
   document.getElementById('fEps').value='0'; document.getElementById('fTotal').value='';
+  document.getElementById('fRating').value='';
   document.getElementById('modalOverlay').classList.remove('hidden');
   setTimeout(()=>document.getElementById('fTitle').focus(),50);
 }
@@ -885,6 +1112,7 @@ function openEditModal(id){
   document.getElementById('fEps').value=a.eps||0; document.getElementById('fTotal').value=a.total||'';
   document.getElementById('fGenres').value=(a.genres||[]).join(', ');
   document.getElementById('fCover').value=a.cover||'';
+  document.getElementById('fRating').value=a.rating||'';
   document.getElementById('modalOverlay').classList.remove('hidden');
   setTimeout(()=>document.getElementById('fTitle').focus(),50);
 }
@@ -902,18 +1130,19 @@ function saveAnime(){
   const total=totalRaw===''?null:parseInt(totalRaw)||null;
   const genres=document.getElementById('fGenres').value.trim().split(',').map(g=>g.trim()).filter(Boolean);
   const cover=document.getElementById('fCover').value.trim()||null;
+  const rating=document.getElementById('fRating').value||null;
   if(editingId){
     const old=findAnime(editingId); if(!old) return;
     const oldStatus=old.status;
-    Object.assign(old,{title,sub:document.getElementById('fSub').value.trim(),format:document.getElementById('fFormat').value,status,score,eps,total,genres,cover});
+    Object.assign(old,{title,sub:document.getElementById('fSub').value.trim(),format:document.getElementById('fFormat').value,status,score,eps,total,genres,cover,rating});
     if(oldStatus!==status){ db[oldStatus]=db[oldStatus].filter(a=>a.id!==editingId); db[status].unshift(old); }
     showToast('Anime updated ✓','success');
   } else {
-    db[status].unshift({id:genId(),title,sub:document.getElementById('fSub').value.trim(),format:document.getElementById('fFormat').value,status,score,eps,total,genres,cover,addedAt:Date.now()});
+    db[status].unshift({id:genId(),title,sub:document.getElementById('fSub').value.trim(),format:document.getElementById('fFormat').value,status,score,eps,total,genres,cover,rating,addedAt:Date.now()});
     showToast('Anime added ✓','success');
   }
   saveDB(); updateStats(); updateWatchingBanner(); scanBrokenCovers();
-  if(status!==currentTab&&currentTab!=='dupes'&&currentTab!=='broken') switchTab(status,document.getElementById('tab-'+status));
+  if(status!==currentTab&&currentTab!=='dupes'&&currentTab!=='broken'&&currentTab!=='all') switchTab(status,document.getElementById('tab-'+status));
   else renderList();
   closeModal();
 }
@@ -939,8 +1168,6 @@ function closeConfirm(){ document.getElementById('confirmOverlay').classList.add
 function switchTab(status,el){
   currentTab=status; currentSearch='';
   const fb=document.getElementById('filterBox'); if(fb) fb.value='';
-  const ns=document.getElementById('navSearch'); if(ns) ns.value='';
-  const sb=document.getElementById('sidebarFilterBox'); if(sb) sb.value='';
   document.querySelectorAll('.sidebar-item[id^="tab-"]').forEach(s=>s.classList.remove('active'));
   if(el) el.classList.add('active'); renderList();
 }
@@ -951,8 +1178,6 @@ function setSort(s){
 function filterSearch(val){
   currentSearch=val;
   const fb=document.getElementById('filterBox'); if(fb) fb.value=val;
-  const ns=document.getElementById('navSearch'); if(ns) ns.value=val;
-  const sb=document.getElementById('sidebarFilterBox'); if(sb) sb.value=val;
   renderList();
 }
 
