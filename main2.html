@@ -235,6 +235,8 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
 .ep-ctrl{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;}
 .ep-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:5px;color:var(--text-muted);cursor:pointer;font-size:12px;padding:3px 8px;line-height:1.4;transition:all .15s;flex-shrink:0;font-weight:600;}
 .ep-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,194,255,0.08);}
+.ep-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.ep-btn:disabled:hover{border-color:var(--border2);color:var(--text-muted);background:var(--surface2);}
 .ep-val{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);width:52px;text-align:center;white-space:nowrap;flex-shrink:0;}
 
 /* STATS */
@@ -556,6 +558,13 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
         <button class="view-toggle-btn" id="viewBtnGrid" onclick="setViewMode('grid')" title="Grid view">▦</button>
       </div>
       <button class="btn btn-primary btn-sm" onclick="openAddModal()">＋ Add</button>
+    </div>
+
+    <div id="importBanner" style="display:none;background:rgba(0,229,160,0.07);border:1px solid rgba(0,229,160,0.2);border-radius:var(--radius-lg);padding:10px 16px;margin-bottom:12px;display:none;align-items:center;gap:12px;">
+      <span style="font-size:16px;">✅</span>
+      <span id="importBannerText" style="font-size:13px;color:var(--green);flex:1;"></span>
+      <span id="importBannerTime" style="font-size:11px;color:var(--text-dim);"></span>
+      <button onclick="document.getElementById('importBanner').style.display='none'" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:16px;padding:0;line-height:1;">×</button>
     </div>
 
     <table class="list-table" id="animeTable">
@@ -1006,7 +1015,7 @@ function renderList(){
       <div><span class="entry-title" onclick="openEditModal('${a.id}')">${escHtml(a.title)}</span><span class="entry-sub">${statusDot}${currentTab==='all'?STATUS_NAMES[a.status]+(a.sub?' · ':''):''}${escHtml(a.sub||'')}</span><div>${genres}</div></div></div></td>
       <td style="text-align:center"><span class="entry-score ${scoreClass(a.score)}">${sv}</span></td>
       <td style="text-align:center;padding-left:0;padding-right:0;"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-        <div class="ep-ctrl"><button class="ep-btn" onclick="adjustEps('${a.id}',-1)">−</button><span class="ep-val">${eps}${tot?'/'+tot:''}</span><button class="ep-btn" onclick="adjustEps('${a.id}',1)">+</button></div>
+        <div class="ep-ctrl"><button class="ep-btn" onclick="adjustEps('${a.id}',-1)" ${eps<=0?'disabled':''}>−</button><span class="ep-val">${eps}${tot?'/'+tot:''}</span><button class="ep-btn" onclick="adjustEps('${a.id}',1)" ${tot&&eps>=tot?'disabled':''}>+</button></div>
         ${tot&&eps>0&&eps<tot?`<span class="progress-bar"><span class="progress-fill" style="width:${pct}%;background:${rowColor}"></span></span>`:''}
       </div></td>
       <td><div class="row-actions"><button class="btn btn-sm btn-icon" title="Edit" onclick="openEditModal('${a.id}')">✎</button><button class="btn btn-sm btn-icon btn-danger" title="Delete" onclick="confirmDelete('${a.id}')">✕</button></div></td>
@@ -1424,7 +1433,18 @@ function doImport(){
   importData.forEach(a=>{ if(importMode==='merge'&&existingIds.has(a.id)) skipped++; else{db[a.status].push(a);added++;} });
   saveDB(); updateStats(); updateWatchingBanner(); scanBrokenCovers();
   switchTab(currentTab,document.getElementById('tab-'+currentTab));
-  closeIO(); showToast(importMode==='replace'?`Imported ${added} anime ✓`:`Added ${added}${skipped?' ('+skipped+' dupes skipped)':''}  ✓`,'success');
+  closeIO();
+
+  // Show persistent import summary banner
+  const banner = document.getElementById('importBanner');
+  const msg = importMode==='replace'
+    ? `Imported ${added} anime (full replace)`
+    : `Added ${added} anime${skipped?' · '+skipped+' duplicates skipped':''}`;
+  document.getElementById('importBannerText').textContent = msg;
+  document.getElementById('importBannerTime').textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  banner.style.display='flex';
+
+  showToast(msg+' ✓','success');
 }
 function clearAllData(){
   if(!confirm('Delete your entire anime list?')) return;
