@@ -1233,7 +1233,7 @@ function exportTXT(){
       const progress = a.total ? `${a.eps||0}/${a.total} eps` : a.eps ? `${a.eps} eps` : '';
       const genres = (a.genres||[]).length ? `[${a.genres.join(', ')}]` : '';
       lines.push(`${i+1}. ${a.title}${a.sub?' ('+a.sub+')':''}`);
-      lines.push(`   Score: ${score}${progress?' | Progress: '+progress:''}${genres?' | '+genres:''}`);
+      lines.push(`   Score: ${score}${progress?' | Progress: '+progress:''}${a.rating?' | Rating: '+a.rating:''}${genres?' | '+genres:''}`);
       if(a.cover) lines.push(`   Cover: ${a.cover}`);
     });
     lines.push('');
@@ -1280,7 +1280,7 @@ function parseImportFile(text){
     else if(['plan to watch','plan_to_watch','plantowatch','planning','want to watch','plan','ptw','on hold','onhold','on-hold','paused','hold'].includes(r)) status='planning';
     else if(['waiting','wait','airing','next season'].includes(r)) status='waiting';
     else if(['nsfw','18+','adult','ecchi','hentai'].includes(r)) status='nsfw';
-    return {id:a.id||genId(),title:a.title||'Untitled',sub:String(a.sub||a.note||a.notes||''),format:a.format||'TV',status,score:(!a.score||+a.score===0)?null:+a.score,eps:ew,total:et,genres,cover:a.cover||a.image||null,addedAt:a.addedAt||Date.now()};
+    return {id:a.id||genId(),title:a.title||'Untitled',sub:String(a.sub||a.note||a.notes||''),format:a.format||'TV',status,score:(!a.score||+a.score===0)?null:+a.score,eps:ew,total:et,genres,cover:a.cover||a.image||null,rating:a.rating||null,addedAt:a.addedAt||Date.now()};
   });
 }
 function showImportPreview(list){
@@ -1406,6 +1406,8 @@ function parseTXTFile(text){
       if(scoreMatch) currentAnime.score = +scoreMatch[1];
       const progressMatch = line.match(/Progress:\s*(\d+)(?:\/(\d+))?\s*eps/);
       if(progressMatch){ currentAnime.eps=+progressMatch[1]; if(progressMatch[2]) currentAnime.total=+progressMatch[2]; }
+      const ratingMatch = line.match(/Rating:\s*([^\s|]+)/);
+      if(ratingMatch) currentAnime.rating = ratingMatch[1].trim();
       const genreMatch = line.match(/\[(.+?)\]/);
       if(genreMatch) currentAnime.genres = genreMatch[1].split(',').map(g=>g.trim());
       continue;
