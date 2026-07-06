@@ -1,116 +1,174 @@
-# 📋 My Anime Watchlist
+# AniTrack
 
-A fully offline, single-file anime tracking app that runs directly in your browser — no account, no server, no install required. Just open the HTML file and start tracking.
+A personal anime tracking web app — built as a single HTML file, no install required.
 
 ---
 
 ## Getting Started
 
-Download `main.html` and open it in any modern browser. That's it.
+1. Download `main2.html`
+2. Open it in any modern browser
+3. Import your anime list via **⇅ Import / Export**
 
-Your list starts empty. Add anime manually using the **+ Add** button, or load an existing list with **↑ Import**.
+> **Note:** Data is memory-only — it clears on refresh. Export your list before closing the tab.
 
 ---
 
 ## Features
 
-### Adding Anime
-Click **+ Add** to add a new entry. You can provide:
-- **Title** — the anime's name
-- **Episodes** — total episode count (use `18+` to flag adult content)
-- **Status** — Watching, Completed, Plan to Watch, or Dropped
-- **Category** — a custom tag to group anime (e.g. "Action", "Romance", "Ongoing")
-- **Note** — any personal notes
+### Status Lists
+Anime can be assigned to one of six statuses, each with its own sidebar tab:
 
-### Tracking Progress
-Each card has an episode counter. Type in the number of episodes you've watched and the progress bar updates automatically. When you hit 100%, the bar turns green.
-
-### Statuses
-Every anime can be assigned one of four statuses, shown as a colored left border on each card:
-
-| Status | Color |
+| Status | Description |
 |---|---|
-| Watching | Blue |
-| Completed | Green |
-| Plan to Watch | Amber |
-| Dropped | Red |
-
-Click the **stat tabs** at the top to filter by status.
-
-### Notes
-Click any anime's title or the note preview text to open a note editor. Notes support multi-line text and are searchable.
-
-### Search & Filter
-- **Search bar** — filters by title or note content in real time
-- **Sort** — order by Original, A→Z, Z→A, Status, Most/Fewest Episodes, or Recently Added
-- **Category filter** — filter to a specific category
-- **Letter bar** — jump to anime starting with a specific letter
-
-### Bulk Actions
-Click **☑ Bulk** to enter bulk mode. Check multiple cards, then:
-- Set the same status on all selected anime at once
-- Remove all selected anime at once
-
-### Random Picker
-Click **🎲 Random** to have the app pick a random anime from your list. You can narrow the pool to only Plan to Watch, Currently Watching, or Not Set entries — useful for deciding what to watch next.
-
-### Duplicate Detector
-Click **🔍 Dupes** to scan your list for entries with identical or very similar titles.
-
-### Import
-Click **↑ Import** and either:
-- **Drag & drop** a `.json` file onto the drop zone
-- **Browse** for a file
-- **Paste** raw JSON directly into the text box
-
-Importing merges with your existing list — existing titles are updated, new ones are added.
-
-The expected JSON format is an array of objects:
-```json
-[
-  {
-    "title": "Fullmetal Alchemist: Brotherhood",
-    "episodes": "64",
-    "status": "completed",
-    "progress": 64,
-    "category": "Action",
-    "note": "One of the best."
-  }
-]
-```
-All fields except `title` are optional.
-
-### Export
-Click **↓ Export** to download your list in three formats:
-- **JSON** — full data, can be re-imported later
-- **CSV** — opens in Excel or Google Sheets
-- **TXT** — plain text list
-
-Exports respect your active search/filter — so you can export just your "Plan to Watch" list, or just anime in a specific category.
-
-### Light / Dark Mode
-Click **☀ Light** / **🌙 Dark** to toggle the theme.
-
-### Print
-Click **🖨 Print** to open the browser print dialog. The UI chrome is hidden and the grid prints cleanly.
+| **All** | Combined view of every entry across all statuses |
+| **Watching** | Currently airing/watching |
+| **Completed** | Finished |
+| **Dropped** | Abandoned |
+| **Plan to Watch** | Queued for later |
+| **Waiting** | Waiting for next season or a movie release |
+| **NSFW / 18+** | Separate tab for adult content |
 
 ---
 
-## Data & Privacy
+### Import / Export
+Access via **⇅ Import / Export** in the nav bar.
 
-Everything stays in your browser. There is no backend, no account, and no data is ever sent anywhere. Your list exists only in the HTML file's session — to keep it permanently, **export to JSON** and re-import it next time.
+**Export formats:**
+- `.json` — full data export including all fields
+- `.txt` — human-readable formatted list
+- Copy to clipboard as JSON
 
-> 💡 **Tip:** Keep your exported JSON file as your "save file." Each time you finish a session, export JSON. Next time, open the HTML and import it back.
+**Import formats:**
+- `.json` — AniTrack exports or compatible JSON
+- `.txt` — AniTrack TXT exports
+- `.xml` — MyAnimeList export files (exported from MAL profile → Export)
+
+**Import options:**
+- **Merge** — keeps existing entries, adds new ones (skips duplicates by ID)
+- **Replace** — wipes current list and replaces with imported data
+
+**After importing**, a green summary banner appears showing how many anime were added and how many duplicates were skipped.
+
+**Status mapping from MAL XML:**
+
+| MAL Status | AniTrack Status |
+|---|---|
+| Watching | Watching |
+| Completed | Completed |
+| On-Hold | Plan to Watch |
+| Dropped | Dropped |
+| Plan to Watch | Plan to Watch |
 
 ---
 
-## File Format Reference
+### Add / Edit Anime
+Click **＋ Add Anime** or the **✎** icon on any row.
 
-| Field | Type | Description |
-|---|---|---|
-| `title` | string | Anime title (required) |
-| `episodes` | string | Episode count, or `"18+"` for adult content |
-| `status` | string | `watching`, `completed`, `plan`, or `dropped` |
-| `progress` | number | Episodes watched so far |
-| `category` | string | Custom grouping tag |
-| `note` | string | Personal notes |
+Fields available:
+- Title, Sub-title / Info
+- Status, Format (TV, TV Short, Movie, Special, OVA, ONA, Music)
+- Score (0–10, decimals supported — 0 is treated as unscored)
+- Episodes Watched / Total Episodes
+- Rating (G, PG, PG13, R, R+, Rx)
+- Genres (comma-separated)
+- Cover Image URL
+
+---
+
+### Views
+Toggle between two display modes using the **☰ / ▦** buttons in the toolbar:
+
+**Table view** — default, shows score, progress bar, +/− episode controls, edit/delete actions
+
+**Grid view** — poster wall with:
+- Cover art thumbnails
+- Score badge overlaid on cover
+- Status color dot
+- Progress bar along bottom edge
+- Hover to reveal edit/delete buttons
+- Hover preview panel showing format, status, genres, score, progress
+
+> Grid view is not available on Duplicates or Broken Covers tabs.
+
+---
+
+### Filters & Sorting
+Located in the sidebar under **Filters**:
+
+- **Format** dropdown — filter by TV, TV Short, Movie, Special, OVA, ONA, Music
+- **Rating** multi-select — check one or more: PG, PG13, G, R, R+, Rx
+- **Sort** dropdown — Score, Title, Progress, Date Added
+
+The toolbar search box filters by title or sub-title within the current tab.
+
+---
+
+### Tools (Sidebar)
+
+#### 🎲 Random Picker
+Picks a random anime from your **Plan to Watch** list with a slot-machine animation.
+- **▶ Start Watching** — moves the picked anime to Watching
+- **Skip** — removes it from this session's pool and spins again
+- Resets automatically when all options are skipped
+
+#### 📤 Share List
+Encodes your entire list into a URL. Anyone with the link sees a read-only card grid of your list — no account needed.
+- **Preview** button shows exactly what others will see
+- Warning shown if URL is very long (large lists may hit browser limits)
+
+#### ⚠ Duplicates *(auto-detected)*
+Appears automatically when duplicate titles are found after import.
+- Groups entries by title (case-insensitive)
+- Shows status, score, and progress for each copy
+- Delete the unwanted copies — tab disappears when list is clean
+
+#### 🔗 Broken Covers *(auto-detected)*
+Appears automatically after import when cover images fail to load or are missing.
+- Shows the broken URL so you know what to fix
+- Click ✎ to edit and paste a working image URL
+- Tip shown at bottom of the list
+
+---
+
+### Currently Watching Banner
+Appears automatically below the profile section when you have anime in the **Watching** tab.
+- Shows cover art thumbnails, title chips, and episode progress summary
+- Click any title or cover to jump to the Watching tab
+- Hides when Watching list is empty
+
+---
+
+### Editable Profile Name
+Click your name or avatar to set a custom display name. Updates the avatar initial automatically.
+
+---
+
+### Episode Controls
+- **− button** disables when episode count is at 0
+- **+ button** disables when episode count reaches the total
+- Auto-moves anime from **Watching → Completed** when you hit the final episode
+
+---
+
+## Removed / Cleaned Up
+
+| What | Why |
+|---|---|
+| Firebase / Google login | Too many browser compatibility issues with GitHub Pages; removed in favour of Import/Export |
+| Nav bar search box | Redundant — three search boxes existed at once; only toolbar search kept |
+| Sidebar search box | Same as above |
+| Sidebar Sort By link list | Replaced with compact dropdown in Filters section |
+| Sidebar Format filter link list | Replaced with compact dropdown in Filters section |
+| Dead `.nav-search` CSS | Leftover after nav search was removed |
+| AniList search (auto-fill) | Blocked by CORS on GitHub Pages; removed |
+| localStorage persistence | Intentionally removed — data is memory-only, use Import/Export to save |
+
+---
+
+## File Info
+
+- **Single HTML file** — no dependencies, no server, no install
+- **Fonts** — Rajdhani, Inter, JetBrains Mono (loaded from Google Fonts)
+- **Data** — lives in memory only; clears on page refresh
+- **Compatible** — works in any modern browser (Chrome, Firefox, Edge, Safari)
