@@ -1177,6 +1177,11 @@ function closeConfirm(){ document.getElementById('confirmOverlay').classList.add
 function switchTab(status,el){
   currentTab=status; currentSearch='';
   const fb=document.getElementById('filterBox'); if(fb) fb.value='';
+  // Reset filters on tab switch so counts are consistent
+  currentFormatFilter='all';
+  currentRatingFilters.clear();
+  const fs=document.getElementById('formatFilterSelect'); if(fs) fs.value='all';
+  updateRatingDropdownLabel();
   document.querySelectorAll('.sidebar-item[id^="tab-"]').forEach(s=>s.classList.remove('active'));
   if(el) el.classList.add('active'); renderList();
 }
@@ -1432,7 +1437,15 @@ function doImport(){
   if(!importData||!importData.length){showToast('No file loaded','error');return;}
   if(importMode==='replace') db={watching:[],completed:[],dropped:[],planning:[],waiting:[],nsfw:[]};
   let added=0,skipped=0; const existingIds=new Set(allAnime().map(a=>a.id));
-  importData.forEach(a=>{ if(importMode==='merge'&&existingIds.has(a.id)) skipped++; else{db[a.status].push(a);added++;} });
+  const validStatuses = new Set(['watching','completed','dropped','planning','waiting','nsfw']);
+  importData.forEach(a=>{
+    if(importMode==='merge'&&existingIds.has(a.id)){ skipped++; return; }
+    // Remap any unknown/old status to planning
+    const status = validStatuses.has(a.status) ? a.status : 'planning';
+    a.status = status;
+    db[status].push(a);
+    added++;
+  });
   saveDB(); updateStats(); updateWatchingBanner(); scanBrokenCovers();
   switchTab(currentTab,document.getElementById('tab-'+currentTab));
   closeIO();
