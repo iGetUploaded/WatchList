@@ -687,14 +687,18 @@ nav::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
     <div class="io-section">
       <div class="io-section-title">Export</div>
       <div class="io-row">
-        <button class="btn btn-green" onclick="exportJSON()">⬇ JSON</button>
-        <button class="btn btn-green" onclick="exportTXT()" style="border-color:rgba(0,229,160,0.4);">⬇ TXT</button>
+        <button class="btn btn-green" onclick="exportJSON()" title="Recommended — preserves all data">⬇ JSON <span style="font-size:10px;opacity:0.7;">(full backup)</span></button>
+        <button class="btn" onclick="exportTXT()" title="Human-readable only — some fields may be lost on re-import" style="border-color:rgba(255,146,84,0.4);color:var(--orange);">⬇ TXT <span style="font-size:10px;opacity:0.7;">(read-only)</span></button>
         <button class="btn" onclick="copyJSON()" id="copyBtn">⎘ Copy JSON</button>
         <button class="btn" onclick="openShareModal()" style="border-color:rgba(155,109,255,0.4);color:var(--accent2);">📤 Share</button>
       </div>
       <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;">
         <div style="font-size:12px;color:var(--text-dim)" id="exportInfo"></div>
         <button class="btn btn-danger btn-sm" onclick="clearAllData()">🗑 Clear all data</button>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--text-dim);line-height:1.6;">
+        💡 Always use <b style="color:var(--green)">JSON</b> for backups and transfers — it preserves every field.<br>
+        TXT is human-readable only and may lose some data if re-imported.
       </div>
     </div>
     <div class="io-section">
@@ -1225,6 +1229,17 @@ function closeIOIfBg(e){ if(e.target===document.getElementById('ioOverlay')) clo
 
 function exportTXT(){
   const all=allAnime(); if(!all.length){showToast('Nothing to export yet','error');return;}
+  const confirmed = confirm(
+    '⚠ Heads up — TXT export is human-readable only.\n\n' +
+    'Some fields will NOT be preserved:\n' +
+    '  • Format (TV/Movie/OVA etc.)\n' +
+    '  • Rating (PG/R/Rx etc.)\n' +
+    '  • Date Added\n' +
+    '  • Entry IDs (duplicates won\'t be detected on re-import)\n\n' +
+    'For a full backup, use JSON instead.\n\n' +
+    'Continue with TXT export anyway?'
+  );
+  if(!confirmed) return;
   const STATUS_LABELS = {watching:'Watching',completed:'Completed',dropped:'Dropped',planning:'Plan to Watch',waiting:'Waiting',nsfw:'NSFW / 18+'};
   const groups = {};
   all.forEach(a=>{ if(!groups[a.status]) groups[a.status]=[]; groups[a.status].push(a); });
